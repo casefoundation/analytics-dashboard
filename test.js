@@ -1,5 +1,13 @@
 const assert = require('assert');
 const reporter = require('./lib/reporter');
+const server = require('./index');
+const settings = require('./settings.js');
+const async = require('async');
+const chai = require('chai');
+const should = chai.should();
+const chaiHttp = require('chai-http');
+
+chai.use(chaiHttp);
 
 describe('Analytics Dashboard',function() {
 
@@ -150,5 +158,166 @@ describe('Analytics Dashboard',function() {
       });
     });
 
+  });
+
+  describe('Feed API',function() {
+    beforeEach(function(done) {
+      async.waterfall([
+        function(next) {
+          settings.init('./settings.test.json',{},next);
+        },
+        function(next) {
+          settings.commit(next);
+        }
+      ],done);
+    });
+
+    afterEach(function(done) {
+      settings._ = {};
+      settings.commit(done);
+    })
+
+    it('GET /api/feed',function(done) {
+      settings._.feeds = [
+        {
+          "url": "http://casefoundation.org/feed/",
+          "nPosts": 5,
+          "nDays": 5,
+          "profile": 19286955,
+          "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
+        }
+      ];
+      chai.request(server)
+        .get('/api/feed')
+        .end(function(err,res) {
+          if (err) {
+            done(err);
+          } else {
+            res.should.have.status(200);
+            res.body.should.have.lengthOf(settings._.feeds.length);
+            res.body.should.be.a('array');
+            res.body[0].should.be.a('object');
+            ['url','nPosts','nDays','profile','id'].forEach(function(prop) {
+              res.body[0].should.have.property(prop);
+              res.body[0][prop].should.equal(settings._.feeds[0][prop]);
+            });
+            done();
+          }
+        });
+    });
+
+    it('GET /api/feed/:id',function(done) {
+      settings._.feeds = [
+        {
+          "url": "http://casefoundation.org/feed/",
+          "nPosts": 5,
+          "nDays": 5,
+          "profile": 19286955,
+          "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
+        }
+      ];
+      chai.request(server)
+        .get('/api/feed/24f35fe0-e723-11e6-bafc-3daaebff386e')
+        .end(function(err,res) {
+          if (err) {
+            done(err);
+          } else {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            ['url','nPosts','nDays','profile','id'].forEach(function(prop) {
+              res.body.should.have.property(prop);
+              res.body[prop].should.equal(settings._.feeds[0][prop]);
+            });
+            done();
+          }
+        });
+    });
+
+    it('POST /api/feed',function(done) {
+      const item = {
+        "url": "http://casefoundation.org/feed/",
+        "nPosts": 5,
+        "nDays": 5,
+        "profile": 19286955,
+      };
+      chai.request(server)
+        .post('/api/feed')
+        .send(item)
+        .end(function(err,res) {
+          if (err) {
+            done(err);
+          } else {
+            assert.equal(settings._.feeds.length,1);
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('id');
+            ['url','nPosts','nDays','profile'].forEach(function(prop) {
+              res.body.should.have.property(prop);
+              res.body[prop].should.equal(item[prop]);
+            });
+            done();
+          }
+        });
+    });
+
+    it('PUT /api/feed/:id',function(done) {
+      settings._.feeds = [
+        {
+          "url": "http://casefoundation.org/feed/",
+          "nPosts": 5,
+          "nDays": 5,
+          "profile": 19286955,
+          "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
+        }
+      ];
+      const item = {
+        "url": "http://google.com",
+        "nPosts": 4,
+        "nDays": 3,
+        "profile": 16566,
+        "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
+      }
+      chai.request(server)
+        .put('/api/feed/24f35fe0-e723-11e6-bafc-3daaebff386e')
+        .send(item)
+        .end(function(err,res) {
+          if (err) {
+            done(err);
+          } else {
+            assert.equal(settings._.feeds.length,1);
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('id');
+            ['url','nPosts','nDays','profile','id'].forEach(function(prop) {
+              res.body.should.have.property(prop);
+              res.body[prop].should.equal(item[prop]);
+            });
+            done();
+          }
+        });
+    });
+
+    it('DELETE /api/feed/:id',function(done) {
+      settings._.feeds = [
+        {
+          "url": "http://casefoundation.org/feed/",
+          "nPosts": 5,
+          "nDays": 5,
+          "profile": 19286955,
+          "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
+        }
+      ];
+      chai.request(server)
+        .delete('/api/feed/24f35fe0-e723-11e6-bafc-3daaebff386e')
+        .end(function(err,res) {
+          if (err) {
+            done(err);
+          } else {
+            assert.equal(settings._.feeds.length,0);
+            res.should.have.status(200);
+            done();
+          }
+        });
+    });
   });
 });

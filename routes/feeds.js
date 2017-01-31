@@ -60,7 +60,7 @@ exports.deleteFeed = function(req,res,next) {
 }
 
 function getFeed(id) {
-  const index = getFeedIndex(req.params.id);
+  const index = getFeedIndex(id);
   if (index >= 0) {
     return settings._.feeds[index];
   } else {
