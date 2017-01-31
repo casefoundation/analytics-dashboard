@@ -2,7 +2,7 @@
   "name": "analytics-dashboard",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "bin/www.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha test"
   },

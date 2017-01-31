@@ -3,3 +3,4 @@ node_modules
 settings.json
 run.sh
 settings.test.json
+GOOGLE.env

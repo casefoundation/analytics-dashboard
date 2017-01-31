@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  app:
+    build: ./app
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      ROOT_URL: "http://localhost:8080"
+    env_file:
+      - ./GOOGLE.env
+    command: node bin/www.js
+    restart: always
