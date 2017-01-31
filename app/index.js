@@ -5,6 +5,7 @@ const routes = require('./routes');
 const app = express();
 app.use(routes.google.refreshToken);
 app.use(bodyParser.json());
+app.set('view engine', 'ejs');
 
 app.get('/auth/googleanalytics',routes.google.startGoogleAuth);
 app.get('/auth/googleanalytics/done',routes.google.finishGoogleAuth);
@@ -15,5 +16,10 @@ app.post('/api/feed',routes.feeds.saveFeed);
 app.put('/api/feed/:id',routes.feeds.saveFeed);
 app.delete('/api/feed/:id',routes.feeds.deleteFeed);
 app.get('/api/feed/:id/report',routes.report.runReport);
+app.get('*',function(req,res,next) {
+  res.render('index',{
+    'staticFilesURL': process.env.STATIC_FILES_URL || 'http://localhost:8081'
+  });
+});
 
 module.exports = app;

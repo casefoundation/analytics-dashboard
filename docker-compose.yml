@@ -8,7 +8,16 @@ services:
     environment:
       PORT: 8080
       ROOT_URL: "http://localhost:8080"
+      STATIC_FILES_URL: "http://localhost:8081"
     env_file:
       - ./GOOGLE.env
     command: node bin/www.js
+    restart: always
+  frontend:
+    build: ./frontend
+    ports:
+      - "8081:8081"
+    environment:
+      PORT: 8081
+    command: npm run dev
     restart: always
