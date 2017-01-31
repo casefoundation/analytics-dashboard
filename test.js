@@ -28,13 +28,14 @@ describe('Analytics Dashboard',function() {
         const posts = 5;
         reporter.testable.parseReport(posts,days,testData.feed,testData.report,function(err,report) {
           assert(!err);
-          assert.equal(5,report.length);
+          assert.equal(posts,report.length);
           report.forEach(function(reportRow,i) {
             const counterpartRow = testData.finalReport[i];
             assert.equal(reportRow.url,counterpartRow.url);
             assert.equal(reportRow.date.getTime(),Date.parse(counterpartRow.date));
             ['averages','actuals','scores'].forEach(function(statType) {
               for(const metric in reportRow[statType]) {
+                assert.equal(days,reportRow[statType][metric].length);
                 assert.equal(reportRow[statType][metric].length,counterpartRow[statType][metric].length);
                 reportRow[statType][metric].forEach(function(stat,j) {
                   const counterpartStat = counterpartRow[statType][metric][j];
