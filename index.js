@@ -52,3 +52,5 @@ async.waterfall([
     console.log('Running');
   }
 });
+
+exports.app = app;
