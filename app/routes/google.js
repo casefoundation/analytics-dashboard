@@ -23,6 +23,9 @@ exports.refreshToken = function(req,res,next) {
         'grant_type': 'refresh_token'
       },
       function(err,accessToken,refreshToken,params) {
+        if (!settings._.google) {
+          settings._.google = {};
+        }
         if (err) {
           console.error(err);
           settings._.google.accessToken = null;
@@ -71,6 +74,9 @@ exports.finishGoogleAuth = function(req,res,next) {
         if (err) {
           next(err);
         } else {
+          if (!settings._.google) {
+            settings._.google = {};
+          }
           settings._.google.accessToken = accessToken;
           settings._.google.refreshToken = refreshToken;
           settings._.google.expires = new Date(now + (params['expires_in'] * 1000));
