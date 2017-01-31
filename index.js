@@ -2,21 +2,15 @@ const express = require('express');
 const async = require('async');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
-const config = require('./config.js');
+const settings = require('./settings.js');
 const reporters = require('./lib/reporters');
 const reporter = require('./lib/reporter');
 const routes = require('./routes');
 
 const app = express();
+app.use(routes.auth.refreshToken);
 app.use(logger('combined'));
-app.use(bodyParser.urlencoded({
-  'extended': true,
-  'limit': '8mb'
-}));
-app.use(bodyParser.json({
-  'limit': '8mb'
-}));
-app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.json());
 
 app.get('/auth/googleanalytics',routes.auth.startGoogleAuth);
 app.get('/auth/googleanalytics/done',routes.auth.finishGoogleAuth);
@@ -30,7 +24,7 @@ app.get('/api/feed/:id/report',routes.report.runReport);
 
 async.waterfall([
   function(next) {
-    config.init('./config.json',{},next);
+    settings.init('./settings.json',{},next);
   },
   function(next) {
     const reportersArray = [];
@@ -40,7 +34,7 @@ async.waterfall([
     async.parallel(
       reportersArray.map(function(reporter) {
         return function(next1) {
-          reporter.init(config,app,next1);
+          reporter.init(settings,app,next1);
         }
       }),
       function(err) {
@@ -49,12 +43,12 @@ async.waterfall([
     );
   },
   function(next) {
-    app.listen(config._.port,next);
+    app.listen(process.env.PORT || 8080,next);
   }
 ],function(err) {
   if (err) {
     console.error(err);
   } else {
-    console.log('Running')
+    console.log('Running');
   }
 });

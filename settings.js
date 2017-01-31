@@ -6,14 +6,14 @@ module.exports = new events.EventEmitter();
 
 module.exports._ = null;
 
-module.exports.config = {};
+module.exports.settings = {};
 
 module.exports.init = function(file,defaults,done) {
-  module.exports.config.file = file || './config.json';
-  module.exports.config.defaults = defaults || {};
-  fs.exists(module.exports.config.file,function(exists) {
+  module.exports.settings.file = file || './settings.json';
+  module.exports.settings.defaults = defaults || {};
+  fs.exists(module.exports.settings.file,function(exists) {
     if (exists) {
-      fs.readFile(module.exports.config.file,'utf-8',function(err,data) {
+      fs.readFile(module.exports.settings.file,'utf-8',function(err,data) {
         if (err) {
           done && done(err);
         } else {
@@ -31,7 +31,7 @@ module.exports.init = function(file,defaults,done) {
 }
 
 module.exports.commit = function(done) {
-  fs.writeFile(module.exports.config.file,JSON.stringify(module.exports._,null,'  '),function(err) {
+  fs.writeFile(module.exports.settings.file,JSON.stringify(module.exports._,null,'  '),function(err) {
     done && done();
   });
 }

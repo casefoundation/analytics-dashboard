@@ -1,15 +1,15 @@
-const config = require('../config');
+const settings = require('../settings');
 const async = require('async');
 const request = require('request');
 
 exports.googleProfiles = function(req,res,next) {
-  if (config._.google.accessToken) {
+  if (settings._.google.accessToken) {
     const gaRequest = function(path,done) {
       request.get({
         'uri': 'https://www.googleapis.com/analytics/v3/' + path,
         'json': true,
         'auth': {
-          'bearer': config._.google.accessToken
+          'bearer': settings._.google.accessToken
         }
       },done);
     }

@@ -1,8 +1,8 @@
-const config = require('../config.js');
+const settings = require('../settings.js');
 const uuid = require('node-uuid');
 
 exports.getFeeds = function(req,res,next) {
-  res.send(config._.feeds || []);
+  res.send(settings._.feeds || []);
 }
 
 exports.getFeed = function(req,res,next) {
@@ -20,37 +20,37 @@ exports.getFeed = function(req,res,next) {
 
 exports.saveFeed = function(req,res,next) {
   //TODO JOI verification
-  if (!config._.feeds) {
-    config._.feeds = [];
+  if (!settings._.feeds) {
+    settings._.feeds = [];
   }
   if (req.params && req.params.id) {
     const index = getFeedIndex(req.params.id);
     if (index >= 0) {
-      config._.feeds[index] = req.body;
-      config._.feeds[index].id = req.params.id;
-      res.send(config._.feeds[index]);
-      config.commit();
+      settings._.feeds[index] = req.body;
+      settings._.feeds[index].id = req.params.id;
+      res.send(settings._.feeds[index]);
+      settings.commit();
     } else {
       res.send(404);
     }
   } else {
     req.body.id = uuid.v1();
-    config._.feeds.push(req.body);
+    settings._.feeds.push(req.body);
     res.send(req.body);
-    config.commit();
+    settings.commit();
   }
 }
 
 exports.deleteFeed = function(req,res,next) {
-  if (!config._.feeds) {
-    config._.feeds = [];
+  if (!settings._.feeds) {
+    settings._.feeds = [];
   }
   if (req.params && req.params.id) {
     const index = getFeedIndex(req.params.id);
     if (index >= 0) {
-      config._.feeds.splice(index,1);
+      settings._.feeds.splice(index,1);
       res.send({});
-      config.commit();
+      settings.commit();
     } else {
       res.send(404);
     }
@@ -62,17 +62,17 @@ exports.deleteFeed = function(req,res,next) {
 function getFeed(id) {
   const index = getFeedIndex(req.params.id);
   if (index >= 0) {
-    return config._.feeds[index];
+    return settings._.feeds[index];
   } else {
     return null;
   }
 }
 
 function getFeedIndex(id) {
-  if (!config._.feeds) {
-    config._.feeds = [];
+  if (!settings._.feeds) {
+    settings._.feeds = [];
   }
-  return config._.feeds.findIndex(function(feed) {
+  return settings._.feeds.findIndex(function(feed) {
     return feed.id === id;
   });
 }

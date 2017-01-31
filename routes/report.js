@@ -1,12 +1,12 @@
 const reporter = require('../lib/reporter');
-const config = require('../config');
+const settings = require('../settings');
 
 exports.runReport = function(req,res,next) {
-  const feed = config._.feeds.find(function(feed) {
+  const feed = settings._.feeds.find(function(feed) {
     return feed.id === req.params.id;
   });
   if (feed) {
-    reporter.runReport(config,feed.url,feed.profile,feed.nPosts,feed.nDays,function(err,report) {
+    reporter.runReport(settings,feed.url,feed.profile,feed.nPosts,feed.nDays,function(err,report) {
       if (err) {
         next(err);
       } else {
