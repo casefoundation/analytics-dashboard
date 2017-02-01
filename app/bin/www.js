@@ -3,9 +3,6 @@ const app = require('../index');
 const settings = require('../settings.js');
 const reporters = require('../lib/reporters');
 const reporter = require('../lib/reporter');
-const logger = require('morgan');
-
-app.use(logger('combined'));
 
 async.waterfall([
   function(next) {

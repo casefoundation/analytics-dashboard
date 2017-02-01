@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const routes = require('./routes');
+const logger = require('morgan');
 
 const app = express();
+app.use(logger('combined'));
 app.use(routes.google.refreshToken);
 app.use(bodyParser.json());
 app.set('view engine', 'ejs');

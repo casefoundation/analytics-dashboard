@@ -10,7 +10,7 @@ export default {
   name: 'feed',
   computed: {
     feed () {
-      return this.$store.getters.currentFeed || {}
+      return this.$store.getters.currentFeed() || {}
     }
   },
   created: function () {

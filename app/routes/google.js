@@ -14,13 +14,13 @@ const oauthClient = new OAuth.OAuth2(
 );
 
 exports.refreshToken = function(req,res,next) {
-  if (settings._.google && settings._.google.expires && settings._.google.refreshToken && Date.parse(settings._.google.expires) < new Date().getTime()) {
+  if (settings._.google && settings._.google.expires && settings._.google.refreshToken && new Date(settings._.google.expires).getTime() < new Date().getTime()) {
     console.log('Refreshing token');
     const now = new Date().getTime();
     oauthClient.getOAuthAccessToken(
       settings._.google.refreshToken,
       {
-        'grant_type': 'refresh_token'
+        'grant_type': 'refresh_token',
       },
       function(err,accessToken,refreshToken,params) {
         if (!settings._.google) {
@@ -28,13 +28,11 @@ exports.refreshToken = function(req,res,next) {
         }
         if (err) {
           console.error(err);
-          settings._.google.accessToken = null;
-          settings._.google.refreshToken = null;
-          settings._.google.expires = null;
         } else {
+          console.log('New token set');
+          //TODO no refresh
           settings._.google.accessToken = accessToken;
-          settings._.google.refreshToken = refreshToken;
-          settings._.google.expires = new Date(now + (params['expires_in'] * 1000));
+          settings._.google.expires = new Date(now + (params.expires_in * 1000)).getTime();
         }
         settings.commit();
         next();
@@ -50,7 +48,7 @@ exports.startGoogleAuth = function(req,res,next) {
     'response_type': 'code',
     'redirect_uri': RootURL + '/auth/googleanalytics/done',
     'scope': [
-      'https://www.googleapis.com/auth/plus.login',
+      // 'https://www.googleapis.com/auth/plus.login',
       'https://www.googleapis.com/auth/analytics.readonly'
     ].join(' '),
     'state': new Date().getTime()+'',
@@ -79,7 +77,7 @@ exports.finishGoogleAuth = function(req,res,next) {
           }
           settings._.google.accessToken = accessToken;
           settings._.google.refreshToken = refreshToken;
-          settings._.google.expires = new Date(now + (params['expires_in'] * 1000));
+          settings._.google.expires = new Date(now + (params.expires_in * 1000)).getTime();
           res.redirect('/');
           settings.commit();
         }

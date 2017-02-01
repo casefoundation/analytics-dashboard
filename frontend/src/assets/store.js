@@ -15,45 +15,50 @@ const store = new Vuex.Store({
   },
   actions: {
     LOAD_GOOGLE_ACCOUNTS: function ({ commit }, { account, property }) {
-      const params = {}
-      if (account) {
-        params.account = account
-      }
-      if (property) {
-        params.property = property
-      }
-      axios.get('/api/googleaprofiles?' + qs.stringify(params)).then((response) => {
-        commit('SET_GOOGLE_ACCOUNTS', response.data.data)
-      }, (err) => {
-        console.error(err)
+      return new Promise((resolve, reject) => {
+        const params = {}
+        if (account) {
+          params.account = account
+        }
+        if (property) {
+          params.property = property
+        }
+        axios.get('/api/googleaprofiles?' + qs.stringify(params)).then((response) => {
+          commit('SET_GOOGLE_ACCOUNTS', response.data.data)
+          resolve()
+        }, reject)
       })
     },
     LOAD_FEED_LIST: function ({ commit }) {
-      axios.get('/api/feed').then((response) => {
-        commit('SET_FEED_LIST', { list: response.data })
-      }, (err) => {
-        console.error(err)
+      return new Promise((resolve, reject) => {
+        axios.get('/api/feed').then((response) => {
+          commit('SET_FEED_LIST', { list: response.data })
+          resolve()
+        }, reject)
       })
     },
     UPDATE_FEED: function ({ commit }, { feed }) {
-      axios.put('/api/feed/' + feed.id, feed).then((response) => {
-        commit('UPDATE_FEED', { feed: response.data })
-      }, (err) => {
-        console.error(err)
+      return new Promise((resolve, reject) => {
+        axios.put('/api/feed/' + feed.id, feed).then((response) => {
+          commit('UPDATE_FEED', { feed: response.data })
+          resolve()
+        }, reject)
       })
     },
     DELETE_FEED: function ({ commit }, { feed }) {
-      axios.delete('/api/feed/' + feed.id).then((response) => {
-        commit('DELETE_FEED', { feed: feed })
-      }, (err) => {
-        console.error(err)
+      return new Promise((resolve, reject) => {
+        axios.delete('/api/feed/' + feed.id).then((response) => {
+          commit('DELETE_FEED', { feed: feed })
+          resolve()
+        }, reject)
       })
     },
     ADD_NEW_FEED: function ({ commit }, { feed }) {
-      axios.post('/api/feed', feed).then((response) => {
-        commit('ADD_NEW_FEED', { feed: response.data })
-      }, (err) => {
-        console.error(err)
+      return new Promise((resolve, reject) => {
+        axios.post('/api/feed', feed).then((response) => {
+          commit('ADD_NEW_FEED', { feed: response.data })
+          resolve()
+        }, reject)
       })
     },
     SET_CURRENT_FEED: function ({ commit }, { id }) {
@@ -101,7 +106,7 @@ const store = new Vuex.Store({
     }
   },
   getters: {
-    currentFeed: (state) => state.feeds.find((feed) => feed.id === state.currentFeedId),
+    currentFeed: (state) => () => state.feeds.find((feed) => feed.id === state.currentFeedId),
     googleAccounts: (state) => state.googleAccounts
   }
 })

@@ -2,7 +2,7 @@
   <div class="container">
     <h1 class="page-header">{{ feed.name }}</h1>
     <h2>Settings</h2>
-    <form v-on:submit.stop.prevent="cancel">
+    <form v-on:submit.stop.prevent="save">
       <div class="row">
         <div class="col-md-6">
           <div class="panel panel-default">
@@ -50,13 +50,13 @@
                   <option v-for="account in googleAccounts.accounts" :value="account.id">{{ account.name }}</option>
                 </select>
               </div>
-              <div class="form-group">
+              <div class="form-group" v-if="googleAccounts.properties.length > 0">
                 <label for="property">Property</label>
                 <select v-model="googleProperty" id="property" name="property" class="form-control">
                   <option v-for="property in googleAccounts.properties" :value="property.id">{{ property.name }}</option>
                 </select>
               </div>
-              <div class="form-group">
+              <div class="form-group" v-if="googleAccounts.profiles.length > 0">
                 <label for="profile">Profile</label>
                 <select v-model="googleProfile" id="profile" name="profile" class="form-control">
                   <option v-for="profile in googleAccounts.profiles" :value="profile.id">{{ profile.name }}</option>
@@ -67,8 +67,8 @@
         </div>
       </div>
       <p class="text-right">
-        <!-- <button v-on:click.stop.prevent="cancel" class="btn btn-default">Cancel</button> -->
-        <button v-on:submit.stop.prevent="cancel" class="btn btn-primary">Save</button>
+        <button v-on:click.stop.prevent="cancelSave" class="btn btn-default">Cancel</button>
+        <button v-on:click.stop.prevent="save" class="btn btn-primary">Save</button>
       </p>
     </form>
   </div>
@@ -85,61 +85,63 @@ export default {
   },
   methods: {
     save () {
-      this.$store.commit('UPDATE_FEED', { feed: this.$store.getters.currentFeed })
-      return false
+      this.$store.dispatch('UPDATE_FEED', { feed: this.$store.getters.currentFeed() }).then(() => {
+        this.$router.push('/feed/' + this.$store.state.currentFeedId)
+      }, (err) => {
+        // TODO better handling
+        console.error(err)
+      })
     },
-    cancel ($event) {
-      $event.preventDefault()
-      this.$router.go('/')
-      return false
+    cancelSave () {
+      this.$router.push('/feed/' + this.$store.state.currentFeedId)
     }
   },
   computed: {
     feed () {
-      return this.$store.getters.currentFeed || {}
+      return this.$store.getters.currentFeed() || {}
     },
     googleAccounts () {
       return this.$store.getters.googleAccounts
     },
     feedName: {
       get () {
-        return this.$store.getters.currentFeed ? this.$store.getters.currentFeed.name : null
+        return this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().name : null
       },
       set (value) {
-        this.$store.commit('UPDATE_CURRENT_FEED_DETAILS', { name: value })
+        this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', { name: value })
       }
     },
     feedURL: {
       get () {
-        return this.$store.getters.currentFeed ? this.$store.getters.currentFeed.url : null
+        return this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().url : null
       },
       set (value) {
-        this.$store.commit('UPDATE_CURRENT_FEED_DETAILS', { url: value })
+        this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', { url: value })
       }
     },
     feedNPosts: {
       get () {
-        return this.$store.getters.currentFeed ? this.$store.getters.currentFeed.nPosts : null
+        return this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().nPosts : null
       },
       set (value) {
-        this.$store.commit('UPDATE_CURRENT_FEED_DETAILS', { nPosts: parseInt(value) })
+        this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', { nPosts: parseInt(value) })
       }
     },
     feedNDays: {
       get () {
-        return this.$store.getters.currentFeed ? this.$store.getters.currentFeed.nDays : null
+        return this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().nDays : null
       },
       set (value) {
-        this.$store.commit('UPDATE_CURRENT_FEED_DETAILS', { nDays: parseInt(value) })
+        this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', { nDays: parseInt(value) })
       }
     },
     googleAccount: {
       get () {
-        return this.$store.getters.currentFeed ? this.$store.getters.currentFeed.googleAccount.account : null
+        return this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().googleAccount.account : null
       },
       set (value) {
         if (value) {
-          this.$store.commit('UPDATE_CURRENT_FEED_DETAILS', {
+          this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', {
             googleAccount: {
               account: value,
               property: null,
@@ -147,36 +149,36 @@ export default {
             }
           })
         }
-        this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed.googleAccount)
+        this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed().googleAccount)
       }
     },
     googleProperty: {
       get () {
-        return this.$store.getters.currentFeed ? this.$store.getters.currentFeed.googleAccount.property : null
+        return this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().googleAccount.property : null
       },
       set (value) {
         if (value) {
-          this.$store.commit('UPDATE_CURRENT_FEED_DETAILS', {
+          this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', {
             googleAccount: {
-              account: this.$store.getters.currentFeed.googleAccount.account,
+              account: this.$store.getters.currentFeed().googleAccount.account,
               property: value,
               profile: null
             }
           })
         }
-        this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed.googleAccount)
+        this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed().googleAccount)
       }
     },
     googleProfile: {
       get () {
-        return this.$store.getters.currentFeed ? this.$store.getters.currentFeed.googleAccount.profile : null
+        return this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().googleAccount.profile : null
       },
       set (value) {
         if (value) {
-          this.$store.commit('UPDATE_CURRENT_FEED_DETAILS', {
+          this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', {
             googleAccount: {
-              account: this.$store.getters.currentFeed.googleAccount.account,
-              property: this.$store.getters.currentFeed.googleAccount.property,
+              account: this.$store.getters.currentFeed().googleAccount.account,
+              property: this.$store.getters.currentFeed().googleAccount.property,
               profile: value
             }
           })
@@ -186,7 +188,7 @@ export default {
   },
   created: function () {
     this.$store.dispatch('SET_CURRENT_FEED', { id: this.$route.params.id })
-    this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed ? this.$store.getters.currentFeed.googleAccount : {})
+    this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().googleAccount : {})
   }
 }
 </script>
