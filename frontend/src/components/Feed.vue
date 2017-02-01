@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <h1>Feed {{ feed.name }}</h1>
+    <h1 class="page-header">Feed {{ feed.name }}</h1>
     <router-link :to="'/feed/'+feed.id+'/settings'">Settings</router-link>
   </div>
 </template>

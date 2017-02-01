@@ -23,6 +23,6 @@ export default {
 
 <style scoped>
   .router-view {
-    padding-top: 70px;
+    padding-top: 30px;
   }
 </style>

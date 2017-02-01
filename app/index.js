@@ -9,7 +9,7 @@ app.set('view engine', 'ejs');
 
 app.get('/auth/googleanalytics',routes.google.startGoogleAuth);
 app.get('/auth/googleanalytics/done',routes.google.finishGoogleAuth);
-app.get('/auth/googleaprofiles',routes.google.googleProfiles);
+app.get('/api/googleaprofiles',routes.google.googleProfiles);
 app.get('/api/feed',routes.feeds.getFeeds);
 app.get('/api/feed/:id',routes.feeds.getFeed);
 app.post('/api/feed',routes.feeds.saveFeed);
