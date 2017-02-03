@@ -6,7 +6,8 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     feeds: [],
-    currentFeedId: {},
+    currentFeedId: null,
+    currentFeedReport: null,
     googleAccounts: {
       accounts: [],
       properties: [],
@@ -37,7 +38,8 @@ const store = new Vuex.Store({
         }, reject)
       })
     },
-    UPDATE_FEED: function ({ commit }, { feed }) {
+    UPDATE_CURRENT_FEED: function ({ commit, state }) {
+      const feed = state.feeds.find((feed) => feed.id === state.currentFeedId)
       return new Promise((resolve, reject) => {
         axios.put('/api/feed/' + feed.id, feed).then((response) => {
           commit('UPDATE_FEED', { feed: response.data })
@@ -45,10 +47,10 @@ const store = new Vuex.Store({
         }, reject)
       })
     },
-    DELETE_FEED: function ({ commit }, { feed }) {
+    DELETE_CURRENT_FEED: function ({ commit, state }) {
       return new Promise((resolve, reject) => {
-        axios.delete('/api/feed/' + feed.id).then((response) => {
-          commit('DELETE_FEED', { feed: feed })
+        axios.delete('/api/feed/' + state.currentFeedId).then((response) => {
+          commit('DELETE_FEED', { id: state.currentFeedId })
           resolve()
         }, reject)
       })
@@ -66,6 +68,14 @@ const store = new Vuex.Store({
     },
     UPDATE_CURRENT_FEED_DETAILS: function ({ commit }, details) {
       commit('UPDATE_CURRENT_FEED_DETAILS', details)
+    },
+    LOAD_FEED_REPORT: function ({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        axios.get('/api/feed/' + state.currentFeedId + '/report').then((response) => {
+          commit('SET_FEED_REPORT', { report: response.data })
+          resolve()
+        }, reject)
+      })
     }
   },
   mutations: {
@@ -78,8 +88,8 @@ const store = new Vuex.Store({
         state.feeds[index] = feed
       }
     },
-    DELETE_FEED: function (state, { feed }) {
-      const index = state.feeds.findIndex((_feed) => _feed.id === feed.id)
+    DELETE_FEED: function (state, { id }) {
+      const index = state.feeds.findIndex((feed) => feed.id === id)
       if (index >= 0) {
         state.feeds.splice(index, 1)
       }
@@ -89,6 +99,7 @@ const store = new Vuex.Store({
     },
     SET_CURRENT_FEED: (state, { id }) => {
       state.currentFeedId = id
+      state.currentFeedReport = null
     },
     UPDATE_CURRENT_FEED_DETAILS: (state, details) => {
       const feed = state.feeds.find((feed) => feed.id === state.currentFeedId)
@@ -103,6 +114,12 @@ const store = new Vuex.Store({
       state.googleAccounts.accounts = accounts
       state.googleAccounts.properties = properties
       state.googleAccounts.profiles = profiles
+    },
+    SET_FEED_REPORT: function (state, { report }) {
+      report.forEach((row) => {
+        row.date = new Date(Date.parse(row.date))
+      })
+      state.currentFeedReport = report
     }
   },
   getters: {

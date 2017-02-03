@@ -97,11 +97,18 @@ function getDateBounds(feed) {
 function parseReport(nPosts,nDays,feed,report,done) {
   const reports = [];
   feed.slice(0,nPosts).forEach(function(reportPost,i) {
-    const averages = {};
-    const scores = {};
+    const averages = {
+      'daily': {},
+      'cumulative': {}
+    };
+    const scores = {
+      'daily': {},
+      'cumulative': {}
+    };
     const actuals = {};
     const thisReport = {
       'url': reportPost.link,
+      'title': reportPost.title,
       'date': new Date(Date.parse(formatDate(reportPost.pubdate))),
       'averages': averages,
       'actuals': actuals,
@@ -113,16 +120,23 @@ function parseReport(nPosts,nDays,feed,report,done) {
     computePosts.forEach(function(computePost,j) {
       const baseDate = new Date(Date.parse(formatDate(computePost.pubdate)));
       Metrics.forEach(function(metric,k) {
-        if (!averages[metric]) {
-          averages[metric] = [];
+        if (!averages.daily[metric]) {
+          averages.daily[metric] = [];
+        }
+        if (!averages.cumulative[metric]) {
+          averages.cumulative[metric] = [];
+        }
+        if (!averages.cumulative[metric][j]) {
+          averages.cumulative[metric][j] = [];
         }
         for(var l = 0; l < nDays; l++) {
-          if (!averages[metric][l]) {
-            averages[metric][l] = [];
+          if (!averages.daily[metric][l]) {
+            averages.daily[metric][l] = [];
           }
           const stamp = baseDate.getTime() + (l * OneDay);
           if (report[computePost.link][stamp] && report[computePost.link][stamp].metrics[metric]) {
-            averages[metric][l].push(report[computePost.link][stamp].metrics[metric]);
+            averages.daily[metric][l].push(report[computePost.link][stamp].metrics[metric]);
+            averages.cumulative[metric][j].push(report[computePost.link][stamp].metrics[metric]);
           }
         }
       });
@@ -130,26 +144,38 @@ function parseReport(nPosts,nDays,feed,report,done) {
 
     Metrics.forEach(function(metric,k) {
       for(var l = 0; l < nDays; l++) {
-        averages[metric][l] = averages[metric][l].reduce(function(previous,current) {
+        averages.daily[metric][l] = averages.daily[metric][l].reduce(function(previous,current) {
           return previous + current;
         },0) / computePosts.length;
       }
+      averages.cumulative[metric] = averages.cumulative[metric].reduce(function(previous,postSet) {
+        return previous + postSet.reduce(function(previous1,value) {
+          return previous1 + value;
+        },0);
+      },0) / computePosts.length;
     });
 
     Metrics.forEach(function(metric,k) {
-      scores[metric] = [];
+      scores.daily[metric] = [];
+      scores.cumulative[metric] = 0;
       actuals[metric] = [];
       for(var l = 0; l < nDays; l++) {
         const stamp = thisReport.date.getTime() + (l * OneDay);
-        if (report[reportPost.link][stamp] && report[reportPost.link][stamp].metrics[metric] && averages[metric] && averages[metric][l]) {
+        if (report[reportPost.link][stamp] && report[reportPost.link][stamp].metrics[metric]) {
           const value = report[reportPost.link][stamp].metrics[metric];
-          scores[metric][l] = value / averages[metric][l];
           actuals[metric][l] = value;
+          scores.cumulative[metric] += value;
+          if (averages.daily[metric] && averages.daily[metric][l]) {
+            scores.daily[metric][l] = value / averages.daily[metric][l];
+          } else {
+            scores.daily[metric][l] = 0;
+          }
         } else {
-          scores[metric][l] = 0;
+          scores.daily[metric][l] = 0;
           actuals[metric][l] = 0;
         }
       }
+      scores.cumulative[metric] = scores.cumulative[metric] / averages.cumulative[metric]
     });
   });
   done(null,reports);

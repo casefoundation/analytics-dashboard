@@ -79,13 +79,13 @@ export default {
   name: 'feed',
   data: function () {
     return {
-      nPostsArray: Array.from(new Array(5), (x, i) => i + 1),
+      nPostsArray: Array.from(new Array(25), (x, i) => i + 1),
       nDaysArray: Array.from(new Array(30), (x, i) => i + 1)
     }
   },
   methods: {
     save () {
-      this.$store.dispatch('UPDATE_FEED', { feed: this.$store.getters.currentFeed() }).then(() => {
+      this.$store.dispatch('UPDATE_CURRENT_FEED').then(() => {
         this.$router.push('/feed/' + this.$store.state.currentFeedId)
       }, (err) => {
         // TODO better handling

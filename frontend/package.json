@@ -16,7 +16,9 @@
     "axios": "^0.15.3",
     "qs": "^6.3.0",
     "vue": "^2.1.0",
+    "vue-d3": "^0.1.0",
     "vue-router": "^2.2.0",
+    "vue-strap": "^1.1.36",
     "vuex": "^2.1.1"
   },
   "devDependencies": {
