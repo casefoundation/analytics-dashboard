@@ -8,7 +8,7 @@ This is a dashboard for showing post perfromance benchmarked against previous po
 
 ## Installation
 
-The app runs as a Docker Compose project. To install and run it, complete the following:
+The app runs as a Docker project. To install and run it, complete the following:
 
 First, create a file in the root of the project named `GOOGLE.env` that contains the OAuth2 keys given by the Google API Console for access to the Google Analytics configuraiton and reporting APIs. The file should look like this:
 
@@ -17,16 +17,16 @@ GOOGLE_KEY=keyfromgoogle
 GOOGLE_SECRET=secretfromgoogle
 ```
 
-After creating that file, build the Docker images by running:
+After creating that file, build the Docker image by running:
 
 ```
-docker-compose build
+docker build ./ -t analyticsdashboard
 ```
 
-Finally, start the Docker images by running
+Finally, start the Docker image by running
 
 ```
-docker-compose up
+docker run --env-file ./GOOGLE.env -e PORT=8080 -e ROOT_URL=http://localhost:8080 -p "8080:8080" analyticsdashboard
 ```
 
 ## Usage

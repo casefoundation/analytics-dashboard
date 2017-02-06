@@ -4,11 +4,12 @@ var merge = require('webpack-merge')
 var utils = require('./utils')
 var baseWebpackConfig = require('./webpack.base.conf')
 var FriendlyErrors = require('friendly-errors-webpack-plugin')
+var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 // add hot-reload related code to entry chunks
-// Object.keys(baseWebpackConfig.entry).forEach(function (name) {
-//   baseWebpackConfig.entry[name] = ['./build/dev-client'].concat(baseWebpackConfig.entry[name])
-// })
+Object.keys(baseWebpackConfig.entry).forEach(function (name) {
+  baseWebpackConfig.entry[name] = ['./frontend/build/dev-client'].concat(baseWebpackConfig.entry[name])
+})
 
 module.exports = merge(baseWebpackConfig, {
   module: {
@@ -22,8 +23,13 @@ module.exports = merge(baseWebpackConfig, {
     }),
     // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
     new webpack.optimize.OccurrenceOrderPlugin(),
-    // new webpack.HotModuleReplacementPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'frontend/index.html',
+      inject: true
+    }),
     new FriendlyErrors()
   ]
 })
