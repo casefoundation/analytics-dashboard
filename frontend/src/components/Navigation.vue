@@ -23,7 +23,7 @@
         </div>
       </div><!--/.nav-collapse -->
     </div>
-    <modal :show.sync="showModal">
+    <modal :show.sync="showModal" ok-text="Create" :callback="createNewFeed">
       <div slot="modal-header" class="modal-header">
         <h4 class="modal-title">New Feed</h4>
       </div>
@@ -57,7 +57,24 @@ export default {
   },
   data () {
     return {
-      showModal: false
+      showModal: false,
+      feedName: null,
+      feedURL: null
+    }
+  },
+  methods: {
+    createNewFeed () {
+      this.showModal = false
+      const feed = {
+        name: this.feedName,
+        url: this.feedURL
+      }
+      this.$store.dispatch('ADD_NEW_FEED', {feed}).then(() => {
+        this.$router.push('/feed/' + this.$store.state.currentFeedId + '/settings')
+      }, (err) => {
+        window.alert('A server-side error has occured. Please report this issue.')
+        console.error(err)
+      })
     }
   }
 }

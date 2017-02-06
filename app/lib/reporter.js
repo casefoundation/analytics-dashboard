@@ -4,7 +4,7 @@ const FeedParser = require('feedparser');
 const request = require('request');
 const url = require('url');
 
-const Metrics = ['pageviews','facebook_pageviews','linkedin_pageviews','twitter_pageviews'];
+const Metrics = ['pageviews','timeOnPage','facebook_pageviews','linkedin_pageviews','twitter_pageviews'];
 const OneDay = 24 * 60 * 60 * 1000;
 
 exports.runReport = function(settings,feedUrl,gaProfile,nPosts,nDays,done) {
@@ -67,7 +67,9 @@ function sortFeed(feed) {
 function convertFeedToUrls(feed) {
   return feed.map(function(feedItem) {
     return url.parse(feedItem.link);
-  })
+  }).filter(function(urlObj) {
+    return urlObj;
+  });
 }
 
 function filterReportFeed(feed,nPosts,done) {
@@ -103,13 +105,15 @@ function parseReport(nPosts,nDays,feed,report,done) {
     };
     const scores = {
       'daily': {},
-      'cumulative': {}
+      'cumulative': {},
+      'overall': null
     };
     const actuals = {};
     const thisReport = {
       'url': reportPost.link,
       'title': reportPost.title,
-      'date': new Date(Date.parse(formatDate(reportPost.pubdate))),
+      'startDate': new Date(Date.parse(formatDate(reportPost.pubdate))),
+      'endDate': new Date(Math.min(Date.parse(formatDate(reportPost.pubdate)) + (nDays * OneDay),new Date().getTime())),
       'averages': averages,
       'actuals': actuals,
       'scores': scores
@@ -134,7 +138,7 @@ function parseReport(nPosts,nDays,feed,report,done) {
             averages.daily[metric][l] = [];
           }
           const stamp = baseDate.getTime() + (l * OneDay);
-          if (report[computePost.link][stamp] && report[computePost.link][stamp].metrics[metric]) {
+          if (report[computePost.link] && report[computePost.link][stamp] && report[computePost.link][stamp].metrics[metric]) {
             averages.daily[metric][l].push(report[computePost.link][stamp].metrics[metric]);
             averages.cumulative[metric][j].push(report[computePost.link][stamp].metrics[metric]);
           }
@@ -160,13 +164,13 @@ function parseReport(nPosts,nDays,feed,report,done) {
       scores.cumulative[metric] = 0;
       actuals[metric] = [];
       for(var l = 0; l < nDays; l++) {
-        const stamp = thisReport.date.getTime() + (l * OneDay);
-        if (report[reportPost.link][stamp] && report[reportPost.link][stamp].metrics[metric]) {
+        const stamp = thisReport.startDate.getTime() + (l * OneDay);
+        if (report[reportPost.link] && report[reportPost.link][stamp] && report[reportPost.link][stamp].metrics[metric]) {
           const value = report[reportPost.link][stamp].metrics[metric];
           actuals[metric][l] = value;
           scores.cumulative[metric] += value;
           if (averages.daily[metric] && averages.daily[metric][l]) {
-            scores.daily[metric][l] = value / averages.daily[metric][l];
+            scores.daily[metric][l] = (value / averages.daily[metric][l]) - 1;
           } else {
             scores.daily[metric][l] = 0;
           }
@@ -175,8 +179,11 @@ function parseReport(nPosts,nDays,feed,report,done) {
           actuals[metric][l] = 0;
         }
       }
-      scores.cumulative[metric] = scores.cumulative[metric] / averages.cumulative[metric]
+      scores.cumulative[metric] = scores.cumulative[metric] > 0 ? ((scores.cumulative[metric] / averages.cumulative[metric]) - 1) : null;
     });
+    scores.overall = Metrics.reduce(function(previous,metric) {
+      return previous + (scores.cumulative[metric] ? scores.cumulative[metric] : 0);
+    },0) / Metrics.length;
   });
   done(null,reports);
 }

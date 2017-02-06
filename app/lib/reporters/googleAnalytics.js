@@ -20,9 +20,9 @@ module.exports = {
 function executeRequest(previousResponseBodies,pageTokens,settings,urls,gaProfile,startDate,endDate,done) {
   const resultsMap = [];
   let includedReportsCount = 0;
-  const reportRequests = [
+  const reportTypes = [
     {
-      'metrics': ['ga:pageviews'],
+      'metrics': ['ga:pageviews','ga:timeOnPage'],
       'dimensions': ['ga:date','ga:hostname','ga:pagePath'],
       'dimensionFilterClauses': []
     },
@@ -31,7 +31,8 @@ function executeRequest(previousResponseBodies,pageTokens,settings,urls,gaProfil
       'dimensions': ['ga:date','ga:hostname','ga:pagePath','ga:socialNetwork'],
       'dimensionFilterClauses': []
     }
-  ].filter(function(request,i) {
+  ];
+  const reportRequests = reportTypes.filter(function(request,i) {
     if (pageTokens === null || pageTokens[i] !== null) {
       resultsMap[includedReportsCount] = i;
       includedReportsCount++;
@@ -87,16 +88,18 @@ function executeRequest(previousResponseBodies,pageTokens,settings,urls,gaProfil
     if (err) {
       done(err);
     } else if (body.reports && body.reports.length == reportRequests.length) {
-      //TODO this assumes only two types of requests
-      const pageTokens = [null,null];
+      const pageTokens = reportTypes.map(function(report) {
+        return null;
+      });
+      let hasTokens = false;
       body.reports.forEach(function(report,i) {
         previousResponseBodies[resultsMap[i]].push(report);
         if (report.nextPageToken) {
+          hasTokens = true;
           pageTokens[resultsMap[i]] = report.nextPageToken;
         }
       });
-      //TODO this assumes only two types of requests
-      if (pageTokens[0] || pageTokens[1]) {
+      if (hasTokens) {
         executeRequest(previousResponseBodies,pageTokens,settings,urls,gaProfile,startDate,endDate,done);
       } else {
         done(null,previousResponseBodies);
@@ -117,29 +120,31 @@ function processResponseBodies(urls,responseBodies) {
         const date = new Date(Date.parse([row.dimensions[0].substring(0,4),row.dimensions[0].substring(4,6),row.dimensions[0].substring(6,8)].join('-')));
         const dateStamp = date.getTime();
         const url = getURLForHostnameAndPath(urls,row.dimensions[1],row.dimensions[2]);
-        if (!consolidatedReport[url.href]) {
-          consolidatedReport[url.href] = {};
-        }
-        if (!consolidatedReport[url.href][dateStamp]) {
-          consolidatedReport[url.href][dateStamp] = {
-            'date': date,
-            'metrics': {}
-          };
-        }
-        switch(i) {
-          case 0:
-            ['pageviews'].forEach(function(metricName,j) {
-              consolidatedReport[url.href][dateStamp].metrics[metricName] = parseInt(row.metrics[0].values[j]);
-            });
-            break;
-          case 1:
-            const networkName = row.dimensions[3].toLowerCase();
-            if (networkName != '(not set)') {
-              [networkName+'_pageviews'].forEach(function(metricName,j) {
+        if (url) {
+          if (!consolidatedReport[url.href]) {
+            consolidatedReport[url.href] = {};
+          }
+          if (!consolidatedReport[url.href][dateStamp]) {
+            consolidatedReport[url.href][dateStamp] = {
+              'date': date,
+              'metrics': {}
+            };
+          }
+          switch(i) {
+            case 0:
+              ['pageviews','timeOnPage'].forEach(function(metricName,j) {
                 consolidatedReport[url.href][dateStamp].metrics[metricName] = parseInt(row.metrics[0].values[j]);
               });
-            }
-            break;
+              break;
+            case 1:
+              const networkName = row.dimensions[3].toLowerCase();
+              if (networkName != '(not set)') {
+                [networkName+'_pageviews'].forEach(function(metricName,j) {
+                  consolidatedReport[url.href][dateStamp].metrics[metricName] = parseInt(row.metrics[0].values[j]);
+                });
+              }
+              break;
+          }
         }
       })
     });

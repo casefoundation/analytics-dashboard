@@ -39,21 +39,25 @@ const store = new Vuex.Store({
       })
     },
     UPDATE_CURRENT_FEED: function ({ commit, state }) {
-      const feed = state.feeds.find((feed) => feed.id === state.currentFeedId)
-      return new Promise((resolve, reject) => {
-        axios.put('/api/feed/' + feed.id, feed).then((response) => {
-          commit('UPDATE_FEED', { feed: response.data })
-          resolve()
-        }, reject)
-      })
+      if (state.currentFeedId) {
+        const feed = state.feeds.find((feed) => feed.id === state.currentFeedId)
+        return new Promise((resolve, reject) => {
+          axios.put('/api/feed/' + feed.id, feed).then((response) => {
+            commit('UPDATE_FEED', { feed: response.data })
+            resolve()
+          }, reject)
+        })
+      }
     },
     DELETE_CURRENT_FEED: function ({ commit, state }) {
-      return new Promise((resolve, reject) => {
-        axios.delete('/api/feed/' + state.currentFeedId).then((response) => {
-          commit('DELETE_FEED', { id: state.currentFeedId })
-          resolve()
-        }, reject)
-      })
+      if (state.currentFeedId) {
+        return new Promise((resolve, reject) => {
+          axios.delete('/api/feed/' + state.currentFeedId).then((response) => {
+            commit('DELETE_CURRENT_FEED')
+            resolve()
+          }, reject)
+        })
+      }
     },
     ADD_NEW_FEED: function ({ commit }, { feed }) {
       return new Promise((resolve, reject) => {
@@ -70,12 +74,14 @@ const store = new Vuex.Store({
       commit('UPDATE_CURRENT_FEED_DETAILS', details)
     },
     LOAD_FEED_REPORT: function ({ commit, state }) {
-      return new Promise((resolve, reject) => {
-        axios.get('/api/feed/' + state.currentFeedId + '/report').then((response) => {
-          commit('SET_FEED_REPORT', { report: response.data })
-          resolve()
-        }, reject)
-      })
+      if (state.currentFeedId) {
+        return new Promise((resolve, reject) => {
+          axios.get('/api/feed/' + state.currentFeedId + '/report').then((response) => {
+            commit('SET_FEED_REPORT', { report: response.data })
+            resolve()
+          }, reject)
+        })
+      }
     }
   },
   mutations: {
@@ -88,27 +94,34 @@ const store = new Vuex.Store({
         state.feeds[index] = feed
       }
     },
-    DELETE_FEED: function (state, { id }) {
-      const index = state.feeds.findIndex((feed) => feed.id === id)
-      if (index >= 0) {
-        state.feeds.splice(index, 1)
+    DELETE_CURRENT_FEED: function (state) {
+      if (state.currentFeedId) {
+        const index = state.feeds.findIndex((feed) => feed.id === state.currentFeedId)
+        if (index >= 0) {
+          state.currentFeedId = null
+          state.currentFeedReport = null
+          state.feeds.splice(index, 1)
+        }
       }
     },
     ADD_NEW_FEED: (state, { feed }) => {
       state.feeds.push(feed)
+      state.currentFeedId = feed.id
     },
     SET_CURRENT_FEED: (state, { id }) => {
       state.currentFeedId = id
       state.currentFeedReport = null
     },
     UPDATE_CURRENT_FEED_DETAILS: (state, details) => {
-      const feed = state.feeds.find((feed) => feed.id === state.currentFeedId)
-      const props = ['name', 'nPosts', 'nDays', 'url', 'profile', 'googleAccount']
-      props.forEach((prop) => {
-        if (typeof details[prop] !== 'undefined') {
-          feed[prop] = details[prop]
-        }
-      })
+      if (state.currentFeedId) {
+        const feed = state.feeds.find((feed) => feed.id === state.currentFeedId)
+        const props = ['name', 'nPosts', 'nDays', 'url', 'profile', 'googleAccount']
+        props.forEach((prop) => {
+          if (typeof details[prop] !== 'undefined') {
+            feed[prop] = details[prop]
+          }
+        })
+      }
     },
     SET_GOOGLE_ACCOUNTS: function (state, { accounts, properties, profiles }) {
       state.googleAccounts.accounts = accounts
@@ -117,7 +130,8 @@ const store = new Vuex.Store({
     },
     SET_FEED_REPORT: function (state, { report }) {
       report.forEach((row) => {
-        row.date = new Date(Date.parse(row.date))
+        row.startDate = new Date(Date.parse(row.startDate))
+        row.endDate = new Date(Date.parse(row.endDate))
       })
       state.currentFeedReport = report
     }

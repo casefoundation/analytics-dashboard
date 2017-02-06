@@ -66,10 +66,15 @@
           </div>
         </div>
       </div>
-      <p class="text-right">
-        <button v-on:click.stop.prevent="cancelSave" class="btn btn-default">Cancel</button>
-        <button v-on:click.stop.prevent="save" class="btn btn-primary">Save</button>
-      </p>
+      <div class="row">
+        <div class="col-sm-6 text-left">
+          <button v-on:click.stop.prevent="deleteFeed" class="btn btn-danger">Delete</button>
+        </div>
+        <div class="col-sm-6 text-right">
+          <button v-on:click.stop.prevent="cancelSave" class="btn btn-default">Cancel</button>
+          <button v-on:click.stop.prevent="save" class="btn btn-primary">Save</button>
+        </div>
+      </div>
     </form>
   </div>
 </template>
@@ -84,16 +89,30 @@ export default {
     }
   },
   methods: {
+    deleteFeed () {
+      if (window.confirm('Are you sure you want to delete this feed?')) {
+        this.$store.dispatch('DELETE_CURRENT_FEED').then(() => {
+          this.$router.push('/')
+        }, (err) => {
+          window.alert('A server-side error has occured. Please report this issue.')
+          console.error(err)
+        })
+      }
+    },
     save () {
       this.$store.dispatch('UPDATE_CURRENT_FEED').then(() => {
         this.$router.push('/feed/' + this.$store.state.currentFeedId)
       }, (err) => {
-        // TODO better handling
+        window.alert('A server-side error has occured. Please report this issue.')
         console.error(err)
       })
     },
     cancelSave () {
       this.$router.push('/feed/' + this.$store.state.currentFeedId)
+    },
+    loadFeed () {
+      this.$store.dispatch('SET_CURRENT_FEED', { id: this.$route.params.id })
+      this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().googleAccount : {})
     }
   },
   computed: {
@@ -140,16 +159,18 @@ export default {
         return this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().googleAccount.account : null
       },
       set (value) {
-        if (value) {
-          this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', {
-            googleAccount: {
-              account: value,
-              property: null,
-              profile: null
-            }
-          })
+        if (this.$store.getters.currentFeed()) {
+          if (value) {
+            this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', {
+              googleAccount: {
+                account: value,
+                property: null,
+                profile: null
+              }
+            })
+          }
+          this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed().googleAccount)
         }
-        this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed().googleAccount)
       }
     },
     googleProperty: {
@@ -157,16 +178,18 @@ export default {
         return this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().googleAccount.property : null
       },
       set (value) {
-        if (value) {
-          this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', {
-            googleAccount: {
-              account: this.$store.getters.currentFeed().googleAccount.account,
-              property: value,
-              profile: null
-            }
-          })
+        if (this.$store.getters.currentFeed()) {
+          if (value) {
+            this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', {
+              googleAccount: {
+                account: this.$store.getters.currentFeed().googleAccount.account,
+                property: value,
+                profile: null
+              }
+            })
+          }
+          this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed().googleAccount)
         }
-        this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed().googleAccount)
       }
     },
     googleProfile: {
@@ -174,21 +197,27 @@ export default {
         return this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().googleAccount.profile : null
       },
       set (value) {
-        if (value) {
-          this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', {
-            googleAccount: {
-              account: this.$store.getters.currentFeed().googleAccount.account,
-              property: this.$store.getters.currentFeed().googleAccount.property,
-              profile: value
-            }
-          })
+        if (this.$store.getters.currentFeed()) {
+          if (value) {
+            this.$store.dispatch('UPDATE_CURRENT_FEED_DETAILS', {
+              googleAccount: {
+                account: this.$store.getters.currentFeed().googleAccount.account,
+                property: this.$store.getters.currentFeed().googleAccount.property,
+                profile: value
+              }
+            })
+          }
         }
       }
     }
   },
-  created: function () {
-    this.$store.dispatch('SET_CURRENT_FEED', { id: this.$route.params.id })
-    this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentFeed() ? this.$store.getters.currentFeed().googleAccount : {})
+  watch: {
+    '$route' (to, from) {
+      this.loadFeed()
+    }
+  },
+  mounted () {
+    this.loadFeed()
   }
 }
 </script>

@@ -75,7 +75,7 @@ export default {
     maxScore () {
       let max = 0
       this.$store.state.currentFeedReport.forEach((report) => {
-        ['pageviews', 'facebook_pageviews', 'twitter_pageviews'].forEach((stat) => {
+        ['pageviews', 'timeOnPage', 'facebook_pageviews', 'twitter_pageviews'].forEach((stat) => {
           if (this.mode === 'scores' && report.scores.daily[stat]) {
             report.scores.daily[stat].forEach((value) => {
               if (value > max) {
@@ -94,9 +94,19 @@ export default {
       return max
     }
   },
-  created: function () {
-    this.$store.dispatch('SET_CURRENT_FEED', { id: this.$route.params.id })
-    this.$store.dispatch('LOAD_FEED_REPORT')
+  watch: {
+    '$route' (to, from) {
+      this.loadFeed()
+    }
+  },
+  mounted () {
+    this.loadFeed()
+  },
+  methods: {
+    loadFeed () {
+      this.$store.dispatch('SET_CURRENT_FEED', { id: this.$route.params.id })
+      this.$store.dispatch('LOAD_FEED_REPORT')
+    }
   }
 }
 </script>

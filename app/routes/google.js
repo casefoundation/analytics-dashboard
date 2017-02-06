@@ -30,7 +30,6 @@ exports.refreshToken = function(req,res,next) {
           console.error(err);
         } else {
           console.log('New token set');
-          //TODO no refresh
           settings._.google.accessToken = accessToken;
           settings._.google.expires = new Date(now + (params.expires_in * 1000)).getTime();
         }

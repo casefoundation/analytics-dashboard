@@ -1,5 +1,19 @@
 const settings = require('../settings.js');
 const uuid = require('node-uuid');
+const Joi = require('joi');
+
+const schema = Joi.object().keys({
+  'name': Joi.string().required(),
+  'url': Joi.string().uri().required(),
+  'nPosts': Joi.number().default(5),
+  'nDays': Joi.number().default(5),
+  'googleAccount': {
+    'account': Joi.string().default(''),
+    'property': Joi.string().default(''),
+    'profile': Joi.string().default('')
+  },
+  'id': Joi.string().optional()
+})
 
 exports.getFeeds = function(req,res,next) {
   res.send(settings._.feeds || []);
@@ -19,26 +33,34 @@ exports.getFeed = function(req,res,next) {
 }
 
 exports.saveFeed = function(req,res,next) {
-  //TODO JOI verification
-  if (!settings._.feeds) {
-    settings._.feeds = [];
-  }
-  if (req.params && req.params.id) {
-    const index = getFeedIndex(req.params.id);
-    if (index >= 0) {
-      settings._.feeds[index] = req.body;
-      settings._.feeds[index].id = req.params.id;
-      res.send(settings._.feeds[index]);
-      settings.commit();
-    } else {
-      res.send(404);
+  Joi.validate(req.body,schema,function(err,object) {
+    if (!object.googleAccount) {
+      object.googleAccount = {};
     }
-  } else {
-    req.body.id = uuid.v1();
-    settings._.feeds.push(req.body);
-    res.send(req.body);
-    settings.commit();
-  }
+    if (err) {
+      next(err);
+    } else {
+      if (!settings._.feeds) {
+        settings._.feeds = [];
+      }
+      if (req.params && req.params.id) {
+        const index = getFeedIndex(req.params.id);
+        if (index >= 0) {
+          settings._.feeds[index] = object;
+          settings._.feeds[index].id = req.params.id;
+          res.send(settings._.feeds[index]);
+          settings.commit();
+        } else {
+          res.send(404);
+        }
+      } else {
+        object.id = uuid.v1();
+        settings._.feeds.push(object);
+        res.send(object);
+        settings.commit();
+      }
+    }
+  })
 }
 
 exports.deleteFeed = function(req,res,next) {
