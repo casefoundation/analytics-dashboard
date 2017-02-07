@@ -19,7 +19,8 @@
                   <svg :width="dimensions.width" :height="dimensions.height">
                     <rect x="0" y="0" :width="dimensions.width" :height="dimensions.height" />
                     <g :style="{transform: `translate(${margin.left}px, ${margin.top}px)`}">
-                      <path class="line" :d="stat.path" />
+                      <path class="average" :d="stat.average" />
+                      <path class="actual" :d="stat.actual" />
                       <line :x1="stat.line" y1="0" :x2="stat.line" :y2="dimensions.height - (margin.top * 2)" />
                     </g>
                   </svg>
@@ -102,7 +103,8 @@ export default {
             x: null,
             y: null
           },
-          path: '',
+          average: '',
+          actual: '',
           line: ''
         },
         {
@@ -112,7 +114,8 @@ export default {
             x: null,
             y: null
           },
-          path: '',
+          average: '',
+          actual: '',
           line: ''
         },
         {
@@ -122,7 +125,8 @@ export default {
             x: null,
             y: null
           },
-          path: '',
+          average: '',
+          actual: '',
           line: ''
         },
         {
@@ -132,7 +136,8 @@ export default {
             x: null,
             y: null
           },
-          path: '',
+          average: '',
+          actual: '',
           line: ''
         }
       ]
@@ -154,18 +159,24 @@ export default {
       this.dimensions.height = this.dimensions.width * 0.25
       const today = new Date().getTime()
       this.stats.forEach((stat) => {
-        const data = this.mode === 'scores' ? this.report.scores.daily[stat.slug] : this.report.actuals[stat.slug]
+        const actual = this.report.actuals[stat.slug]
+        const average = this.report.averages.daily[stat.slug]
         stat.scale.x = this.$d3.scaleLinear().range([0, this.dimensions.width - (this.margin.left * 2)])
         stat.scale.y = this.$d3.scaleLinear().range([this.dimensions.height - (this.margin.top * 2), 0])
-        const xDomain = this.$d3.extent(data, (d, i) => i)
+        const xDomain = this.$d3.extent(actual, (d, i) => i)
         stat.scale.x.domain(xDomain)
-        // const yDomain = [0, this.maxScore]
-        const yDomain = this.$d3.extent(data, (d, i) => d)
-        stat.scale.y.domain(yDomain)
-        stat.path = this.$d3
+        stat.scale.y.domain([
+          Math.min(this.$d3.min(actual, (d, i) => d), this.$d3.min(average, (d, i) => d)),
+          Math.max(this.$d3.max(actual, (d, i) => d), this.$d3.max(average, (d, i) => d))
+        ])
+        stat.actual = this.$d3
           .line()
           .x((d, i) => stat.scale.x(i))
-          .y(d => stat.scale.y(d))(data)
+          .y(d => stat.scale.y(d))(actual)
+        stat.average = this.$d3
+          .line()
+          .x((d, i) => stat.scale.x(i))
+          .y(d => stat.scale.y(d))(average)
         const linePos = (today - this.report.startDate.getTime()) / (24 * 60 * 60 * 1000)
         if (linePos >= xDomain[0] && linePos <= xDomain[1]) {
           stat.line = stat.scale.x(linePos)
@@ -196,10 +207,16 @@ export default {
   svg rect {
     fill: #ddd;
   }
-  svg path {
-    stroke: black;
+  svg .average,
+  svg .actual {
     fill: none;
     stroke-width: 2;
+  }
+  svg .average {
+    stroke: #aaa;
+  }
+  svg .actual {
+    stroke: black;
   }
   svg line {
     stroke: red;

@@ -1,13 +1,26 @@
 <template>
-  <div class="container-fluid">
-    <h1 class="page-header">
-      {{ feed.name }}
-      <router-link :to="'/feed/'+feed.id+'/settings'" class="pull-right">Settings</router-link>
-    </h1>
-    <div v-for="row in reports" class="row">
-      <div class="col-md-4" v-for="report in row">
-        <feed-tile :report="report" :max-score="maxScore" :mode="mode"></feed-tile>
+  <div class="container-fluid page-wrapper">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <span class="navbar-brand">{{ feed.name }}</span>
+        </div>
+        <div class="collapse navbar-collapse">
+          <div class="navbar-form navbar-right">
+            <router-link :to="'/feed/'+feed.id+'/settings'" class="btn btn-primary">Settings</router-link>
+          </div>
+        </div>
       </div>
+    </nav>
+    <div v-if="reports.length > 0">
+      <div v-for="row in reports" class="row">
+        <div class="col-md-4" v-for="report in row">
+          <feed-tile :report="report" :max-score="maxScore" :mode="mode"></feed-tile>
+        </div>
+      </div>
+    </div>
+    <div v-else class="lead text-center">
+      Loading ...
     </div>
   </div>
 </template>
@@ -110,3 +123,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .page-wrapper {
+    padding-top: 36px;
+  }
+</style>
