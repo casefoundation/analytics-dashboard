@@ -32,25 +32,36 @@ describe('Analytics Dashboard',function() {
         testData.feed.forEach(function(item) {
           item.pubdate = new Date(Date.parse(item.pubdate));
         });
-        const days = 5;
-        const posts = 5;
+        const days = 30;
+        const posts = 25;
         reporter.testable.parseReport(posts,days,testData.feed,testData.report,function(err,report) {
           assert(!err);
           assert.equal(posts,report.length);
           report.forEach(function(reportRow,i) {
             const counterpartRow = testData.finalReport[i];
             assert.equal(reportRow.url,counterpartRow.url);
-            assert.equal(reportRow.date.getTime(),Date.parse(counterpartRow.date));
-            ['averages','actuals','scores'].forEach(function(statType) {
-              for(const metric in reportRow[statType]) {
-                assert.equal(days,reportRow[statType][metric].length);
-                assert.equal(reportRow[statType][metric].length,counterpartRow[statType][metric].length);
-                reportRow[statType][metric].forEach(function(stat,j) {
-                  const counterpartStat = counterpartRow[statType][metric][j];
+            assert.equal(reportRow.startDate.getTime(),Date.parse(counterpartRow.startDate));
+            ['averages','scores'].forEach(function(statType) {
+              for(const metric in reportRow[statType].daily) {
+                assert.equal(days,reportRow[statType].daily[metric].length);
+                assert.equal(reportRow[statType].daily[metric].length,counterpartRow[statType].daily[metric].length);
+                reportRow[statType].daily[metric].forEach(function(stat,j) {
+                  const counterpartStat = counterpartRow[statType].daily[metric][j];
                   assert.strictEqual(stat,counterpartStat);
                 });
               }
+              for(const metric in reportRow[statType].cumulative) {
+                assert.equal(reportRow[statType].cumulative[metric],counterpartRow[statType].cumulative[metric]);
+              }
             });
+            for(const metric in reportRow.actuals) {
+              assert.equal(days,reportRow.actuals[metric].length);
+              assert.equal(reportRow.actuals[metric].length,counterpartRow.actuals[metric].length);
+              reportRow.actuals[metric].forEach(function(stat,j) {
+                const counterpartStat = counterpartRow.actuals[metric][j];
+                assert.strictEqual(stat,counterpartStat);
+              });
+            }
           });
           done();
         });
@@ -180,10 +191,15 @@ describe('Analytics Dashboard',function() {
     it('GET /api/feed',function(done) {
       settings._.feeds = [
         {
+          "name": "Test Name",
           "url": "http://casefoundation.org/feed/",
           "nPosts": 5,
           "nDays": 5,
-          "profile": 19286955,
+          "googleAccount": {
+            "account": "dfsdfsvsdv",
+            "property": "sfsdfsdfsfsg",
+            "profile": "nvbnvbnvbn"
+          },
           "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
         }
       ];
@@ -197,9 +213,14 @@ describe('Analytics Dashboard',function() {
             res.body.should.have.lengthOf(settings._.feeds.length);
             res.body.should.be.a('array');
             res.body[0].should.be.a('object');
-            ['url','nPosts','nDays','profile','id'].forEach(function(prop) {
+            ['name','url','nPosts','nDays','id'].forEach(function(prop) {
               res.body[0].should.have.property(prop);
               res.body[0][prop].should.equal(settings._.feeds[0][prop]);
+            });
+            res.body[0].googleAccount.should.be.a('object');
+            ['account','property','profile'].forEach(function(prop) {
+              res.body[0].googleAccount.should.have.property(prop);
+              res.body[0].googleAccount[prop].should.equal(settings._.feeds[0].googleAccount[prop]);
             });
             done();
           }
@@ -209,10 +230,15 @@ describe('Analytics Dashboard',function() {
     it('GET /api/feed/:id',function(done) {
       settings._.feeds = [
         {
+          "name": "Test Name",
           "url": "http://casefoundation.org/feed/",
           "nPosts": 5,
           "nDays": 5,
-          "profile": 19286955,
+          "googleAccount": {
+            "account": "dfsdfsvsdv",
+            "property": "sfsdfsdfsfsg",
+            "profile": "nvbnvbnvbn"
+          },
           "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
         }
       ];
@@ -224,9 +250,14 @@ describe('Analytics Dashboard',function() {
           } else {
             res.should.have.status(200);
             res.body.should.be.a('object');
-            ['url','nPosts','nDays','profile','id'].forEach(function(prop) {
+            ['name','url','nPosts','nDays','id'].forEach(function(prop) {
               res.body.should.have.property(prop);
               res.body[prop].should.equal(settings._.feeds[0][prop]);
+            });
+            res.body.googleAccount.should.be.a('object');
+            ['account','property','profile'].forEach(function(prop) {
+              res.body.googleAccount.should.have.property(prop);
+              res.body.googleAccount[prop].should.equal(settings._.feeds[0].googleAccount[prop]);
             });
             done();
           }
@@ -235,10 +266,15 @@ describe('Analytics Dashboard',function() {
 
     it('POST /api/feed',function(done) {
       const item = {
+        "name": "Test Name",
         "url": "http://casefoundation.org/feed/",
         "nPosts": 5,
         "nDays": 5,
-        "profile": 19286955,
+        "googleAccount": {
+          "account": "dfsdfsvsdv",
+          "property": "sfsdfsdfsfsg",
+          "profile": "nvbnvbnvbn"
+        }
       };
       chai.request(server)
         .post('/api/feed')
@@ -251,9 +287,14 @@ describe('Analytics Dashboard',function() {
             res.should.have.status(200);
             res.body.should.be.a('object');
             res.body.should.have.property('id');
-            ['url','nPosts','nDays','profile'].forEach(function(prop) {
+            ['name','url','nPosts','nDays'].forEach(function(prop) {
               res.body.should.have.property(prop);
               res.body[prop].should.equal(item[prop]);
+            });
+            res.body.googleAccount.should.be.a('object');
+            ['account','property','profile'].forEach(function(prop) {
+              res.body.googleAccount.should.have.property(prop);
+              res.body.googleAccount[prop].should.equal(item.googleAccount[prop]);
             });
             done();
           }
@@ -263,18 +304,28 @@ describe('Analytics Dashboard',function() {
     it('PUT /api/feed/:id',function(done) {
       settings._.feeds = [
         {
+          "name": "Test Name",
           "url": "http://casefoundation.org/feed/",
           "nPosts": 5,
           "nDays": 5,
-          "profile": 19286955,
+          "googleAccount": {
+            "account": "dfsdfsvsdv",
+            "property": "sfsdfsdfsfsg",
+            "profile": "nvbnvbnvbn"
+          },
           "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
         }
       ];
       const item = {
+        "name": "Test Name 1",
         "url": "http://google.com",
         "nPosts": 4,
         "nDays": 3,
-        "profile": 16566,
+        "googleAccount": {
+          "account": "vbcvbcvb",
+          "property": "cvbcvbc",
+          "profile": "dsvcvxcv"
+        },
         "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
       }
       chai.request(server)
@@ -288,9 +339,14 @@ describe('Analytics Dashboard',function() {
             res.should.have.status(200);
             res.body.should.be.a('object');
             res.body.should.have.property('id');
-            ['url','nPosts','nDays','profile','id'].forEach(function(prop) {
+            ['name','url','nPosts','nDays','id'].forEach(function(prop) {
               res.body.should.have.property(prop);
               res.body[prop].should.equal(item[prop]);
+            });
+            res.body.googleAccount.should.be.a('object');
+            ['account','property','profile'].forEach(function(prop) {
+              res.body.googleAccount.should.have.property(prop);
+              res.body.googleAccount[prop].should.equal(item.googleAccount[prop]);
             });
             done();
           }
@@ -300,10 +356,15 @@ describe('Analytics Dashboard',function() {
     it('DELETE /api/feed/:id',function(done) {
       settings._.feeds = [
         {
+          "name": "Test Name",
           "url": "http://casefoundation.org/feed/",
           "nPosts": 5,
           "nDays": 5,
-          "profile": 19286955,
+          "googleAccount": {
+            "account": "dfsdfsvsdv",
+            "property": "sfsdfsdfsfsg",
+            "profile": "nvbnvbnvbn"
+          },
           "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
         }
       ];

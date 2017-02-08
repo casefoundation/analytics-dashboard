@@ -2,8 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const routes = require('./routes');
 const logger = require('morgan');
+const basicAuth = require('basic-auth-connect');
 
 const app = express();
+if (process.env.USERNAME && process.env.PASSWORD) {
+  app.use(basicAuth(process.env.USERNAME, process.env.PASSWORD));
+}
 app.use(logger('combined'));
 app.use(routes.google.refreshToken);
 app.use(bodyParser.json());

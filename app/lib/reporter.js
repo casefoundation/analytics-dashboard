@@ -3,9 +3,12 @@ const reporters = require('./reporters');
 const FeedParser = require('feedparser');
 const request = require('request');
 const url = require('url');
+const fs = require('fs');
+const path = require('path');
 
 const Metrics = ['pageviews','timeOnPage','facebook_pageviews','linkedin_pageviews','twitter_pageviews'];
 const OneDay = 24 * 60 * 60 * 1000;
+const WriteTestData = true;
 
 exports.runReport = function(settings,feedUrl,gaProfile,nPosts,nDays,done) {
   async.waterfall([
@@ -24,7 +27,23 @@ exports.runReport = function(settings,feedUrl,gaProfile,nPosts,nDays,done) {
       });
     },
     function(feed,results,next) {
-      parseReport(nPosts,nDays,feed,results,next);
+      parseReport(nPosts,nDays,feed,results,function(err,reports) {
+        next(err,reports,feed,results);
+      });
+    },
+    function(reports,feed,results,next) {
+      if (WriteTestData) {
+        const json = {
+          'feed': feed,
+          'report': results,
+          'finalReport': reports
+        };
+        fs.writeFile(path.join(__dirname,'../testData.json'),JSON.stringify(json),function(err) {
+          next(err,reports);
+        });
+      } else {
+        next(null,reports);
+      }
     }
   ],done);
 }
