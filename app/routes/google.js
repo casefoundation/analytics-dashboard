@@ -3,7 +3,7 @@ const settings = require('../settings.js');
 const async = require('async');
 const request = require('request');
 
-const RootURL = process.env.ROOT_URL || 'http://localhost:8080';
+const RootURL = process.env.ROOT_URL || 'http://localhost:8081';
 const oauthClient = new OAuth.OAuth2(
   process.env.GOOGLE_KEY,
   process.env.GOOGLE_SECRET,
@@ -12,6 +12,32 @@ const oauthClient = new OAuth.OAuth2(
   'https://accounts.google.com/o/oauth2/token',
   null
 );
+
+exports.checkGoogle = function(req,res,next) {
+  if (settings._.google && settings._.google.accessToken) {
+    request.get({
+      'uri': 'https://www.googleapis.com/analytics/v3/management/accounts',
+      'json': true,
+      'auth': {
+        'bearer': settings._.google.accessToken
+      }
+    },function(err,response,body) {
+      if (body && body.items && body.items.length >= 0) {
+        res.send({
+          'loggedIn': true
+        });
+      } else {
+        res.send({
+          'loggedIn': false
+        });
+      }
+    });
+  } else {
+    res.send({
+      'loggedIn': false
+    });
+  }
+}
 
 exports.refreshToken = function(req,res,next) {
   if (settings._.google && settings._.google.expires && settings._.google.refreshToken && new Date(settings._.google.expires).getTime() < new Date().getTime()) {
@@ -45,7 +71,7 @@ exports.refreshToken = function(req,res,next) {
 exports.startGoogleAuth = function(req,res,next) {
   const authURL = oauthClient.getAuthorizeUrl({
     'response_type': 'code',
-    'redirect_uri': RootURL + '/auth/googleanalytics/done',
+    'redirect_uri': RootURL + '/api/auth/googleanalytics/done',
     'scope': [
       // 'https://www.googleapis.com/auth/plus.login',
       'https://www.googleapis.com/auth/analytics.readonly'
@@ -65,7 +91,7 @@ exports.finishGoogleAuth = function(req,res,next) {
       code,
       {
         'grant_type': 'authorization_code',
-        'redirect_uri': RootURL + '/auth/googleanalytics/done'
+        'redirect_uri': RootURL + '/api/auth/googleanalytics/done'
       },
       function(err, accessToken, refreshToken, params) {
         if (err) {
@@ -88,7 +114,7 @@ exports.finishGoogleAuth = function(req,res,next) {
 };
 
 exports.googleProfiles = function(req,res,next) {
-  if (settings._.google.accessToken) {
+  if (settings._.google && settings._.google.accessToken) {
     const gaRequest = function(path,done) {
       request.get({
         'uri': 'https://www.googleapis.com/analytics/v3/' + path,

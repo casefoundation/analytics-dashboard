@@ -13,8 +13,9 @@ app.use(routes.google.refreshToken);
 app.use(bodyParser.json());
 app.use(express.static('./dist'))
 
-app.get('/auth/googleanalytics',routes.google.startGoogleAuth);
-app.get('/auth/googleanalytics/done',routes.google.finishGoogleAuth);
+app.get('/api/auth/googleanalytics/start',routes.google.startGoogleAuth);
+app.get('/api/auth/googleanalytics/done',routes.google.finishGoogleAuth);
+app.get('/api/auth/googleanalytics/check',routes.google.checkGoogle);
 app.get('/api/googleaprofiles',routes.google.googleProfiles);
 app.get('/api/feed',routes.feeds.getFeeds);
 app.get('/api/feed/:id',routes.feeds.getFeed);

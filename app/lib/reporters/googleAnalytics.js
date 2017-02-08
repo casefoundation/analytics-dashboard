@@ -7,13 +7,17 @@ module.exports = {
     done();
   },
   'run': function(settings,urls,gaProfile,startDate,endDate,done) {
-    executeRequest([[],[]],null,settings,urls,gaProfile,startDate,endDate,function(err,responseBodies) {
-      if (err) {
-        done(err);
-      } else {
-        done(null,processResponseBodies(urls,responseBodies));
-      }
-    });
+    if (settings._.google && settings._.google.accessToken) {
+      executeRequest([[],[]],null,settings,urls,gaProfile,startDate,endDate,function(err,responseBodies) {
+        if (err) {
+          done(err);
+        } else {
+          done(null,processResponseBodies(urls,responseBodies));
+        }
+      });
+    } else {
+      done(new Error('No access token'))
+    }
   }
 };
 

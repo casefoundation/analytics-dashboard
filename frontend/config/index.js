@@ -23,7 +23,6 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/auth/**': devServer,
       '/api/**': devServer
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
