@@ -1,12 +1,28 @@
 const async = require('async');
 const app = require('../index');
-const settings = require('../settings.js');
+const settings = require('remote-settings');
 const reporters = require('../lib/reporters');
 const reporter = require('../lib/reporter');
 
 async.waterfall([
   function(next) {
-    settings.init('./settings.json',{},next);
+    const params = {};
+    if (process.env.AMAZON_ACCESS_KEY && process.env.AMAZON_SECRET_ACCESS_KEY && process.env.AMAZON_REGION && process.env.AMAZON_BUCKET && process.env.AMAZON_KEY) {
+      params.s3 = {
+        'config': {
+          'credentials': {
+            "accessKeyId": process.env.AMAZON_ACCESS_KEY,
+            "secretAccessKey": process.env.AMAZON_SECRET_ACCESS_KEY
+          },
+          'region': process.env.AMAZON_REGION
+        },
+        'bucket': process.env.AMAZON_BUCKET,
+        'key': process.env.AMAZON_KEY,
+      };
+    } else {
+      params.file = process.env.SETTINGS_FILE || './settings.json';
+    }
+    settings.init(params,next);
   },
   function(next) {
     const reportersArray = [];

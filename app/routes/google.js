@@ -1,5 +1,5 @@
 const OAuth = require('oauth');
-const settings = require('../settings.js');
+const settings = require('remote-settings');
 const async = require('async');
 const request = require('request');
 

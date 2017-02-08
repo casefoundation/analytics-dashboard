@@ -1,7 +1,7 @@
 const assert = require('assert');
 const reporter = require('./lib/reporter');
 const server = require('./index');
-const settings = require('./settings.js');
+const settings = require('remote-settings');
 const async = require('async');
 const chai = require('chai');
 const should = chai.should();
@@ -175,7 +175,10 @@ describe('Analytics Dashboard',function() {
     beforeEach(function(done) {
       async.waterfall([
         function(next) {
-          settings.init('./settings.test.json',{},next);
+          const params = {
+            'file': './settings.test.json'
+          };
+          settings.init(params,next);
         },
         function(next) {
           settings.commit(next);

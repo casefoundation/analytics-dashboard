@@ -1,4 +1,4 @@
-const settings = require('../settings.js');
+const settings = require('remote-settings');
 const uuid = require('node-uuid');
 const Joi = require('joi');
 
