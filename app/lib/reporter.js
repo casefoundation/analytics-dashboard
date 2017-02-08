@@ -8,7 +8,7 @@ const path = require('path');
 
 const Metrics = ['pageviews','timeOnPage','facebook_pageviews','linkedin_pageviews','twitter_pageviews'];
 const OneDay = 24 * 60 * 60 * 1000;
-const WriteTestData = true;
+const WriteTestData = false;
 
 exports.runReport = function(settings,feedUrl,gaProfile,nPosts,nDays,done) {
   async.waterfall([
