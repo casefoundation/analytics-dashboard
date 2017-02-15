@@ -6,7 +6,7 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 
-const Metrics = ['pageviews','timeOnPage','facebook_pageviews','linkedin_pageviews','twitter_pageviews'];
+const Metrics = ['pageviews','avgTimeOnPage','facebook_pageviews','linkedin_pageviews','twitter_pageviews'];
 const OneDay = 24 * 60 * 60 * 1000;
 const WriteTestData = false;
 

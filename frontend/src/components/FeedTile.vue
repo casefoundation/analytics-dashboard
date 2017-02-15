@@ -1,64 +1,39 @@
 <template>
-  <div class="panel panel-default">
+  <div class="panel panel-primary">
     <div class="panel-heading">
       <a :href="report.url" target="_blank">{{ report.title }}</a>
+      <span class="badge">{{ report.scores.overall | score }}</span>
     </div>
     <div class="panel-body">
-      <div class="row">
-        <div class="col-md-2">
-          <div class="report-score text-primary text-center">
-            {{ report.scores.overall | score }}
-          </div>
-        </div>
-        <div class="col-md-10">
-          <div class="stats row">
-            <div class="stat col-md-6" :class="stat.slug" v-for="stat in stats">
-              <p class="stat-title">{{ stat.name }}</p>
-              <div class="row">
-                <div class="col-xs-8 stat-chart">
-                  <svg :width="dimensions.width" :height="dimensions.height">
-                    <rect x="0" y="0" :width="dimensions.width" :height="dimensions.height" />
-                    <g :style="{transform: `translate(${margin.left}px, ${margin.top}px)`}">
-                      <path class="average" :d="stat.average" />
-                      <path class="actual" :d="stat.actual" />
-                      <line :x1="stat.line" y1="0" :x2="stat.line" :y2="dimensions.height - (margin.top * 2)" />
-                    </g>
-                  </svg>
-                </div>
-                <div class="col-xs-4 stat-total text-center">
-                  <div class="stat-score">
-                    <span class="label label-primary">
-                      <span class="stat-value">
-                        {{ report.scores.cumulative[stat.slug] | score }}
-                      </span>
-                    </span>
-                  </div>
-                  <div class="components">
-                    <div class="stat-total">
-                      <span class="label label-default">
-                        <span class="stat-value">
-                          {{ report.actuals[stat.slug].reduce((p,v) => p + v,0) }}
-                        </span>
-                        <span class="stat-label">
-                          Tot
-                        </span>
-                      </span>
-                    </div>
-                    <div class="stat-average">
-                      <span class="label label-default">
-                        <span class="stat-value">
-                          {{ Math.round(report.averages.cumulative[stat.slug] * 100) / 100 }}
-                        </span>
-                        <span class="stat-label">
-                          Avg
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="stats row">
+        <div class="stat col-md-6" :class="stat.slug" v-for="stat in stats">
+          <p class="stat-title">
+            {{ stat.name }}
+            <span class="badge">
+              {{ report.scores.cumulative[stat.slug] | score }}
+            </span>
+          </p>
+          <p class="stat-chart">
+            <svg :width="dimensions.width" :height="dimensions.height">
+              <rect x="0" y="0" :width="dimensions.width" :height="dimensions.height" />
+              <g :style="{transform: `translate(${margin.left}px, ${margin.top}px)`}">
+                <path class="average" :d="stat.average" />
+                <path class="actual" :d="stat.actual" />
+                <line :x1="stat.line" y1="0" :x2="stat.line" :y2="dimensions.height - (margin.top * 2)" />
+              </g>
+            </svg>
+          </p>
+          <p class="stat-numbers">
+            <span class="stat-numbers-total">
+              {{ report.actuals[stat.slug].reduce((p,v) => p + v,0) }} Total
+            </span>
+            <span class="stat-numbers-slash">
+              /
+            </span>
+            <span class="stat-numbers-total">
+              {{ Math.round(report.averages.cumulative[stat.slug] * 100) / 100 }} Avg
+            </span>
+          </p>
         </div>
       </div>
       <p class="report-dates">Performance based on traffic from {{ report.startDate.toLocaleDateString() }} to {{ report.endDate.toLocaleDateString() }}</p>
@@ -108,8 +83,8 @@ export default {
           line: ''
         },
         {
-          name: 'Time on Page',
-          slug: 'timeOnPage',
+          name: 'Avg Time on Page',
+          slug: 'avgTimeOnPage',
           scale: {
             x: null,
             y: null
@@ -194,18 +169,30 @@ export default {
     padding-bottom: 10px;
   }
   .stat-title {
-    font-size: 1em;
+    font-size: 0.9em;
     margin-bottom: 0.25em;
-    font-weight: bold;
     width: 100%;
     display: block;
+    font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     margin-top: 0;
   }
+  .stat-title .badge {
+    font-size: 0.75em;
+  }
+  .stat-chart {
+    margin: 0;
+  }
+  .stat-numbers {
+    font-size: 0.8em;
+    margin: 0;
+  }
   svg rect {
-    fill: #ddd;
+    fill: none;
+    stroke: none;
+    stroke-width: 1px;
   }
   svg .average,
   svg .actual {
@@ -213,10 +200,10 @@ export default {
     stroke-width: 2;
   }
   svg .average {
-    stroke: #aaa;
+    stroke: #268fdc;
   }
   svg .actual {
-    stroke: black;
+    stroke: white;
   }
   svg line {
     stroke: red;

@@ -1,0 +1,49 @@
+@import 'bootstrap-variables.sass';
+@import '../../../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+
+body {
+  background: darken($brand-primary, 20%);
+  color: white;
+}
+
+.navbar-brand > img {
+  margin-top: -13px;
+}
+
+.btn {
+  border-width: 2px;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  text-transform: uppercase;
+}
+
+.nav > li > a {
+  text-transform: uppercase;
+}
+
+.router-view {
+  padding-top: 30px;
+}
+
+.panel-primary {
+  background: darken($brand-primary, 15%);
+  border-color: darken($brand-primary, 15%);
+  color: white;
+
+  a {
+    color: inherit;
+  }
+
+  .panel-heading {
+    background: inherit;
+    border: none;
+    font-weight: bold;
+    font-size: 1.25em;
+  }
+
+  .badge {
+    color: #268fdc;
+    background-color: #fff;
+  }
+}

@@ -47,8 +47,4 @@ export default {
 }
 </script>
 
-<style scoped>
-  .router-view {
-    padding-top: 30px;
-  }
-</style>
+<style src="./assets/bootstrap.scss" lang="scss"></style>

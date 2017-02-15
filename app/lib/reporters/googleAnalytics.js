@@ -26,7 +26,7 @@ function executeRequest(previousResponseBodies,pageTokens,settings,urls,gaProfil
   let includedReportsCount = 0;
   const reportTypes = [
     {
-      'metrics': ['ga:pageviews','ga:timeOnPage'],
+      'metrics': ['ga:pageviews','ga:avgTimeOnPage'],
       'dimensions': ['ga:date','ga:hostname','ga:pagePath'],
       'dimensionFilterClauses': []
     },
@@ -136,7 +136,7 @@ function processResponseBodies(urls,responseBodies) {
           }
           switch(i) {
             case 0:
-              ['pageviews','timeOnPage'].forEach(function(metricName,j) {
+              ['pageviews','avgTimeOnPage'].forEach(function(metricName,j) {
                 consolidatedReport[url.href][dateStamp].metrics[metricName] = parseInt(row.metrics[0].values[j]);
               });
               break;
