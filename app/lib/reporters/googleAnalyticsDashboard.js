@@ -19,7 +19,7 @@ function execute(settings,done) {
   const requests = buildRequests(settings);
   async.waterfall([
     function(next) {
-      executeRequests(requests.reportRequests,next);
+      executeRequests(settings,requests.reportRequests,next);
     },
     function(reports,next) {
       parseReports(settings,requests.reportTypes,reports,next);
@@ -29,41 +29,35 @@ function execute(settings,done) {
 
 function parseReports(settings,reportTypes,reports,done) {
   const finalReport = {};
-  const reportTypeCounter = {};
   reports.forEach(function(report,i) {
     if (!finalReport[reportTypes[i]]) {
       finalReport[reportTypes[i]] = [];
     }
-    if (!reportTypeCounter[reportTypes[i]]) {
-      reportTypeCounter[reportTypes[i]] = 0;
-    } else {
-      reportTypeCounter[reportTypes[i]]++;
-    }
     switch(reportTypes[i]) {
       case 'events':
-        finalReport.events.push(parseEventReport(settings,report,reportTypeCounter[reportTypes[i]]));
+        finalReport.events.push(parseEventReport(settings,report,finalReport.events.length));
         break;
       case 'pages':
-        finalReport.pages.push(parsePagesReport(settings,report,reportTypeCounter[reportTypes[i]]));
+        finalReport.pages.push(parsePagesReport(settings,report,finalReport.pages.length));
         break;
       case 'goals':
-        finalReport.goals.push(parseGoalsReport(settings,report,reportTypeCounter[reportTypes[i]]));
+        finalReport.goals.push(parseGoalsReport(settings,report,finalReport.goals.length));
         break;
       case 'topPages':
-        finalReport.topPages.push(parseTopPagesReport(settings,report,reportTypeCounter[reportTypes[i]]));
+        finalReport.topPages.push(parseTopPagesReport(settings,report,finalReport.topPages.length));
         break;
       case 'referrals':
-        finalReport.referrals.push(parseReferralsReport(settings,report,reportTypeCounter[reportTypes[i]]));
+        finalReport.referrals.push(parseReferralsReport(settings,report,finalReport.referrals.length));
         break;
       case 'overallMetrics':
-        finalReport.overall.push(parseOverallMetricsReport(settings,report,reportTypeCounter[reportTypes[i]]));
+        finalReport.overallMetrics.push(parseOverallMetricsReport(settings,report,finalReport.overallMetrics.length));
         break;
     }
   });
   done(null,finalReport);
 }
 
-function executeRequests(requests,done) {
+function executeRequests(settings,requests,done) {
   async.series(
     segmentArrays(requests).map(function(requestSet) {
       return function(next) {
@@ -236,6 +230,9 @@ function buildRequests(settings) {
         },
         {
           'name': 'ga:pagePath'
+        },
+        {
+          'name': 'ga:pageTitle'
         }
       ],
       'orderBys': [
@@ -294,7 +291,7 @@ function buildRequests(settings) {
   reportRequests.forEach(function(request) {
     request.viewId = settings._.dashboard.googleAccount.profile;
     request.dateRanges = {
-      'startDate': formatDate(new Date(now.getTime() - settings._.dashboard.range));
+      'startDate': formatDate(new Date(now.getTime() - settings._.dashboard.range)),
       'endDate': formatDate(now)
     };
     request.samplingLevel = 'LARGE';
@@ -318,4 +315,101 @@ function formatDate(dateObj) {
     }
   }
   return [dateObj.getFullYear(),prependZero(dateObj.getMonth()+1),prependZero(dateObj.getDate())].join('-');
+}
+
+function parseEventReport(settings,report,offset) {
+  // console.log(JSON.stringify(report.data.rows,null,'  '))
+  const config = settings._.dashboard.elements.events[offset];
+  if (report.data.rows.length > 0) {
+    const total = report.data.rows.reduce(function(accum,row) {
+      if ((config.category && config.category != row.dimensions[0])
+          || (config.action && config.action != row.dimensions[1])
+          || (config.label && config.label != row.dimensions[2])) {
+        throw new Error('Event report mismatch: ' + [config.category+'/'+row.dimensions[0],config.action+'/'+row.dimensions[1],config.label+'/'+row.dimensions[2]].join(', '));
+      } else {
+        return accum + parseInt(row.metrics[0].values[0]);
+      }
+    },0);
+    return {
+      'name': config.name,
+      'totalEvents': total
+    };
+  } else {
+    return {
+      'name': config.name,
+      'totalEvents': 0
+    };
+  }
+}
+
+function parsePagesReport(settings,report,offset) {
+  const config = settings._.dashboard.elements.pages[offset];
+  if (report.data.rows.length == 0) {
+    return {
+      'name': config.name,
+      'url': config.url,
+      'sessions': 0,
+      'hits': 0,
+      'bounceRate': 0
+    };
+  } else if (report.data.rows.length == 1) {
+    const reportRow = report.data.rows[0];
+    const configURLObject = url.parse(config.url);
+    if (configURLObject.host != reportRow.dimensions[0] && configURLObject.path != reportRow.dimensions[1]) {
+      throw new Error('Page report mismatch: ' + [configURLObject.host+'/'+reportRow.dimensions[0] , configURLObject.path+'/'+reportRow.dimensions[1]].join(', '));
+    } else {
+      return {
+        'name': config.name,
+        'url': config.url,
+        'sessions': parseInt(reportRow.metrics[0].values[0]),
+        'hits': parseInt(reportRow.metrics[0].values[1]),
+        'bounceRate': parseFloat(reportRow.metrics[0].values[2])
+      };
+    }
+  } else {
+    throw new Error('Unexpected number of page rows: ' + report.data.rows.length);
+  }
+}
+
+function parseGoalsReport(settings,report,offset) {
+  const config = settings._.dashboard.elements.goals[offset];
+  if (report.data.totals) {
+    return {
+      'name': config.name,
+      'completions': parseInt(report.data.totals[0].values[0])
+    };
+  } else {
+    throw new Error('Unexpected number of goal report');
+  }
+}
+
+function parseTopPagesReport(settings,report,offset) {
+  return report.data.rows.map(function(row) {
+    return {
+      'name': row.dimensions[2],
+      'url': url.parse('http://' + row.dimensions[0] + row.dimensions[1]).href,
+      'hits': parseInt(row.metrics[0].values[0])
+    }
+  });
+}
+
+function parseReferralsReport(settings,report,offset) {
+  return report.data.rows.map(function(row) {
+    return {
+      'referrer': row.dimensions[0],
+      'hits': parseInt(row.metrics[0].values[0])
+    }
+  });
+}
+
+function parseOverallMetricsReport(settings,report,offset) {
+  if (report.data.totals) {
+    return {
+      'hits': parseInt(report.data.totals[0].values[0]),
+      'sessions': parseInt(report.data.totals[0].values[1]),
+      'bounceRate': parseFloat(report.data.totals[0].values[2]),
+    };
+  } else {
+    throw new Error('Unexpected number of overall report');
+  }
 }

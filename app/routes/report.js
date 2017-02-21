@@ -1,4 +1,5 @@
 const reporter = require('../lib/reporter');
+const reporters = require('../lib/reporters');
 const settings = require('remote-settings');
 
 exports.runReport = function(req,res,next) {
@@ -20,4 +21,14 @@ exports.runReport = function(req,res,next) {
   } else {
     res.send(404);
   }
+}
+
+exports.dashboard = function(req,res,next) {
+  reporters.googleAnalyticsDashboard.run(settings,function(err,report) {
+    if (err) {
+      next(err);
+    } else {
+      res.send(report);
+    }
+  });
 }
