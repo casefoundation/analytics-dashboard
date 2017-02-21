@@ -2,7 +2,6 @@ const request = require('request');
 const async = require('async');
 
 module.exports = {
-  'name': 'Google Analytics',
   'init': function(settings,app,done) {
     done();
   },
@@ -16,7 +15,7 @@ module.exports = {
         }
       });
     } else {
-      done(new Error('No access token'))
+      done(new Error('No access token'));
     }
   }
 };

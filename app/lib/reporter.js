@@ -22,7 +22,7 @@ exports.runReport = function(settings,feedUrl,gaProfile,nPosts,nDays,done) {
     function(feed,next) {
       const dateBounds = getDateBounds(feed);
       const urls = convertFeedToUrls(feed);
-      reporters.googleAnalytics.run(settings,urls,gaProfile,dateBounds.start,dateBounds.end,function(err,report) {
+      reporters.googleAnalyticsBenchmarks.run(settings,urls,gaProfile,dateBounds.start,dateBounds.end,function(err,report) {
         next(err,feed,report);
       });
     },
