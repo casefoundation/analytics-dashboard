@@ -6,7 +6,28 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 
-const Metrics = ['pageviews','avgTimeOnPage','facebook_pageviews','linkedin_pageviews','twitter_pageviews'];
+const Metrics = [
+  {
+    'name': 'pageviews',
+    'type': 'cumulative'
+  },
+  {
+    'name': 'avgTimeOnPage',
+    'type': 'average'
+  },
+  {
+    'name': 'facebook_pageviews',
+    'type': 'cumulative'
+  },
+  {
+    'name': 'linkedin_pageviews',
+    'type': 'cumulative'
+  },
+  {
+    'name': 'twitter_pageviews',
+    'type': 'cumulative'
+  }
+];
 const OneDay = 24 * 60 * 60 * 1000;
 const WriteTestData = false;
 
@@ -21,6 +42,8 @@ exports.runReport = function(settings,feedUrl,gaProfile,nPosts,nDays,done) {
     },
     function(feed,next) {
       const dateBounds = getDateBounds(feed);
+      dateBounds.start = new Date(dateBounds.start.getTime() - (nDays * OneDay));
+      dateBounds.end = new Date(dateBounds.end.getTime() + (nDays * OneDay));
       const urls = convertFeedToUrls(feed);
       reporters.googleAnalyticsBenchmarks.run(settings,urls,gaProfile,dateBounds.start,dateBounds.end,function(err,report) {
         next(err,feed,report);
@@ -127,6 +150,7 @@ function parseReport(nPosts,nDays,feed,report,done) {
       'cumulative': {},
       'overall': null
     };
+    const overalls = {};
     const actuals = {};
     const thisReport = {
       'url': reportPost.link,
@@ -135,7 +159,8 @@ function parseReport(nPosts,nDays,feed,report,done) {
       'endDate': new Date(Math.min(Date.parse(formatDate(reportPost.pubdate)) + (nDays * OneDay),new Date().getTime())),
       'averages': averages,
       'actuals': actuals,
-      'scores': scores
+      'scores': scores,
+      'overalls': overalls
     };
     reports.push(thisReport)
 
@@ -143,23 +168,23 @@ function parseReport(nPosts,nDays,feed,report,done) {
     computePosts.forEach(function(computePost,j) {
       const baseDate = new Date(Date.parse(formatDate(computePost.pubdate)));
       Metrics.forEach(function(metric,k) {
-        if (!averages.daily[metric]) {
-          averages.daily[metric] = [];
+        if (!averages.daily[metric.name]) {
+          averages.daily[metric.name] = [];
         }
-        if (!averages.cumulative[metric]) {
-          averages.cumulative[metric] = [];
+        if (!averages.cumulative[metric.name]) {
+          averages.cumulative[metric.name] = [];
         }
-        if (!averages.cumulative[metric][j]) {
-          averages.cumulative[metric][j] = [];
+        if (!averages.cumulative[metric.name][j]) {
+          averages.cumulative[metric.name][j] = [];
         }
         for(var l = 0; l < nDays; l++) {
-          if (!averages.daily[metric][l]) {
-            averages.daily[metric][l] = [];
+          if (!averages.daily[metric.name][l]) {
+            averages.daily[metric.name][l] = [];
           }
           const stamp = baseDate.getTime() + (l * OneDay);
-          if (report[computePost.link] && report[computePost.link][stamp] && report[computePost.link][stamp].metrics[metric]) {
-            averages.daily[metric][l].push(report[computePost.link][stamp].metrics[metric]);
-            averages.cumulative[metric][j].push(report[computePost.link][stamp].metrics[metric]);
+          if (report[computePost.link] && report[computePost.link][stamp] && report[computePost.link][stamp].metrics[metric.name]) {
+            averages.daily[metric.name][l].push(report[computePost.link][stamp].metrics[metric.name]);
+            averages.cumulative[metric.name][j].push(report[computePost.link][stamp].metrics[metric.name]);
           }
         }
       });
@@ -167,41 +192,59 @@ function parseReport(nPosts,nDays,feed,report,done) {
 
     Metrics.forEach(function(metric,k) {
       for(var l = 0; l < nDays; l++) {
-        averages.daily[metric][l] = averages.daily[metric][l].reduce(function(previous,current) {
+        averages.daily[metric.name][l] = averages.daily[metric.name][l].reduce(function(previous,current) {
           return previous + current;
         },0) / computePosts.length;
       }
-      averages.cumulative[metric] = averages.cumulative[metric].reduce(function(previous,postSet) {
-        return previous + postSet.reduce(function(previous1,value) {
+      averages.cumulative[metric.name] = averages.cumulative[metric.name].reduce(function(previous,postSet) {
+        const total = postSet.reduce(function(previous1,value) {
           return previous1 + value;
         },0);
+        if (metric.type == 'cumulative') {
+          return previous + total;
+        } else if (metric.type == 'average') {
+          return previous + (total / postSet.length);
+        } else {
+          throw new Error('No type defined');
+        }
       },0) / computePosts.length;
     });
 
     Metrics.forEach(function(metric,k) {
-      scores.daily[metric] = [];
-      scores.cumulative[metric] = 0;
-      actuals[metric] = [];
+      scores.daily[metric.name] = [];
+      actuals[metric.name] = [];
+      overalls[metric.name] = [];
       for(var l = 0; l < nDays; l++) {
         const stamp = thisReport.startDate.getTime() + (l * OneDay);
-        if (report[reportPost.link] && report[reportPost.link][stamp] && report[reportPost.link][stamp].metrics[metric]) {
-          const value = report[reportPost.link][stamp].metrics[metric];
-          actuals[metric][l] = value;
-          scores.cumulative[metric] += value;
-          if (averages.daily[metric] && averages.daily[metric][l]) {
-            scores.daily[metric][l] = (value / averages.daily[metric][l]) - 1;
+        if (report[reportPost.link] && report[reportPost.link][stamp] && report[reportPost.link][stamp].metrics[metric.name]) {
+          const value = report[reportPost.link][stamp].metrics[metric.name];
+          actuals[metric.name][l] = value;
+          overalls[metric.name].push(value);
+          if (averages.daily[metric.name] && averages.daily[metric.name][l]) {
+            scores.daily[metric.name][l] = (value / averages.daily[metric.name][l]) - 1;
           } else {
-            scores.daily[metric][l] = 0;
+            scores.daily[metric.name][l] = 0;
           }
         } else {
-          scores.daily[metric][l] = 0;
-          actuals[metric][l] = 0;
+          scores.daily[metric.name][l] = 0;
+          actuals[metric.name][l] = 0;
         }
       }
-      scores.cumulative[metric] = scores.cumulative[metric] > 0 ? ((scores.cumulative[metric] / averages.cumulative[metric]) - 1) : null;
+      if (metric.type == 'cumulative') {
+        overalls[metric.name] = overalls[metric.name].reduce(function(total,item) {
+          return total + item;
+        },0);
+      } else if (metric.type == 'average') {
+        overalls[metric.name] = overalls[metric.name].reduce(function(total,item) {
+          return total + item;
+        },0) / overalls[metric.name].length;
+      } else {
+        throw new Error('No type defined');
+      }
+      scores.cumulative[metric.name] = overalls[metric.name] > 0 ? ((overalls[metric.name] / averages.cumulative[metric.name]) - 1) : null;
     });
     scores.overall = Metrics.reduce(function(previous,metric) {
-      return previous + (scores.cumulative[metric] ? scores.cumulative[metric] : 0);
+      return previous + (scores.cumulative[metric.name] ? scores.cumulative[metric.name] : 0);
     },0) / Metrics.length;
   });
   done(null,reports);

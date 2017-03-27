@@ -24,5 +24,7 @@ app.put('/api/feed/:id',routes.feeds.saveFeed);
 app.delete('/api/feed/:id',routes.feeds.deleteFeed);
 app.get('/api/feed/:id/report',routes.feeds.runFeedReport);
 app.get('/api/dashboard',routes.dashboard.runReport);
+app.get('/api/dashboard/settings',routes.dashboard.getSettings);
+app.post('/api/dashboard/settings',routes.dashboard.updateSettings);
 
 module.exports = app;

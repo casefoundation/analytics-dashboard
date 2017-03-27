@@ -5,8 +5,9 @@ import App from './App'
 import store from './assets/store'
 import VueRouter from 'vue-router'
 import Home from './components/Home'
-import Feed from './components/Feed'
-import FeedSettings from './components/FeedSettings'
+import Feed from './components/feed/Feed'
+import FeedSettings from './components/feed/FeedSettings'
+import DashboardSettings from './components/DashboardSettings'
 
 Vue.use(VueRouter)
 
@@ -23,6 +24,10 @@ const router = new VueRouter({
     {
       path: '/feed/:id',
       component: Feed
+    },
+    {
+      path: '/settings',
+      component: DashboardSettings
     }
   ]
 })

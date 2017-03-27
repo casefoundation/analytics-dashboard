@@ -8,6 +8,7 @@ const store = new Vuex.Store({
     feeds: [],
     currentFeedId: null,
     currentFeedReport: null,
+    dashboardSettings: null,
     googleAccounts: {
       accounts: [],
       properties: [],
@@ -26,6 +27,14 @@ const store = new Vuex.Store({
         }
         axios.get('/api/googleaprofiles?' + qs.stringify(params)).then((response) => {
           commit('SET_GOOGLE_ACCOUNTS', response.data.data)
+          resolve()
+        }, reject)
+      })
+    },
+    LOAD_DASHBOARD_SETTINGS: function ({ commit }) {
+      return new Promise((resolve, reject) => {
+        axios.get('/api/dashboard/settings').then((response) => {
+          commit('SET_DASHBOARD_SETTINGS', { settings: response.data })
           resolve()
         }, reject)
       })
@@ -82,6 +91,9 @@ const store = new Vuex.Store({
           }, reject)
         })
       }
+    },
+    UPDATE_DASHBOARD_DETAILS: function ({ commit }, details) {
+      commit('UPDATE_DASHBOARD_DETAILS', details)
     }
   },
   mutations: {
@@ -134,11 +146,32 @@ const store = new Vuex.Store({
         row.endDate = new Date(Date.parse(row.endDate))
       })
       state.currentFeedReport = report
+    },
+    SET_DASHBOARD_SETTINGS: function (state, { settings }) {
+      state.dashboardSettings = settings
+    },
+    UPDATE_DASHBOARD_DETAILS: function (state, details) {
+      const props = ['name', 'range', 'elements', 'googleAccount']
+      props.forEach((prop) => {
+        if (typeof details[prop] !== 'undefined') {
+          if (prop === 'elements') {
+            const subProps = ['overallMetrics', 'topPages', 'referrals']
+            subProps.forEach((subProp) => {
+              if (typeof details[prop][subProp] !== 'undefined') {
+                state.dashboardSettings[prop][subProp] = details[prop][subProp]
+              }
+            })
+          } else {
+            state.dashboardSettings[prop] = details[prop]
+          }
+        }
+      })
     }
   },
   getters: {
     currentFeed: (state) => () => state.feeds.find((feed) => feed.id === state.currentFeedId),
-    googleAccounts: (state) => state.googleAccounts
+    googleAccounts: (state) => state.googleAccounts,
+    dashboardSettings: (state) => state.dashboardSettings
   }
 })
 export default store

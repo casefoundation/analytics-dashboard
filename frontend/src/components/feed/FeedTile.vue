@@ -1,5 +1,5 @@
 <template>
-  <div class="panel panel-primary">
+  <div class="panel panel-primary panel-feed-tile">
     <div class="panel-heading">
       <a :href="report.url" target="_blank">{{ report.title }}</a>
       <span class="badge">{{ report.scores.overall | score }}</span>
@@ -25,12 +25,12 @@
           </p>
           <p class="stat-numbers">
             <span class="stat-numbers-total">
-              {{ report.actuals[stat.slug].reduce((p,v) => p + v,0) }} Total
+              {{ Math.round(report.overalls[stat.slug] * 100) / 100 }}
             </span>
             <span class="stat-numbers-slash">
               /
             </span>
-            <span class="stat-numbers-total">
+            <span class="stat-numbers-average">
               {{ Math.round(report.averages.cumulative[stat.slug] * 100) / 100 }} Avg
             </span>
           </p>
@@ -167,6 +167,9 @@ export default {
 <style scoped>
   .stat {
     padding-bottom: 10px;
+  }
+  .panel-feed-tile {
+    color: white;
   }
   .stat-title {
     font-size: 0.9em;
