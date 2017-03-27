@@ -8,7 +8,9 @@ const store = new Vuex.Store({
     feeds: [],
     currentFeedId: null,
     currentFeedReport: null,
-    dashboardSettings: null,
+    dashboards: [],
+    currentDashboardId: null,
+    currentDashboardReport: null,
     googleAccounts: {
       accounts: [],
       properties: [],
@@ -27,14 +29,6 @@ const store = new Vuex.Store({
         }
         axios.get('/api/googleaprofiles?' + qs.stringify(params)).then((response) => {
           commit('SET_GOOGLE_ACCOUNTS', response.data.data)
-          resolve()
-        }, reject)
-      })
-    },
-    LOAD_DASHBOARD_SETTINGS: function ({ commit }) {
-      return new Promise((resolve, reject) => {
-        axios.get('/api/dashboard/settings').then((response) => {
-          commit('SET_DASHBOARD_SETTINGS', { settings: response.data })
           resolve()
         }, reject)
       })
@@ -92,8 +86,58 @@ const store = new Vuex.Store({
         })
       }
     },
-    UPDATE_DASHBOARD_DETAILS: function ({ commit }, details) {
-      commit('UPDATE_DASHBOARD_DETAILS', details)
+    LOAD_DASHBOARD_LIST: function ({ commit }) {
+      return new Promise((resolve, reject) => {
+        axios.get('/api/dashboard').then((response) => {
+          commit('SET_DASHBOARD_LIST', { list: response.data })
+          resolve()
+        }, reject)
+      })
+    },
+    UPDATE_CURRENT_DASHBOARD: function ({ commit, state }) {
+      if (state.currentDashboardId) {
+        const dashboard = state.dashboards.find((dashboard) => dashboard.id === state.currentDashboardId)
+        return new Promise((resolve, reject) => {
+          axios.put('/api/dashboard/' + dashboard.id, dashboard).then((response) => {
+            commit('UPDATE_DASHBOARD', { dashboard: response.data })
+            resolve()
+          }, reject)
+        })
+      }
+    },
+    DELETE_CURRENT_DASHBOARD: function ({ commit, state }) {
+      if (state.currentDashboardId) {
+        return new Promise((resolve, reject) => {
+          axios.delete('/api/dashboard/' + state.currentDashboardId).then((response) => {
+            commit('DELETE_CURRENT_DASHBOARD')
+            resolve()
+          }, reject)
+        })
+      }
+    },
+    ADD_NEW_DASHBOARD: function ({ commit }, { dashboard }) {
+      return new Promise((resolve, reject) => {
+        axios.post('/api/dashboard', dashboard).then((response) => {
+          commit('ADD_NEW_DASHBOARD', { dashboard: response.data })
+          resolve()
+        }, reject)
+      })
+    },
+    SET_CURRENT_DASHBOARD: function ({ commit }, { id }) {
+      commit('SET_CURRENT_DASHBOARD', { id })
+    },
+    UPDATE_CURRENT_DASHBOARD_DETAILS: function ({ commit }, details) {
+      commit('UPDATE_CURRENT_DASHBOARD_DETAILS', details)
+    },
+    LOAD_DASHBOARD_REPORT: function ({ commit, state }) {
+      if (state.currentDashboardId) {
+        return new Promise((resolve, reject) => {
+          axios.get('/api/dashboard/' + state.currentDashboardId + '/report').then((response) => {
+            commit('SET_DASHBOARD_REPORT', { report: response.data })
+            resolve()
+          }, reject)
+        })
+      }
     }
   },
   mutations: {
@@ -135,11 +179,6 @@ const store = new Vuex.Store({
         })
       }
     },
-    SET_GOOGLE_ACCOUNTS: function (state, { accounts, properties, profiles }) {
-      state.googleAccounts.accounts = accounts
-      state.googleAccounts.properties = properties
-      state.googleAccounts.profiles = profiles
-    },
     SET_FEED_REPORT: function (state, { report }) {
       report.forEach((row) => {
         row.startDate = new Date(Date.parse(row.startDate))
@@ -147,31 +186,66 @@ const store = new Vuex.Store({
       })
       state.currentFeedReport = report
     },
-    SET_DASHBOARD_SETTINGS: function (state, { settings }) {
-      state.dashboardSettings = settings
+    SET_DASHBOARD_LIST: (state, { list }) => {
+      state.dashboards = list
     },
-    UPDATE_DASHBOARD_DETAILS: function (state, details) {
-      const props = ['name', 'range', 'elements', 'googleAccount']
-      props.forEach((prop) => {
-        if (typeof details[prop] !== 'undefined') {
-          if (prop === 'elements') {
-            const subProps = ['overallMetrics', 'topPages', 'referrals']
-            subProps.forEach((subProp) => {
-              if (typeof details[prop][subProp] !== 'undefined') {
-                state.dashboardSettings[prop][subProp] = details[prop][subProp]
-              }
-            })
-          } else {
-            state.dashboardSettings[prop] = details[prop]
-          }
+    UPDATE_DASHBOARD: (state, { dashboard }) => {
+      const index = state.dashboards.findIndex((_dashboard) => _dashboard.id === dashboard.id)
+      if (index >= 0) {
+        state.dashboards[index] = dashboard
+      }
+    },
+    DELETE_CURRENT_DASHBOARD: function (state) {
+      if (state.currentDashboardId) {
+        const index = state.dashboards.findIndex((dashboard) => dashboard.id === state.currentDashboardId)
+        if (index >= 0) {
+          state.currentDashboardId = null
+          state.currentDashboardReport = null
+          state.dashboards.splice(index, 1)
         }
-      })
+      }
+    },
+    ADD_NEW_DASHBOARD: (state, { dashboard }) => {
+      state.dashboards.push(dashboard)
+      state.currentDashboardId = dashboard.id
+    },
+    SET_CURRENT_DASHBOARD: (state, { id }) => {
+      state.currentDashboardId = id
+      state.currentDashboardReport = null
+    },
+    UPDATE_CURRENT_DASHBOARD_DETAILS: (state, details) => {
+      if (state.currentDashboardId) {
+        const dashboard = state.dashboards.find((dashboard) => dashboard.id === state.currentDashboardId)
+        const props = ['name', 'range', 'elements', 'googleAccount']
+        props.forEach((prop) => {
+          if (typeof details[prop] !== 'undefined') {
+            if (prop === 'elements') {
+              const subProps = ['overallMetrics', 'topPages', 'referrals']
+              subProps.forEach((subProp) => {
+                if (typeof details[prop][subProp] !== 'undefined') {
+                  dashboard[prop][subProp] = details[prop][subProp]
+                }
+              })
+            } else {
+              dashboard[prop] = details[prop]
+            }
+          }
+        })
+      }
+    },
+    SET_DASHBOARD_REPORT: function (state, { report }) {
+      state.currentDashboardReport = report
+    },
+    SET_GOOGLE_ACCOUNTS: function (state, { accounts, properties, profiles }) {
+      state.googleAccounts.accounts = accounts
+      state.googleAccounts.properties = properties
+      state.googleAccounts.profiles = profiles
     }
   },
   getters: {
     currentFeed: (state) => () => state.feeds.find((feed) => feed.id === state.currentFeedId),
-    googleAccounts: (state) => state.googleAccounts,
-    dashboardSettings: (state) => state.dashboardSettings
+    currentDashboard: (state) => () => state.dashboards.find((dashboard) => dashboard.id === state.currentDashboardId),
+    googleAccounts: (state) => state.googleAccounts
   }
 })
 export default store

@@ -126,6 +126,6 @@ export default {
 
 <style scoped>
   .page-wrapper {
-    padding-top: 36px;
+    padding-top: 20px;
   }
 </style>

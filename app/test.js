@@ -1,11 +1,12 @@
 const assert = require('assert');
-const reporter = require('./lib/reporter');
+const feedEngine = require('./lib/feedEngine');
 const server = require('./index');
 const settings = require('remote-settings');
 const async = require('async');
 const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
+const randomstring = require('randomstring');
 
 chai.use(chaiHttp);
 
@@ -16,12 +17,12 @@ describe('Analytics Dashboard',function() {
     describe('formatDate',function() {
       it('Formats dates under 10',function() {
         const date = new Date(2017,0,30);
-        const formattedDate = reporter.testable.formatDate(date);
+        const formattedDate = feedEngine.testable.formatDate(date);
         assert.equal(formattedDate,'2017-01-30T00:00:00.000Z');
       });
       it('Formats dates over 10',function() {
         const date = new Date(2017,9,30);
-        const formattedDate = reporter.testable.formatDate(date);
+        const formattedDate = feedEngine.testable.formatDate(date);
         assert.equal(formattedDate,'2017-10-30T00:00:00.000Z');
       });
     });
@@ -34,7 +35,7 @@ describe('Analytics Dashboard',function() {
         });
         const days = 30;
         const posts = 25;
-        reporter.testable.parseReport(posts,days,testData.feed,testData.report,function(err,report) {
+        feedEngine.testable.parseReport(posts,days,testData.feed,testData.report,function(err,report) {
           assert(!err);
           assert.equal(posts,report.length);
           report.forEach(function(reportRow,i) {
@@ -84,7 +85,7 @@ describe('Analytics Dashboard',function() {
             'pubdate': new Date(2017,2,1)
           }
         ];
-        const bounds = reporter.testable.getDateBounds(feed);
+        const bounds = feedEngine.testable.getDateBounds(feed);
         assert.equal(bounds.start.getTime(),feed[2].pubdate.getTime());
         assert.equal(bounds.end.getTime(),feed[0].pubdate.getTime());
       });
@@ -94,7 +95,7 @@ describe('Analytics Dashboard',function() {
       it('Properly trims the array',function(done) {
         const feed = [0,1,2,3,4,5];
         const trim = 3;
-        reporter.testable.filterReportFeed(feed,trim,function(err,trimmedFeed) {
+        feedEngine.testable.filterReportFeed(feed,trim,function(err,trimmedFeed) {
           assert.equal(trimmedFeed.length,trim);
           done();
         });
@@ -102,7 +103,7 @@ describe('Analytics Dashboard',function() {
       it('Throws an error for a short array',function(done) {
         const feed = [0,1,2,3,4,5];
         const trim = 10;
-        reporter.testable.filterReportFeed(feed,trim,function(err,trimmedFeed) {
+        feedEngine.testable.filterReportFeed(feed,trim,function(err,trimmedFeed) {
           assert(err);
           assert(!trimmedFeed);
           done();
@@ -120,7 +121,7 @@ describe('Analytics Dashboard',function() {
             'link': 'https://twitter.com/casefoundation'
           }
         ];
-        const urls = reporter.testable.convertFeedToUrls(feed);
+        const urls = feedEngine.testable.convertFeedToUrls(feed);
         assert.equal(feed.length,urls.length);
         urls.forEach(function(url,i) {
           assert.equal(url.href,feed[i].link);
@@ -162,7 +163,7 @@ describe('Analytics Dashboard',function() {
             'pubdate': date1
           }
         ];
-        reporter.testable.sortFeed(feed);
+        feedEngine.testable.sortFeed(feed);
         feed.forEach(function(item,i) {
           assert.equal(item.pubdate.getTime(),sortedFeed[i].pubdate.getTime());
         });
@@ -194,16 +195,16 @@ describe('Analytics Dashboard',function() {
     it('GET /api/feed',function(done) {
       settings._.feeds = [
         {
-          "name": "Test Name",
-          "url": "http://casefoundation.org/feed/",
-          "nPosts": 5,
-          "nDays": 5,
+          "name": randomstring.generate(),
+          "url": "http://example.com/feed/",
+          "nPosts": randomNumber(),
+          "nDays": randomNumber(),
           "googleAccount": {
-            "account": "dfsdfsvsdv",
-            "property": "sfsdfsdfsfsg",
-            "profile": "nvbnvbnvbn"
+            "account": randomstring.generate(),
+            "property": randomstring.generate(),
+            "profile": randomstring.generate()
           },
-          "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
+          "id": randomstring.generate()
         }
       ];
       chai.request(server)
@@ -233,20 +234,20 @@ describe('Analytics Dashboard',function() {
     it('GET /api/feed/:id',function(done) {
       settings._.feeds = [
         {
-          "name": "Test Name",
-          "url": "http://casefoundation.org/feed/",
-          "nPosts": 5,
-          "nDays": 5,
+          "name": randomstring.generate(),
+          "url": "http://example.com/feed/",
+          "nPosts": randomNumber(),
+          "nDays": randomNumber(),
           "googleAccount": {
-            "account": "dfsdfsvsdv",
-            "property": "sfsdfsdfsfsg",
-            "profile": "nvbnvbnvbn"
+            "account": randomstring.generate(),
+            "property": randomstring.generate(),
+            "profile": randomstring.generate()
           },
-          "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
+          "id": randomstring.generate()
         }
       ];
       chai.request(server)
-        .get('/api/feed/24f35fe0-e723-11e6-bafc-3daaebff386e')
+        .get('/api/feed/' + settings._.feeds[0].id)
         .end(function(err,res) {
           if (err) {
             done(err);
@@ -269,14 +270,14 @@ describe('Analytics Dashboard',function() {
 
     it('POST /api/feed',function(done) {
       const item = {
-        "name": "Test Name",
-        "url": "http://casefoundation.org/feed/",
-        "nPosts": 5,
-        "nDays": 5,
+        "name": randomstring.generate(),
+        "url": "http://example.com/feed/",
+        "nPosts": randomNumber(),
+        "nDays": randomNumber(),
         "googleAccount": {
-          "account": "dfsdfsvsdv",
-          "property": "sfsdfsdfsfsg",
-          "profile": "nvbnvbnvbn"
+          "account": randomstring.generate(),
+          "property": randomstring.generate(),
+          "profile": randomstring.generate()
         }
       };
       chai.request(server)
@@ -307,32 +308,32 @@ describe('Analytics Dashboard',function() {
     it('PUT /api/feed/:id',function(done) {
       settings._.feeds = [
         {
-          "name": "Test Name",
-          "url": "http://casefoundation.org/feed/",
-          "nPosts": 5,
-          "nDays": 5,
+          "name": randomstring.generate(),
+          "url": "http://example.com/feed/",
+          "nPosts": randomNumber(),
+          "nDays": randomNumber(),
           "googleAccount": {
-            "account": "dfsdfsvsdv",
-            "property": "sfsdfsdfsfsg",
-            "profile": "nvbnvbnvbn"
+            "account": randomstring.generate(),
+            "property": randomstring.generate(),
+            "profile": randomstring.generate()
           },
-          "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
+          "id": randomstring.generate()
         }
       ];
       const item = {
-        "name": "Test Name 1",
-        "url": "http://google.com",
-        "nPosts": 4,
-        "nDays": 3,
+        "name": randomstring.generate(),
+        "url": "http://example.com/feed/",
+        "nPosts": randomNumber(),
+        "nDays": randomNumber(),
         "googleAccount": {
-          "account": "vbcvbcvb",
-          "property": "cvbcvbc",
-          "profile": "dsvcvxcv"
+          "account": randomstring.generate(),
+          "property": randomstring.generate(),
+          "profile": randomstring.generate()
         },
-        "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
+        "id": settings._.feeds[0].id
       }
       chai.request(server)
-        .put('/api/feed/24f35fe0-e723-11e6-bafc-3daaebff386e')
+        .put('/api/feed/' + settings._.feeds[0].id)
         .send(item)
         .end(function(err,res) {
           if (err) {
@@ -359,20 +360,20 @@ describe('Analytics Dashboard',function() {
     it('DELETE /api/feed/:id',function(done) {
       settings._.feeds = [
         {
-          "name": "Test Name",
-          "url": "http://casefoundation.org/feed/",
-          "nPosts": 5,
-          "nDays": 5,
+          "name": randomstring.generate(),
+          "url": "http://example.com/feed/",
+          "nPosts": randomNumber(),
+          "nDays": randomNumber(),
           "googleAccount": {
-            "account": "dfsdfsvsdv",
-            "property": "sfsdfsdfsfsg",
-            "profile": "nvbnvbnvbn"
+            "account": randomstring.generate(),
+            "property": randomstring.generate(),
+            "profile": randomstring.generate()
           },
-          "id": "24f35fe0-e723-11e6-bafc-3daaebff386e"
+          "id": randomstring.generate()
         }
       ];
       chai.request(server)
-        .delete('/api/feed/24f35fe0-e723-11e6-bafc-3daaebff386e')
+        .delete('/api/feed/' + settings._.feeds[0].id)
         .end(function(err,res) {
           if (err) {
             done(err);
@@ -384,4 +385,472 @@ describe('Analytics Dashboard',function() {
         });
     });
   });
+
+  describe('Dashboard API',function() {
+    beforeEach(function(done) {
+      async.waterfall([
+        function(next) {
+          const params = {
+            'file': './settings.test.json'
+          };
+          settings.init(params,next);
+        },
+        function(next) {
+          settings.commit(next);
+        }
+      ],done);
+    });
+
+    afterEach(function(done) {
+      settings._ = {};
+      settings.commit(done);
+    })
+
+    it('GET /api/dashboard',function(done) {
+      settings._.dashboards = [
+        {
+          "name": randomstring.generate(),
+          "googleAccount": {
+            "account": randomstring.generate(),
+            "property": randomstring.generate(),
+            "profile": randomstring.generate()
+          },
+          "range": randomNumber(),
+          "elements": {
+            "events": [
+              {
+                "name": randomstring.generate(),
+                "category": randomstring.generate(),
+                "label": randomstring.generate(),
+                "action": randomstring.generate()
+              }
+            ],
+            "pages": [
+              {
+                "name": randomstring.generate(),
+                "url": "http://example.com/" + randomstring.generate()
+              },
+              {
+                "name": "erwevsvs",
+                "url": "http://example.com" + randomstring.generate()
+              }
+            ],
+            "goals": [
+              {
+                "name": randomstring.generate(),
+                "number": randomNumber()
+              },
+              {
+                "name": randomstring.generate(),
+                "number": randomNumber()
+              }
+            ],
+            "topPages": Math.random() > 0.5,
+            "referrals": Math.random() > 0.5,
+            "overallMetrics": Math.random() > 0.5
+          },
+          "id": randomstring.generate()
+        }
+      ];
+      chai.request(server)
+        .get('/api/dashboard')
+        .end(function(err,res) {
+          if (err) {
+            done(err);
+          } else {
+            res.should.have.status(200);
+            res.body.should.have.lengthOf(settings._.dashboards.length);
+            res.body.should.be.a('array');
+            res.body[0].should.be.a('object');
+            ['name','range','id'].forEach(function(prop) {
+              res.body[0].should.have.property(prop);
+              res.body[0][prop].should.equal(settings._.dashboards[0][prop]);
+            });
+            res.body[0].googleAccount.should.be.a('object');
+            ['account','property','profile'].forEach(function(prop) {
+              res.body[0].googleAccount.should.have.property(prop);
+              res.body[0].googleAccount[prop].should.equal(settings._.dashboards[0].googleAccount[prop]);
+            });
+            res.body[0].elements.should.be.a('object');
+            ['topPages','referrals','overallMetrics'].forEach(function(prop) {
+              res.body[0].elements.should.have.property(prop);
+              res.body[0].elements[prop].should.equal(settings._.dashboards[0].elements[prop]);
+            });
+            ['events','pages','goals'].forEach(function(prop) {
+              res.body[0].elements.should.have.property(prop);
+              res.body[0].elements[prop].should.be.a('array');
+              res.body[0].elements[prop].should.have.lengthOf(settings._.dashboards[0].elements[prop].length);
+              res.body[0].elements[prop].forEach(function(arrayItem,index) {
+                for(var subProp in settings._.dashboards[0].elements[prop][index]) {
+                  arrayItem.should.have.property(subProp);
+                  arrayItem[subProp].should.equal(settings._.dashboards[0].elements[prop][index][subProp]);
+                }
+              });
+            });
+            done();
+          }
+        });
+    });
+
+    it('GET /api/dashboard/:id',function(done) {
+      settings._.dashboards = [
+        {
+          "name": randomstring.generate(),
+          "googleAccount": {
+            "account": randomstring.generate(),
+            "property": randomstring.generate(),
+            "profile": randomstring.generate()
+          },
+          "range": randomNumber(),
+          "elements": {
+            "events": [
+              {
+                "name": randomstring.generate(),
+                "category": randomstring.generate(),
+                "label": randomstring.generate(),
+                "action": randomstring.generate()
+              }
+            ],
+            "pages": [
+              {
+                "name": randomstring.generate(),
+                "url": "http://example.com/" + randomstring.generate()
+              },
+              {
+                "name": "erwevsvs",
+                "url": "http://example.com" + randomstring.generate()
+              }
+            ],
+            "goals": [
+              {
+                "name": randomstring.generate(),
+                "number": randomNumber()
+              },
+              {
+                "name": randomstring.generate(),
+                "number": randomNumber()
+              }
+            ],
+            "topPages": Math.random() > 0.5,
+            "referrals": Math.random() > 0.5,
+            "overallMetrics": Math.random() > 0.5
+          },
+          "id": randomstring.generate()
+        }
+      ];
+      chai.request(server)
+        .get('/api/dashboard/' + settings._.dashboards[0].id)
+        .end(function(err,res) {
+          if (err) {
+            done(err);
+          } else {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            ['name','range','id'].forEach(function(prop) {
+              res.body.should.have.property(prop);
+              res.body[prop].should.equal(settings._.dashboards[0][prop]);
+            });
+            res.body.googleAccount.should.be.a('object');
+            ['account','property','profile'].forEach(function(prop) {
+              res.body.googleAccount.should.have.property(prop);
+              res.body.googleAccount[prop].should.equal(settings._.dashboards[0].googleAccount[prop]);
+            });
+            res.body.elements.should.be.a('object');
+            ['topPages','referrals','overallMetrics'].forEach(function(prop) {
+              res.body.elements.should.have.property(prop);
+              res.body.elements[prop].should.equal(settings._.dashboards[0].elements[prop]);
+            });
+            ['events','pages','goals'].forEach(function(prop) {
+              res.body.elements.should.have.property(prop);
+              res.body.elements[prop].should.be.a('array');
+              res.body.elements[prop].should.have.lengthOf(settings._.dashboards[0].elements[prop].length);
+              res.body.elements[prop].forEach(function(arrayItem,index) {
+                for(var subProp in settings._.dashboards[0].elements[prop][index]) {
+                  arrayItem.should.have.property(subProp);
+                  arrayItem[subProp].should.equal(settings._.dashboards[0].elements[prop][index][subProp]);
+                }
+              });
+            });
+            done();
+          }
+        });
+    });
+
+    it('POST /api/dashboard',function(done) {
+      const item = {
+        "name": randomstring.generate(),
+        "googleAccount": {
+          "account": randomstring.generate(),
+          "property": randomstring.generate(),
+          "profile": randomstring.generate()
+        },
+        "range": randomNumber(),
+        "elements": {
+          "events": [
+            {
+              "name": randomstring.generate(),
+              "category": randomstring.generate(),
+              "label": randomstring.generate(),
+              "action": randomstring.generate()
+            }
+          ],
+          "pages": [
+            {
+              "name": randomstring.generate(),
+              "url": "http://example.com/" + randomstring.generate()
+            },
+            {
+              "name": "erwevsvs",
+              "url": "http://example.com" + randomstring.generate()
+            }
+          ],
+          "goals": [
+            {
+              "name": randomstring.generate(),
+              "number": randomNumber()
+            },
+            {
+              "name": randomstring.generate(),
+              "number": randomNumber()
+            }
+          ],
+          "topPages": Math.random() > 0.5,
+          "referrals": Math.random() > 0.5,
+          "overallMetrics": Math.random() > 0.5
+        }
+      };
+      chai.request(server)
+        .post('/api/dashboard')
+        .send(item)
+        .end(function(err,res) {
+          if (err) {
+            done(err);
+          } else {
+            assert.equal(settings._.dashboards.length,1);
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('id');
+            ['name','range','id'].forEach(function(prop) {
+              res.body.should.have.property(prop);
+              res.body[prop].should.equal(settings._.dashboards[0][prop]);
+            });
+            res.body.googleAccount.should.be.a('object');
+            ['account','property','profile'].forEach(function(prop) {
+              res.body.googleAccount.should.have.property(prop);
+              res.body.googleAccount[prop].should.equal(settings._.dashboards[0].googleAccount[prop]);
+            });
+            res.body.elements.should.be.a('object');
+            ['topPages','referrals','overallMetrics'].forEach(function(prop) {
+              res.body.elements.should.have.property(prop);
+              res.body.elements[prop].should.equal(settings._.dashboards[0].elements[prop]);
+            });
+            ['events','pages','goals'].forEach(function(prop) {
+              res.body.elements.should.have.property(prop);
+              res.body.elements[prop].should.be.a('array');
+              res.body.elements[prop].should.have.lengthOf(settings._.dashboards[0].elements[prop].length);
+              res.body.elements[prop].forEach(function(arrayItem,index) {
+                for(var subProp in settings._.dashboards[0].elements[prop][index]) {
+                  arrayItem.should.have.property(subProp);
+                  arrayItem[subProp].should.equal(settings._.dashboards[0].elements[prop][index][subProp]);
+                }
+              });
+            });
+            done();
+          }
+        });
+    });
+
+    it('PUT /api/dashboard/:id',function(done) {
+      settings._.dashboards = [
+        {
+          "name": randomstring.generate(),
+          "googleAccount": {
+            "account": randomstring.generate(),
+            "property": randomstring.generate(),
+            "profile": randomstring.generate()
+          },
+          "range": randomNumber(),
+          "elements": {
+            "events": [
+              {
+                "name": randomstring.generate(),
+                "category": randomstring.generate(),
+                "label": randomstring.generate(),
+                "action": randomstring.generate()
+              }
+            ],
+            "pages": [
+              {
+                "name": randomstring.generate(),
+                "url": "http://example.com/" + randomstring.generate()
+              },
+              {
+                "name": "erwevsvs",
+                "url": "http://example.com" + randomstring.generate()
+              }
+            ],
+            "goals": [
+              {
+                "name": randomstring.generate(),
+                "number": randomNumber()
+              },
+              {
+                "name": randomstring.generate(),
+                "number": randomNumber()
+              }
+            ],
+            "topPages": Math.random() > 0.5,
+            "referrals": Math.random() > 0.5,
+            "overallMetrics": Math.random() > 0.5
+          },
+          "id": randomstring.generate()
+        }
+      ];
+      const item = {
+        "id": settings._.dashboards[0].id,
+        "name": randomstring.generate(),
+        "googleAccount": {
+          "account": randomstring.generate(),
+          "property": randomstring.generate(),
+          "profile": randomstring.generate()
+        },
+        "range": randomNumber(),
+        "elements": {
+          "events": [
+            {
+              "name": randomstring.generate(),
+              "category": randomstring.generate(),
+              "label": randomstring.generate(),
+              "action": randomstring.generate()
+            }
+          ],
+          "pages": [
+            {
+              "name": randomstring.generate(),
+              "url": "http://example.com/" + randomstring.generate()
+            },
+            {
+              "name": "erwevsvs",
+              "url": "http://example.com" + randomstring.generate()
+            }
+          ],
+          "goals": [
+            {
+              "name": randomstring.generate(),
+              "number": randomNumber()
+            },
+            {
+              "name": randomstring.generate(),
+              "number": randomNumber()
+            }
+          ],
+          "topPages": Math.random() > 0.5,
+          "referrals": Math.random() > 0.5,
+          "overallMetrics": Math.random() > 0.5
+        }
+      }
+      chai.request(server)
+        .put('/api/dashboard/' + settings._.dashboards[0].id)
+        .send(item)
+        .end(function(err,res) {
+          if (err) {
+            done(err);
+          } else {
+            assert.equal(settings._.dashboards.length,1);
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('id');
+            ['name','range','id'].forEach(function(prop) {
+              res.body.should.have.property(prop);
+              res.body[prop].should.equal(settings._.dashboards[0][prop]);
+            });
+            res.body.googleAccount.should.be.a('object');
+            ['account','property','profile'].forEach(function(prop) {
+              res.body.googleAccount.should.have.property(prop);
+              res.body.googleAccount[prop].should.equal(settings._.dashboards[0].googleAccount[prop]);
+            });
+            res.body.elements.should.be.a('object');
+            ['topPages','referrals','overallMetrics'].forEach(function(prop) {
+              res.body.elements.should.have.property(prop);
+              res.body.elements[prop].should.equal(settings._.dashboards[0].elements[prop]);
+            });
+            ['events','pages','goals'].forEach(function(prop) {
+              res.body.elements.should.have.property(prop);
+              res.body.elements[prop].should.be.a('array');
+              res.body.elements[prop].should.have.lengthOf(settings._.dashboards[0].elements[prop].length);
+              res.body.elements[prop].forEach(function(arrayItem,index) {
+                for(var subProp in settings._.dashboards[0].elements[prop][index]) {
+                  arrayItem.should.have.property(subProp);
+                  arrayItem[subProp].should.equal(settings._.dashboards[0].elements[prop][index][subProp]);
+                }
+              });
+            });
+            done();
+          }
+        });
+    });
+
+    it('DELETE /api/dashboard/:id',function(done) {
+      settings._.dashboards = [
+        {
+          "name": randomstring.generate(),
+          "googleAccount": {
+            "account": randomstring.generate(),
+            "property": randomstring.generate(),
+            "profile": randomstring.generate()
+          },
+          "range": randomNumber(),
+          "elements": {
+            "events": [
+              {
+                "name": randomstring.generate(),
+                "category": randomstring.generate(),
+                "label": randomstring.generate(),
+                "action": randomstring.generate()
+              }
+            ],
+            "pages": [
+              {
+                "name": randomstring.generate(),
+                "url": "http://example.com/" + randomstring.generate()
+              },
+              {
+                "name": "erwevsvs",
+                "url": "http://example.com" + randomstring.generate()
+              }
+            ],
+            "goals": [
+              {
+                "name": randomstring.generate(),
+                "number": randomNumber()
+              },
+              {
+                "name": randomstring.generate(),
+                "number": randomNumber()
+              }
+            ],
+            "topPages": Math.random() > 0.5,
+            "referrals": Math.random() > 0.5,
+            "overallMetrics": Math.random() > 0.5
+          },
+          "id": randomstring.generate()
+        }
+      ];
+      chai.request(server)
+        .delete('/api/dashboard/' + settings._.dashboards[0].id)
+        .end(function(err,res) {
+          if (err) {
+            done(err);
+          } else {
+            assert.equal(settings._.dashboards.length,0);
+            res.should.have.status(200);
+            done();
+          }
+        });
+    });
+  });
 });
+
+function randomNumber() {
+  return Math.floor(Math.random() * 10000);
+}

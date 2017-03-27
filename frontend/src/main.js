@@ -7,7 +7,8 @@ import VueRouter from 'vue-router'
 import Home from './components/Home'
 import Feed from './components/feed/Feed'
 import FeedSettings from './components/feed/FeedSettings'
-import DashboardSettings from './components/DashboardSettings'
+import DashboardSettings from './components/dashboard/DashboardSettings'
+import Dashboard from './components/dashboard/Dashboard'
 
 Vue.use(VueRouter)
 
@@ -26,8 +27,12 @@ const router = new VueRouter({
       component: Feed
     },
     {
-      path: '/settings',
+      path: '/dashboard/:id/settings',
       component: DashboardSettings
+    },
+    {
+      path: '/dashboard/:id',
+      component: Dashboard
     }
   ]
 })

@@ -3,31 +3,28 @@ const async = require('async');
 const url = require('url');
 
 module.exports = {
-  'init': function(settings,app,done) {
-    done();
-  },
-  'run': function(settings,done) {
-    if (settings._.google && settings._.google.accessToken && settings._.dashboard && settings._.dashboard.elements) {
-      execute(settings,done);
+  'run': function(settings,dashboard,done) {
+    if (settings._.google && settings._.google.accessToken && dashboard.elements) {
+      execute(settings,dashboard,done);
     } else {
       done(new Error('No access token or dashboard configuration'));
     }
   }
 };
 
-function execute(settings,done) {
-  const requests = buildRequests(settings);
+function execute(settings,dashboard,done) {
+  const requests = buildRequests(settings,dashboard);
   async.waterfall([
     function(next) {
-      executeRequests(settings,requests.reportRequests,next);
+      executeRequests(settings,dashboard,requests.reportRequests,next);
     },
     function(reports,next) {
-      parseReports(settings,requests.reportTypes,reports,next);
+      parseReports(settings,dashboard,requests.reportTypes,reports,next);
     }
   ],done);
 }
 
-function parseReports(settings,reportTypes,reports,done) {
+function parseReports(settings,dashboard,reportTypes,reports,done) {
   const finalReport = {};
   reports.forEach(function(report,i) {
     if (!finalReport[reportTypes[i]]) {
@@ -35,29 +32,29 @@ function parseReports(settings,reportTypes,reports,done) {
     }
     switch(reportTypes[i]) {
       case 'events':
-        finalReport.events.push(parseEventReport(settings,report,finalReport.events.length));
+        finalReport.events.push(parseEventReport(settings,dashboard,report,finalReport.events.length));
         break;
       case 'pages':
-        finalReport.pages.push(parsePagesReport(settings,report,finalReport.pages.length));
+        finalReport.pages.push(parsePagesReport(settings,dashboard,report,finalReport.pages.length));
         break;
       case 'goals':
-        finalReport.goals.push(parseGoalsReport(settings,report,finalReport.goals.length));
+        finalReport.goals.push(parseGoalsReport(settings,dashboard,report,finalReport.goals.length));
         break;
       case 'topPages':
-        finalReport.topPages.push(parseTopPagesReport(settings,report,finalReport.topPages.length));
+        finalReport.topPages.push(parseTopPagesReport(settings,dashboard,report,finalReport.topPages.length));
         break;
       case 'referrals':
-        finalReport.referrals.push(parseReferralsReport(settings,report,finalReport.referrals.length));
+        finalReport.referrals.push(parseReferralsReport(settings,dashboard,report,finalReport.referrals.length));
         break;
       case 'overallMetrics':
-        finalReport.overallMetrics.push(parseOverallMetricsReport(settings,report,finalReport.overallMetrics.length));
+        finalReport.overallMetrics.push(parseOverallMetricsReport(settings,dashboard,report,finalReport.overallMetrics.length));
         break;
     }
   });
   done(null,finalReport);
 }
 
-function executeRequests(settings,requests,done) {
+function executeRequests(settings,dashboard,requests,done) {
   async.series(
     segmentArrays(requests).map(function(requestSet) {
       return function(next) {
@@ -112,11 +109,11 @@ function segmentArrays(array) {
   return segmented;
 }
 
-function buildRequests(settings) {
+function buildRequests(settings,dashboard) {
   const reportTypes = [];
   const reportRequests = [];
 
-  settings._.dashboard.elements.events.forEach(function(event) {
+  dashboard.elements.events.forEach(function(event) {
     reportTypes.push('events');
     reportRequests.push({
       'metrics': [
@@ -160,7 +157,7 @@ function buildRequests(settings) {
     })
   });
 
-  settings._.dashboard.elements.pages.forEach(function(page) {
+  dashboard.elements.pages.forEach(function(page) {
     reportTypes.push('pages');
     const urlObject = url.parse(page.url);
     if (urlObject) {
@@ -205,7 +202,7 @@ function buildRequests(settings) {
     }
   });
 
-  settings._.dashboard.elements.goals.forEach(function(goal) {
+  dashboard.elements.goals.forEach(function(goal) {
     reportTypes.push('goals');
     reportRequests.push({
       'metrics': [
@@ -216,7 +213,7 @@ function buildRequests(settings) {
     });
   });
 
-  if (settings._.dashboard.elements.topPages) {
+  if (dashboard.elements.topPages) {
     reportTypes.push('topPages');
     reportRequests.push({
       'metrics': [
@@ -246,7 +243,7 @@ function buildRequests(settings) {
     });
   }
 
-  if (settings._.dashboard.elements.referrals) {
+  if (dashboard.elements.referrals) {
     reportTypes.push('referrals');
     reportRequests.push({
       'metrics': [
@@ -270,7 +267,7 @@ function buildRequests(settings) {
     });
   }
 
-  if (settings._.dashboard.elements.overallMetrics) {
+  if (dashboard.elements.overallMetrics) {
     reportTypes.push('overallMetrics');
     reportRequests.push({
       'metrics': [
@@ -289,9 +286,9 @@ function buildRequests(settings) {
 
   const now = new Date();
   reportRequests.forEach(function(request) {
-    request.viewId = settings._.dashboard.googleAccount.profile;
+    request.viewId = dashboard.googleAccount.profile;
     request.dateRanges = {
-      'startDate': formatDate(new Date(now.getTime() - settings._.dashboard.range)),
+      'startDate': formatDate(new Date(now.getTime() - dashboard.range)),
       'endDate': formatDate(now)
     };
     request.samplingLevel = 'LARGE';
@@ -317,9 +314,9 @@ function formatDate(dateObj) {
   return [dateObj.getFullYear(),prependZero(dateObj.getMonth()+1),prependZero(dateObj.getDate())].join('-');
 }
 
-function parseEventReport(settings,report,offset) {
+function parseEventReport(settings,dashboard,report,offset) {
   // console.log(JSON.stringify(report.data.rows,null,'  '))
-  const config = settings._.dashboard.elements.events[offset];
+  const config = dashboard.elements.events[offset];
   if (report.data.rows.length > 0) {
     const total = report.data.rows.reduce(function(accum,row) {
       if ((config.category && config.category != row.dimensions[0])
@@ -342,8 +339,8 @@ function parseEventReport(settings,report,offset) {
   }
 }
 
-function parsePagesReport(settings,report,offset) {
-  const config = settings._.dashboard.elements.pages[offset];
+function parsePagesReport(settings,dashboard,report,offset) {
+  const config = dashboard.elements.pages[offset];
   if (report.data.rows.length == 0) {
     return {
       'name': config.name,
@@ -371,8 +368,8 @@ function parsePagesReport(settings,report,offset) {
   }
 }
 
-function parseGoalsReport(settings,report,offset) {
-  const config = settings._.dashboard.elements.goals[offset];
+function parseGoalsReport(settings,dashboard,report,offset) {
+  const config = dashboard.elements.goals[offset];
   if (report.data.totals) {
     return {
       'name': config.name,
@@ -383,7 +380,7 @@ function parseGoalsReport(settings,report,offset) {
   }
 }
 
-function parseTopPagesReport(settings,report,offset) {
+function parseTopPagesReport(settings,dashboard,report,offset) {
   return report.data.rows.map(function(row) {
     return {
       'name': row.dimensions[2],
@@ -393,7 +390,7 @@ function parseTopPagesReport(settings,report,offset) {
   });
 }
 
-function parseReferralsReport(settings,report,offset) {
+function parseReferralsReport(settings,dashboard,report,offset) {
   return report.data.rows.map(function(row) {
     return {
       'referrer': row.dimensions[0],
@@ -402,7 +399,7 @@ function parseReferralsReport(settings,report,offset) {
   });
 }
 
-function parseOverallMetricsReport(settings,report,offset) {
+function parseOverallMetricsReport(settings,dashboard,report,offset) {
   if (report.data.totals) {
     return {
       'hits': parseInt(report.data.totals[0].values[0]),

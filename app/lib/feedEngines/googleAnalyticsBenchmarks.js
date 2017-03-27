@@ -3,9 +3,6 @@ const async = require('async');
 const url = require('url');
 
 module.exports = {
-  'init': function(settings,app,done) {
-    done();
-  },
   'run': function(settings,urls,gaProfile,startDate,endDate,done) {
     if (settings._.google && settings._.google.accessToken) {
       executeRequest([[],[]],null,settings,urls,gaProfile,startDate,endDate,function(err,responseBodies) {

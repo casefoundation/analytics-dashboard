@@ -8,7 +8,9 @@ const app = express();
 if (process.env.USERNAME && process.env.PASSWORD) {
   app.use(basicAuth(process.env.USERNAME, process.env.PASSWORD));
 }
-app.use(logger('combined'));
+if (!process.env.LOADED_MOCHA_OPTS) {
+  app.use(logger('combined'));
+}
 app.use(routes.google.refreshToken);
 app.use(bodyParser.json());
 app.use(express.static('./dist'))
@@ -17,14 +19,19 @@ app.get('/api/auth/googleanalytics/start',routes.google.startGoogleAuth);
 app.get('/api/auth/googleanalytics/done',routes.google.finishGoogleAuth);
 app.get('/api/auth/googleanalytics/check',routes.google.checkGoogle);
 app.get('/api/googleaprofiles',routes.google.googleProfiles);
+
 app.get('/api/feed',routes.feeds.getFeeds);
 app.get('/api/feed/:id',routes.feeds.getFeed);
 app.post('/api/feed',routes.feeds.saveFeed);
 app.put('/api/feed/:id',routes.feeds.saveFeed);
 app.delete('/api/feed/:id',routes.feeds.deleteFeed);
 app.get('/api/feed/:id/report',routes.feeds.runFeedReport);
-app.get('/api/dashboard',routes.dashboard.runReport);
-app.get('/api/dashboard/settings',routes.dashboard.getSettings);
-app.post('/api/dashboard/settings',routes.dashboard.updateSettings);
+
+app.get('/api/dashboard',routes.dashboards.getDashboards);
+app.get('/api/dashboard/:id',routes.dashboards.getDashboard);
+app.post('/api/dashboard',routes.dashboards.saveDashboard);
+app.put('/api/dashboard/:id',routes.dashboards.saveDashboard);
+app.delete('/api/dashboard/:id',routes.dashboards.deleteDashboard);
+app.get('/api/dashboard/:id/report',routes.dashboards.runDashboardReport);
 
 module.exports = app;

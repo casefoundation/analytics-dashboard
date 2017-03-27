@@ -1,5 +1,5 @@
 const async = require('async');
-const reporters = require('./reporters');
+const feedEngines = require('./feedEngines');
 const FeedParser = require('feedparser');
 const request = require('request');
 const url = require('url');
@@ -45,7 +45,7 @@ exports.runReport = function(settings,feedUrl,gaProfile,nPosts,nDays,done) {
       dateBounds.start = new Date(dateBounds.start.getTime() - (nDays * OneDay));
       dateBounds.end = new Date(dateBounds.end.getTime() + (nDays * OneDay));
       const urls = convertFeedToUrls(feed);
-      reporters.googleAnalyticsBenchmarks.run(settings,urls,gaProfile,dateBounds.start,dateBounds.end,function(err,report) {
+      feedEngines.googleAnalyticsBenchmarks.run(settings,urls,gaProfile,dateBounds.start,dateBounds.end,function(err,report) {
         next(err,feed,report);
       });
     },

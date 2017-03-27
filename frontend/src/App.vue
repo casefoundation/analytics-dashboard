@@ -36,6 +36,7 @@ export default {
   },
   mounted: function () {
     this.$store.dispatch('LOAD_FEED_LIST')
+    this.$store.dispatch('LOAD_DASHBOARD_LIST')
     axios.get('/api/auth/googleanalytics/check').then((response) => {
       if (!response.data.loggedIn) {
         this.showModal = true

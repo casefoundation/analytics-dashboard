@@ -9,8 +9,13 @@
             <div class="panel-heading">General Settings</div>
             <div class="panel-body">
               <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" v-model="dashboardName" class="form-control" required />
+              </div>
+
+              <div class="form-group">
                 <label for="days">Days</label>
-                <input type="text" id="days" name="days" v-model="dashboardDays" class="form-control" required />
+                <input type="number" id="days" name="days" v-model="dashboardDays" class="form-control" required />
                 <span class="help-block">Number of previous days to include in numbers.</span>
               </div>
 
@@ -157,7 +162,7 @@
       </div>
       <div class="row">
         <div class="col-sm-6 text-left">
-          <button v-on:click.stop.prevent="deleteFeed" class="btn btn-danger">Delete</button>
+          <button v-on:click.stop.prevent="deleteDashboard" class="btn btn-danger">Delete</button>
         </div>
         <div class="col-sm-6 text-right">
           <button v-on:click.stop.prevent="cancelSave" class="btn btn-default">Cancel</button>
@@ -172,43 +177,43 @@
 export default {
   name: 'dashboardSettings',
   methods: {
-    // deleteFeed () {
-    //   if (window.confirm('Are you sure you want to delete this feed?')) {
-    //     this.$store.dispatch('DELETE_CURRENT_FEED').then(() => {
-    //       this.$router.push('/')
-    //     }, (err) => {
-    //       window.alert('A server-side error has occured. Please report this issue.')
-    //       console.error(err)
-    //     })
-    //   }
-    // },
-    // save () {
-    //   this.$store.dispatch('UPDATE_CURRENT_FEED').then(() => {
-    //     this.$router.push('/feed/' + this.$store.state.currentFeedId)
-    //   }, (err) => {
-    //     window.alert('A server-side error has occured. Please report this issue.')
-    //     console.error(err)
-    //   })
-    // },
-    // cancelSave () {
-    //   this.$router.push('/feed/' + this.$store.state.currentFeedId)
-    // },
+    deleteDashboard () {
+      if (window.confirm('Are you sure you want to delete this dashboard?')) {
+        this.$store.dispatch('DELETE_CURRENT_DASHBOARD').then(() => {
+          this.$router.push('/')
+        }, (err) => {
+          window.alert('A server-side error has occured. Please report this issue.')
+          console.error(err)
+        })
+      }
+    },
+    save () {
+      this.$store.dispatch('UPDATE_CURRENT_DASHBOARD').then(() => {
+        this.$router.push('/dashboard/' + this.$store.state.currentDashboardId)
+      }, (err) => {
+        window.alert('A server-side error has occured. Please report this issue.')
+        console.error(err)
+      })
+    },
+    cancelSave () {
+      this.$router.push('/dashboard/' + this.$store.state.currentDashboardId)
+    },
     loadDashboard () {
-      this.$store.dispatch('LOAD_DASHBOARD_SETTINGS', { })
-      this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.dashboardSettings ? this.$store.getters.dashboardSettings.googleAccount : {})
+      this.$store.dispatch('SET_CURRENT_DASHBOARD', { id: this.$route.params.id })
+      this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().googleAccount : {})
     },
     updateListProperty (type, index, property, value) {
       if (value && value.trim().length === 0) {
         value = null
       }
-      const list = this.$store.getters.dashboardSettings.elements[type]
+      const list = this.$store.getters.currentDashboard().elements[type]
       list[index][property] = value
       const update = {}
       update[type] = list
-      this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', { elements: update })
+      this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', { elements: update })
     },
     addListItem (type) {
-      const list = this.$store.getters.dashboardSettings.elements[type]
+      const list = this.$store.getters.currentDashboard().elements[type]
       switch (type) {
         case 'events':
           list.push({
@@ -233,61 +238,68 @@ export default {
       }
       const update = {}
       update[type] = list
-      this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', { elements: update })
+      this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', { elements: update })
     },
     removeListItem (type, index) {
-      const list = this.$store.getters.dashboardSettings.elements[type]
+      const list = this.$store.getters.currentDashboard().elements[type]
       list.splice(index, 1)
       const update = {}
       update[type] = list
-      this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', { elements: update })
+      this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', { elements: update })
     }
   },
   computed: {
     googleAccounts () {
       return this.$store.getters.googleAccounts
     },
-    dashboardDays: {
+    dashboardName: {
       get () {
-        return this.$store.getters.dashboardSettings ? this.$store.getters.dashboardSettings.range / (1000 * 60 * 60 * 24) : null
+        return this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().name : null
       },
       set (value) {
-        this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', { range: value * (1000 * 60 * 60 * 24) })
+        this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', { name: value })
       }
     },
-    // TODO: make this work
-    dashboardOverallMetrics: {
+    dashboardDays: {
       get () {
-        return this.$store.getters.dashboardSettings ? this.$store.getters.dashboardSettings.elements.overallMetrics : {}
+        return this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().range / (1000 * 60 * 60 * 24) : null
       },
       set (value) {
-        this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', { elements: { overallMetrics: value } })
+        this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', { range: value * (1000 * 60 * 60 * 24) })
+      }
+    },
+    dashboardOverallMetrics: {
+      get () {
+        return this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().elements.overallMetrics : {}
+      },
+      set (value) {
+        this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', { elements: { overallMetrics: value } })
       }
     },
     dashboardTopPages: {
       get () {
-        return this.$store.getters.dashboardSettings ? this.$store.getters.dashboardSettings.elements.topPages : {}
+        return this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().elements.topPages : {}
       },
       set (value) {
-        this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', { elements: { topPages: value } })
+        this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', { elements: { topPages: value } })
       }
     },
     dashboardReferrals: {
       get () {
-        return this.$store.getters.dashboardSettings ? this.$store.getters.dashboardSettings.elements.referrals : {}
+        return this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().elements.referrals : {}
       },
       set (value) {
-        this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', { elements: { referrals: value } })
+        this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', { elements: { referrals: value } })
       }
     },
     googleAccount: {
       get () {
-        return this.$store.getters.dashboardSettings ? this.$store.getters.dashboardSettings.googleAccount.account : null
+        return this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().googleAccount.account : null
       },
       set (value) {
-        if (this.$store.getters.dashboardSettings) {
+        if (this.$store.getters.currentDashboard) {
           if (value) {
-            this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', {
+            this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', {
               googleAccount: {
                 account: value,
                 property: null,
@@ -295,40 +307,40 @@ export default {
               }
             })
           }
-          this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.dashboardSettings.googleAccount)
+          this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentDashboard().googleAccount)
         }
       }
     },
     googleProperty: {
       get () {
-        return this.$store.getters.dashboardSettings ? this.$store.getters.dashboardSettings.googleAccount.property : null
+        return this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().googleAccount.property : null
       },
       set (value) {
-        if (this.$store.getters.dashboardSettings) {
+        if (this.$store.getters.currentDashboard) {
           if (value) {
-            this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', {
+            this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', {
               googleAccount: {
-                account: this.$store.getters.dashboardSettings.googleAccount.account,
+                account: this.$store.getters.currentDashboard().googleAccount.account,
                 property: value,
                 profile: null
               }
             })
           }
-          this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.dashboardSettings.googleAccount)
+          this.$store.dispatch('LOAD_GOOGLE_ACCOUNTS', this.$store.getters.currentDashboard().googleAccount)
         }
       }
     },
     googleProfile: {
       get () {
-        return this.$store.getters.dashboardSettings ? this.$store.getters.dashboardSettings.googleAccount.profile : null
+        return this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().googleAccount.profile : null
       },
       set (value) {
-        if (this.$store.getters.dashboardSettings) {
+        if (this.$store.getters.currentDashboard) {
           if (value) {
-            this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', {
+            this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', {
               googleAccount: {
-                account: this.$store.getters.dashboardSettings.googleAccount.account,
-                property: this.$store.getters.dashboardSettings.googleAccount.property,
+                account: this.$store.getters.currentDashboard().googleAccount.account,
+                property: this.$store.getters.currentDashboard().googleAccount.property,
                 profile: value
               }
             })
@@ -338,26 +350,26 @@ export default {
     },
     dashboardEvents: {
       get () {
-        return this.$store.getters.dashboardSettings ? this.$store.getters.dashboardSettings.elements.events : {}
+        return this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().elements.events : {}
       },
       set (value) {
-        this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', { elements: { events: value } })
+        this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', { elements: { events: value } })
       }
     },
     dashboardPages: {
       get () {
-        return this.$store.getters.dashboardSettings ? this.$store.getters.dashboardSettings.elements.pages : {}
+        return this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().elements.pages : {}
       },
       set (value) {
-        this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', { elements: { pages: value } })
+        this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', { elements: { pages: value } })
       }
     },
     dashboardGoals: {
       get () {
-        return this.$store.getters.dashboardSettings ? this.$store.getters.dashboardSettings.elements.goals : {}
+        return this.$store.getters.currentDashboard() ? this.$store.getters.currentDashboard().elements.goals : {}
       },
       set (value) {
-        this.$store.dispatch('UPDATE_DASHBOARD_DETAILS', { elements: { goals: value } })
+        this.$store.dispatch('UPDATE_CURRENT_DASHBOARD_DETAILS', { elements: { goals: value } })
       }
     }
   },

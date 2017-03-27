@@ -1,5 +1,5 @@
 const settings = require('remote-settings');
-const reporter = require('../lib/reporter');
+const feedEngine = require('../lib/feedEngine');
 const uuid = require('node-uuid');
 const Joi = require('joi');
 
@@ -106,7 +106,7 @@ exports.runFeedReport = function(req,res,next) {
       return feed.id === req.params.id;
     });
     if (feed) {
-      reporter.runReport(settings,feed.url,feed.googleAccount.profile,feed.nPosts,feed.nDays,function(err,report) {
+      feedEngine.runReport(settings,feed.url,feed.googleAccount.profile,feed.nPosts,feed.nDays,function(err,report) {
         if (err) {
           next(err);
         } else {
