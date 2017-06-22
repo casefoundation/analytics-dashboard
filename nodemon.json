@@ -1,7 +1,0 @@
-{
-  "ignore": [
-    "settings.json",
-    "testData.json",
-    "frontend/*"
-  ]
-}

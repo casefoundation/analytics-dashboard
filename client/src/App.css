@@ -1,0 +1,17 @@
+body {
+  padding-top: 1em;
+}
+
+.callout {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  background: #ddd;
+  margin-bottom: 0.5em;
+  text-align: center;
+}
+
+.callout-value {
+  font-size: 3em;
+  font-weight: bold;
+  line-height: 1em;
+}
