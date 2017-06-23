@@ -13,26 +13,24 @@ const WriteTestData = false;
 
 class FeedBenchmarks extends GoogleDataSource {
   query(range) {
-    return new Promise((resolve,reject) => {
-      this.getFeedItems()
-        .then((feed) => {
-          this.sortFeed(feed);
-          const newFeed = this.filterReportFeed(feed);
-          return this.fetchAnalytics(newFeed);
-        })
-        .then(({feed,report}) => {
-          resolve([
-            {
-              'data': this.analyzeReport(feed,report),
-              'type': 'sparklines',
-              'label': 'Post Performance',
-              'primary': 'Actual',
-              'secondary': 'Average'
-            }
-          ]);
-        })
-        .catch(reject)
-    });
+    return this.getFeedItems()
+      .then((feed) => {
+        this.sortFeed(feed);
+        const newFeed = this.filterReportFeed(feed);
+        return this.fetchAnalytics(newFeed);
+      })
+      .then(({feed,report}) => {
+        return [
+          {
+            'data': this.analyzeReport(feed,report),
+            'type': 'sparklines',
+            'label': 'Post Performance',
+            'primary': 'Actual',
+            'secondary': 'Average',
+            'xAxis': 'Date'
+          }
+        ];
+      })
   }
 
   getFeedItems() {
@@ -105,21 +103,17 @@ class FeedBenchmarks extends GoogleDataSource {
   }
 
   fetchAnalytics(feed) {
-    return new Promise((resolve,reject) => {
-      const dateBounds = this.getDateBounds(feed);
-      dateBounds.start = new Date(dateBounds.start.getTime() - (this.config.nDays * OneDay));
-      dateBounds.end = new Date(dateBounds.end.getTime() + (this.config.nDays * OneDay));
-      const urls = this.convertFeedToUrls(feed);
-      //TODO
-      this.executeGoogleRequest([[],[]],null,dateBounds,urls)
-        .then((responseBodies) => {
-          resolve({
-            feed,
-            'report': this.processGoogleResponseBodies(urls,responseBodies)
-          })
-        })
-        .catch(reject);
-    });
+    const dateBounds = this.getDateBounds(feed);
+    dateBounds.start = new Date(dateBounds.start.getTime() - (this.config.nDays * OneDay));
+    dateBounds.end = new Date(dateBounds.end.getTime() + (this.config.nDays * OneDay));
+    const urls = this.convertFeedToUrls(feed);
+    return this.executeGoogleRequest([[],[]],null,dateBounds,urls)
+      .then((responseBodies) => {
+        return {
+          feed,
+          'report': this.processGoogleResponseBodies(urls,responseBodies)
+        }
+      })
   }
 
   executeGoogleRequest(previousResponseBodies,pageTokens,dateBounds,urls) {
@@ -257,19 +251,21 @@ class FeedBenchmarks extends GoogleDataSource {
         'endDate': new Date(Math.min(Date.parse(this.formatDate(reportPost.pubdate)) + (this.config.nDays * OneDay),new Date().getTime())),
         'data': data
       };
+
       reports.push(thisReport);
 
       const computePosts = feed.slice(i+1,i+this.config.nPosts);
       computePosts.forEach((computePost,j) => {
         const baseDate = new Date(Date.parse(this.formatDate(computePost.pubdate)));
         for(var l = 0; l < this.config.nDays; l++) {
+          const stamp = baseDate.getTime() + (l * OneDay);
           if (!data[l]) {
             data[l] = {
               'Average': [],
-              'Actual': 0
+              'Actual': 0,
+              'Date': new Date(stamp).toDateString()
             };
           }
-          const stamp = baseDate.getTime() + (l * OneDay);
           if (report[computePost.link] && report[computePost.link][stamp] && report[computePost.link][stamp].metrics.pageviews) {
             data[l].Average.push(report[computePost.link][stamp].metrics.pageviews);
           }

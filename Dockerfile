@@ -3,11 +3,10 @@ FROM node:boron
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-COPY package.json /usr/src/app/
+# COPY server/package.json /usr/src/app/
+
+COPY ./server /usr/src/app
+
 RUN npm install
 
-COPY . /usr/src/app
-
-RUN npm run build
-
-CMD ["node", "app/bin/www.js"]
+CMD ["node", "index.js"]

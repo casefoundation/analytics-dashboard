@@ -12,7 +12,7 @@ class Widgets extends Component {
   }
 
   getWidgetWidthNumber(widget) {
-    return 6;
+    return 4;
   }
 
   render() {

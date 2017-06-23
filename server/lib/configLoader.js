@@ -4,13 +4,13 @@ const async = require('async');
 const datasources = require('../datasources');
 
 exports.load = () => {
-  return new Promise((resolve,reject) => {
-    const configPath = './config';
-    fs.readdir(configPath)
-      .then((contents) => {
-        const configFiles = contents.filter((file) => {
-          return path.extname(file) === '.json';
-        });
+  const configPath = './config';
+  return fs.readdir(configPath)
+    .then((contents) => {
+      const configFiles = contents.filter((file) => {
+        return path.extname(file) === '.json';
+      });
+      return new Promise((resolve,reject) => {
         async.parallel(
           configFiles.map((configFile) => {
             return (next) => {
@@ -31,13 +31,12 @@ exports.load = () => {
           }),
           (err,configs) => {
             if (err) {
-              reject(err);
+              reject(err)
             } else {
               resolve(configs);
             }
           }
         )
       })
-      .catch(reject);
-  })
+    })
 }

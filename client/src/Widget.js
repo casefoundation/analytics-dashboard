@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Line, LineChart} from 'recharts';
+import {ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Line, LineChart} from 'recharts';
 import _ from 'lodash';
 
 const pageLength = 10;
@@ -7,6 +7,7 @@ const pageLength = 10;
 class Widget extends Component {
   constructor(props) {
     super(props);
+    this.formatNumber = this.formatNumber.bind(this);
     this.state = {
       'page': 0
     }
@@ -29,6 +30,10 @@ class Widget extends Component {
     )
   }
 
+  formatNumber(val) {
+    return (isNaN(val) ? val : (this.props.data.percent ? (val*100).toLocaleString()+'%' : val.toLocaleString()));
+  }
+
   render() {
     switch(this.props.data.type) {
       case 'table':
@@ -47,7 +52,7 @@ class Widget extends Component {
                     <tr key={i}>
                       { headers.map((header,j) => (
                         <td key={j}>
-                          {isNaN(row[header]) ? row[header] : row[header].toLocaleString()}
+                          {this.formatNumber(row[header])}
                         </td>
                       )) }
                     </tr>
@@ -67,7 +72,7 @@ class Widget extends Component {
                   <div key={i} className={columns}>
                     <div className="callout">
                       <div className="callout-value">
-                        {isNaN(row[this.props.data.value]) ? row[this.props.data.value] : row[this.props.data.value].toLocaleString()}
+                        {this.formatNumber(row[this.props.data.value])}
                       </div>
                       <div className="callout-label">
                         <span className="label label-default">
@@ -88,10 +93,9 @@ class Widget extends Component {
           <div>
             <ResponsiveContainer width="100%" height={450}>
               <BarChart data={this.props.data.data.slice(pageStart,pageEnd)} margin={{top: 0, right: 0, left: 20, bottom: 0}} layout="vertical">
-                <XAxis type="number" tickFormatter={(val) => isNaN(val) ? val : val.toLocaleString()} />
+                <XAxis type="number" tickFormatter={this.formatNumber} />
                 <YAxis type="category" dataKey={this.props.data.key} width={200} tickFormatter={(val) => (val.length > 50 ? val.substring(0,50)+'...' : val)} />
-                <CartesianGrid strokeDasharray="3 3"/>
-                <Tooltip formatter={(val) => isNaN(val) ? val : val.toLocaleString()} />
+                <Tooltip formatter={this.formatNumber} />
                 <Bar dataKey={this.props.data.value} fill="#BBB" barSize={20} />
               </BarChart>
             </ResponsiveContainer>
@@ -105,16 +109,19 @@ class Widget extends Component {
               this.props.data.data.map((row,i) => {
                 return (
                   <div key={i} className="col-md-4">
-                    <p style={{'whiteSpace':'nowrap','overflow':'hidden','textOverflow':'ellipsis'}}>
-                      <a href={row.url} target="_blank" rel="noopener noreferrer">{row.name}</a>
-                    </p>
-                    <ResponsiveContainer width="100%" height={100}>
-                      <LineChart data={row.data}>
-                        <Line dot={false} type='monotone' dataKey={this.props.data.secondary} stroke='#CCC' strokeWidth={1} />
-                        <Line dot={false} type='monotone' dataKey={this.props.data.primary} stroke='#000' strokeWidth={1} />
-                        <Tooltip formatter={(val) => isNaN(val) ? val : val.toLocaleString()} />
-                      </LineChart>
-                    </ResponsiveContainer>
+                    <div style={{'background':'#eee','padding':5,'marginBottom':10}}>
+                      <div style={{'whiteSpace':'nowrap','overflow':'hidden','textOverflow':'ellipsis'}}>
+                        <a href={row.url} target="_blank" rel="noopener noreferrer">{row.name}</a>
+                      </div>
+                      <ResponsiveContainer width="100%" height={100}>
+                        <LineChart data={row.data}>
+                          <XAxis dataKey={this.props.data.xAxis} hide={true} label="Date" tick={false} tickLine={false} />
+                          <Line dot={false} type='monotone' dataKey={this.props.data.secondary} stroke='#CCC' strokeWidth={1} />
+                          <Line dot={false} type='monotone' dataKey={this.props.data.primary} stroke='#000' strokeWidth={1} />
+                          <Tooltip formatter={this.formatNumber} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
                 );
               })
