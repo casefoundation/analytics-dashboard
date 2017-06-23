@@ -1,0 +1,8 @@
+{
+  "klass": "FeedBenchmarks", /* DO NOT CHANGE */
+  "auth": /* JSON Auth Object */,
+  "profile": "/* GA profile ID */",
+  "feedUrl": "/* Website RSS URL */"
+  "nPosts": /* Number of posts to pull from feed (feed must expose at least twice this number of averaging calculation to work properly) */,
+  "nDays": /* Number of days to query in GA *,
+}

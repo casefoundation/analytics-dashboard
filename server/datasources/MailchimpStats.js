@@ -51,11 +51,15 @@ class MailchimpStats {
           'data': campaigns.map((campaign) => {
             return {
               'Name': campaign.settings.title,
-              'Open Rate': campaign.report_summary.open_rate
+              'Open Rate': campaign.report_summary.open_rate,
+              'Click Rate': campaign.report_summary.click_rate
             }
           }),
           'key': 'Name',
-          'value': 'Open Rate',
+          'value': [
+            'Open Rate',
+            'Click Rate'
+          ],
           'percent': true
         })
       })

@@ -1,0 +1,7 @@
+{
+  "klass": "MailchimpStats", /* DO NOT CHANGE */
+  "apiKey": "/* Mailchimp API Key */",
+  "lists": [
+    "/* Mailchimp list ID */"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "klass": "GoogleAnalytics", /* DO NOT CHANGE */
+  "auth": {/* JSON Auth Object */},
+  "profile": "/* GA profile ID */",
+  "elements": {
+    "events": [
+      {
+        "name": "/* Display ame for front end */",
+        "category": "/* GA event category or null */",
+        "label": "/* GA event label or null */",
+        "action": "/* GA event action or null */"
+      }
+    ],
+    "pages": [
+      {
+        "name": "/* Display ame for front end */",
+        "url": "http://example.com/page"
+      }
+    ],
+    "goals": [
+      {
+        "name": "/* Display ame for front end */",
+        "number": /* GA goal number */
+      }
+    ],
+    "topPages": /* boolean */,
+    "referrals": /* boolean */,
+    "overallMetrics": /* boolean */
+  }
+}
