@@ -1,0 +1,25 @@
+.callout {
+  padding-top: 1.5em;
+  padding-bottom: 1.5em;
+  background: #0367b0;
+  margin-bottom: 1em;
+  text-align: center;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+
+  .callout-value {
+    font-size: 4em;
+    font-weight: bold;
+    line-height: 1em;
+    color: white;
+  }
+
+  .callout-label {
+    margin-top: 0.25em;
+  }
+}
+
+.loading {
+  opacity: 0.5;
+}

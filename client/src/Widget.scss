@@ -1,0 +1,11 @@
+.sparkline {
+  border-bottom: solid 1px #AAA;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.sparkline-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

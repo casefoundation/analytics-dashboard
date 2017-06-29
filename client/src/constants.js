@@ -9,3 +9,14 @@ export const ACTION = {
 };
 
 export const API_URL = '';
+
+export const COLORS = {
+  BLUE: '#0367b0',
+  GRADIENT_BLUE: [
+    '#0367b0',
+    '#4e7cbd',
+    '#7794cb',
+    '#9fb2db'
+  ],
+  GRAY: '#ccc'
+}

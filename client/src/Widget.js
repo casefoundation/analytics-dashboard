@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import {ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Line, LineChart} from 'recharts';
 import _ from 'lodash';
+import {
+  COLORS
+} from './constants';
+import './Widget.scss'
 
 const pageLength = 10;
 
@@ -75,7 +79,7 @@ class Widget extends Component {
                         {this.formatNumber(row[this.props.data.value])}
                       </div>
                       <div className="callout-label">
-                        <span className="label label-default">
+                        <span className="label">
                           {row[this.props.data.key]}
                         </span>
                       </div>
@@ -96,7 +100,7 @@ class Widget extends Component {
                 <XAxis type="number" tickFormatter={this.formatNumber} />
                 <YAxis type="category" dataKey={this.props.data.key} width={200} tickFormatter={(val) => (val.length > 50 ? val.substring(0,50)+'...' : val)} />
                 <Tooltip formatter={this.formatNumber} />
-                { this.props.data.value.map ? this.props.data.value.map((value,i) => (<Bar key={i} dataKey={value} fill="#BBB" barSize={20} />)) : (<Bar dataKey={this.props.data.value} fill="#BBB" barSize={20} />) }
+                { this.props.data.value.map ? this.props.data.value.map((value,i) => (<Bar key={i} dataKey={value} fill={COLORS.GRADIENT_BLUE[i]} barSize={20} />)) : (<Bar dataKey={this.props.data.value} fill={COLORS.BLUE} barSize={20} />) }
               </BarChart>
             </ResponsiveContainer>
             { this.renderPaging() }
@@ -108,16 +112,16 @@ class Widget extends Component {
             {
               this.props.data.data.map((row,i) => {
                 return (
-                  <div key={i} className="col-md-4">
-                    <div style={{'background':'#eee','padding':5,'marginBottom':10}}>
-                      <div style={{'whiteSpace':'nowrap','overflow':'hidden','textOverflow':'ellipsis'}}>
+                  <div key={i} className="col-md-6">
+                    <div className="sparkline">
+                      <div className="sparkline-title">
                         <a href={row.url} target="_blank" rel="noopener noreferrer">{row.name}</a>
                       </div>
                       <ResponsiveContainer width="100%" height={100}>
                         <LineChart data={row.data}>
-                          <XAxis dataKey={this.props.data.xAxis} hide={true} label="Date" tick={false} tickLine={false} />
-                          <Line dot={false} type='monotone' dataKey={this.props.data.secondary} stroke='#CCC' strokeWidth={1} />
-                          <Line dot={false} type='monotone' dataKey={this.props.data.primary} stroke='#000' strokeWidth={1} />
+                          <XAxis dataKey={this.props.data.xAxis} hide={true} label="Date" tick={false} tickLine={false} axisLine={false} />
+                          <Line dot={false} type='monotone' dataKey={this.props.data.secondary} stroke={COLORS.GRAY} strokeWidth={1} />
+                          <Line dot={false} type='monotone' dataKey={this.props.data.primary} stroke={COLORS.GRADIENT_BLUE[0]} strokeWidth={1} />
                           <Tooltip formatter={this.formatNumber} />
                         </LineChart>
                       </ResponsiveContainer>
