@@ -17,7 +17,7 @@ class App extends Component {
   }
 
   render() {
-    const datasourcesAsArray = _.toPairs(this.props.datasources.data).filter((datasource) => datasource[1].length > 0).map((datasource) => ({ 'name': datasource[0], 'data': datasource[1] }));
+    const datasourcesAsArray = _.toPairs(this.props.datasources.data).filter((datasource) => datasource[1].data.length > 0).map((datasource) => ({ 'name': datasource[0], 'data': datasource[1] }));
     return (
       <div className="container-fluid">
         <div className="row">
@@ -27,7 +27,7 @@ class App extends Component {
               <div className="panel-heading">Quick Stats</div>
               <div className="panel-body">
                 { datasourcesAsArray.map((datasource) => {
-                  return datasource.data.filter((data) => data.type === 'quickstat').map((data) => {
+                  return datasource.data.data.filter((data) => data.type === 'quickstat').map((data) => {
                     return (
                       <div className="callout">
                         <div className="callout-value">

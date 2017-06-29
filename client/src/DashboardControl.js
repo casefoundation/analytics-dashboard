@@ -48,9 +48,6 @@ class DashboardControl extends Component {
               ].map((range) => (<option key={range.time} value={range.time}>{range.label}</option>))
             }
           </select>
-          { this.props.datasources.loading ? (
-            <p>Loading ...</p>
-          ) : null }
         </div>
       </div>
     )

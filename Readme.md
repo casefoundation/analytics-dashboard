@@ -17,9 +17,17 @@ This datasource accesses the Google Analytics Reporting API and produces any of 
 5. Top referrers as a bar graph, named `referrals` in the config file
 6. Overall site metrics (hits, sessions, bounce rate), named `overallMetrics` in the config file
 
+#### API Access Setup
+
+To authorize this app to access a Google Analytics account, create a
+
 ### Feed-based Benchmarks
 
 This datasource parses an RSS feed and then queries Google Analytics for data on each URL in the feed (up to a specified limit.). Then, it builds a performance benchmark for each URL based on the URLs that came chronologically before it. This creates a widget on the front end that shows a performance sparkline for each URL overlaid on a benchmark for average post performance reference.
+
+#### API Access Setup
+
+To authorize this app to access a Google Analytics account, follow the setup instructions under _Google Analytics_ / _API Setup_.
 
 ### Mailchimp
 
@@ -28,6 +36,9 @@ This datasource queries the Mailchimp API and exposes the following widgets:
 1. List sizes, named `lists` in the config file
 2. Campaign performance
 
+#### API Access Setup
+
+To authorize this app to access a Mailchimp account, ...
 
 ## To Do:
 

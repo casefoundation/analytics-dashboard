@@ -8,27 +8,20 @@ import Widget from './Widget';
 class Widgets extends Component {
 
   getWidgetWidthClass(widget) {
-    return 'col-md-' + this.getWidgetWidthNumber(widget);
-  }
-
-  getWidgetWidthNumber(widget) {
-    return 4;
+    return 'col-lg-4 col-md-6 col-sm-12'
   }
 
   render() {
-    const datasourcesAsArray = _.toPairs(this.props.datasources.data).filter((datasource) => datasource[1].length > 0).map((datasource) => ({ 'name': datasource[0], 'data': datasource[1] }));
+    const datasourcesAsArray = _.toPairs(this.props.datasources.data).filter((datasource) => datasource[1].data.length > 0).map((datasource) => ({ 'name': datasource[0], 'data': datasource[1] }));
     const widgets = [];
     datasourcesAsArray.forEach((datasource) => {
-      datasource.data.filter((data) => Widgets.isWidgetType(data.type)).forEach((data) => {
+      datasource.data.data.filter((data) => Widgets.isWidgetType(data.type)).forEach((data) => {
         widgets.push({
           datasource,
           data
         });
       });
     });
-    widgets.sort((a,b) => {
-      return this.getWidgetWidthNumber(b) - this.getWidgetWidthNumber(a)
-    })
     return (
       <Masonry
         className="row"
@@ -36,9 +29,14 @@ class Widgets extends Component {
         {
           widgets.map((widget,i) => {
             return (
-              <div key={i} className={this.getWidgetWidthClass(widget)}>
+              <div key={i} className={[this.getWidgetWidthClass(widget),widget.datasource.data.loading ? 'loading' : null].join(' ')}>
                 <div className="panel panel-default">
-                  <div className="panel-heading">{widget.data.label}</div>
+                  <div className="panel-heading">
+                    {widget.data.label}
+                    { widget.datasource.data.loading ? (
+                      <span> (Loading)</span>
+                    ) : null }
+                  </div>
                   <div className="panel-body">
                     <Widget datasource={widget.datasource} data={widget.data} />
                   </div>

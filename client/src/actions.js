@@ -12,10 +12,6 @@ export const setQueryRange = (range) => {
 
 export const fetchDatasourceNames = () => {
   return (dispatch,getState) => {
-    dispatch({
-      'type': ACTION.DATASOURCE.LOADING,
-      'loading': true
-    });
     fetch(API_URL+'/api/datasource')
       .then((response) => response.json())
       .then((names) => {
@@ -46,6 +42,7 @@ export const fetchDatasourceData = (datasourceName) => {
   return (dispatch,getState) => {
     dispatch({
       'type': ACTION.DATASOURCE.LOADING,
+      'datasource': datasourceName,
       'loading': true
     });
     fetch(API_URL+'/api/datasource/' + datasourceName + '?range=' + encodeURIComponent(getState().datasources.range))
@@ -55,7 +52,10 @@ export const fetchDatasourceData = (datasourceName) => {
           'type': ACTION.DATASOURCE.SET_DATA,
           'data': {}
         }
-        action.data[datasourceName] = data;
+        action.data[datasourceName] = {
+          'loading': false,
+          data
+        };
         dispatch(action);
       })
       .catch((error) => {

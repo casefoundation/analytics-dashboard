@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "lodash": "^4.17.4",
+    "node-sass": "^4.5.3",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-masonry-component": "^5.0.7",
@@ -11,7 +12,8 @@
     "recharts": "^1.0.0-alpha.1",
     "redux": "^3.7.0",
     "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "sass-loader": "^6.0.6"
   },
   "devDependencies": {
     "react-scripts": "1.0.7"

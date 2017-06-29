@@ -96,7 +96,7 @@ class Widget extends Component {
                 <XAxis type="number" tickFormatter={this.formatNumber} />
                 <YAxis type="category" dataKey={this.props.data.key} width={200} tickFormatter={(val) => (val.length > 50 ? val.substring(0,50)+'...' : val)} />
                 <Tooltip formatter={this.formatNumber} />
-                { this.props.data.value.map ? this.props.data.value.map((value) => (<Bar dataKey={value} fill="#BBB" barSize={20} />)) : (<Bar dataKey={this.props.data.value} fill="#BBB" barSize={20} />) }
+                { this.props.data.value.map ? this.props.data.value.map((value,i) => (<Bar key={i} dataKey={value} fill="#BBB" barSize={20} />)) : (<Bar dataKey={this.props.data.value} fill="#BBB" barSize={20} />) }
               </BarChart>
             </ResponsiveContainer>
             { this.renderPaging() }
