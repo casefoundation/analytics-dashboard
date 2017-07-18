@@ -65,18 +65,18 @@ class GoogleAnalytics extends GoogleDataSource {
           'filters': [
             {
               'dimensionName': 'ga:eventCategory',
-              'operator': 'EXACT',
-              'expressions': [event.category]
+              'operator': (typeof event.category == 'object') ? 'IN_LIST' : 'EXACT',
+              'expressions': (typeof event.category == 'object') ? event.category : [event.category]
             },
             {
               'dimensionName': 'ga:eventLabel',
-              'operator': 'EXACT',
-              'expressions': [event.label]
+              'operator': (typeof event.action == 'object') ? 'IN_LIST' : 'EXACT',
+              'expressions': (typeof event.action == 'object') ? event.label : [event.label]
             },
             {
               'dimensionName': 'ga:eventAction',
-              'operator': 'EXACT',
-              'expressions': [event.action]
+              'operator': (typeof event.action == 'object') ? 'IN_LIST' : 'EXACT',
+              'expressions': (typeof event.action == 'object') ? event.action : [event.action]
             }
           ].filter((filter) => {
             return filter.expressions[0];
@@ -127,7 +127,7 @@ class GoogleAnalytics extends GoogleDataSource {
       reportRequests.push({
         'metrics': [
           {
-            'expression': 'ga:goal' + goal.number + 'Completions'
+            'expression': 'ga:goal' + goal.number + 'ConversionRate'
           }
         ]
       });
@@ -276,7 +276,7 @@ class GoogleAnalytics extends GoogleDataSource {
         'label': 'Goals',
         'data': intermediateReport.goals,
         'key': 'Name',
-        'value': 'Completions'
+        'value': 'Conversion Rate'
       })
     }
     if (intermediateReport.topPages && intermediateReport.topPages.length > 0) {
@@ -317,13 +317,7 @@ class GoogleAnalytics extends GoogleDataSource {
     const config = this.config.elements.events[offset];
     if (report.data.rows && report.data.rows.length > 0) {
       const total = report.data.rows.reduce(function(accum,row) {
-        if ((config.category && config.category != row.dimensions[0])
-            || (config.action && config.action != row.dimensions[1])
-            || (config.label && config.label != row.dimensions[2])) {
-          throw new Error('Event report mismatch: ' + [config.category+'/'+row.dimensions[0],config.action+'/'+row.dimensions[1],config.label+'/'+row.dimensions[2]].join(', '));
-        } else {
-          return accum + parseInt(row.metrics[0].values[0]);
-        }
+        return accum + parseInt(row.metrics[0].values[0]);
       },0);
       return {
         'Name': config.name,
@@ -364,7 +358,7 @@ class GoogleAnalytics extends GoogleDataSource {
     if (report.data.totals) {
       return {
         'Name': config.name,
-        'Completions': parseInt(report.data.totals[0].values[0])
+        'Conversion Rate': (Math.round(parseFloat(report.data.totals[0].values[0]) * 100) / 100) + '%'
       };
     } else {
       throw new Error('Unexpected number of goal report');

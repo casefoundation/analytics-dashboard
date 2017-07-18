@@ -16,7 +16,7 @@ class FeedBenchmarks extends FeedDataSource {
       {
         'data': this.analyzeReport(feed,report),
         'type': 'sparklines',
-        'label': 'Post Performance',
+        'label': 'Pageview Performance vs Rolling Average',
         'primary': 'Actual',
         'secondary': 'Average',
         'xAxis': 'Date'

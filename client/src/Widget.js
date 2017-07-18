@@ -67,29 +67,33 @@ class Widget extends Component {
           </table>
         )
       case 'callout':
-        const columns = 'col-md-' + Math.floor(12 / this.props.data.data.length);
         return (
-          <div className="row">
-            {
-              this.props.data.data.map((row,i) => {
-                return (
-                  <div key={i} className={columns}>
-                    <div className="callout">
-                      <div className="callout-value">
-                        {this.formatNumber(row[this.props.data.value])}
+          <div>
+            { _.chunk(this.props.data.data,2).map((row,i) => {
+              return (
+                <div className="row" key={i}>
+                  { row.map((item,j) => {
+                    const columns = 'col-md-' + Math.floor(12 / row.length);
+                    return (
+                      <div key={j} className={columns}>
+                        <div className="callout">
+                          <div className="callout-value">
+                            {this.formatNumber(item[this.props.data.value])}
+                          </div>
+                          <div className="callout-label">
+                            <span className="label">
+                              {item[this.props.data.key]}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="callout-label">
-                        <span className="label">
-                          {row[this.props.data.key]}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            }
+                    )
+                  })}
+                </div>
+              )
+            }) }
           </div>
-        )
+        );
       case 'barchart':
         const pageStart = (this.state.page * pageLength);
         const pageEnd = pageStart + pageLength;
