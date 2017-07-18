@@ -92,21 +92,13 @@ class GoogleAnalytics extends GoogleDataSource {
         reportRequests.push({
           'metrics': [
             {
-              'expression': 'ga:sessions'
+              'expression': 'ga:uniquePageviews'
             },
             {
-              'expression': 'ga:hits'
+              'expression': 'ga:pageviews'
             },
             {
-              'expression': 'ga:bounceRate'
-            }
-          ],
-          'dimensions': [
-            {
-              'name': 'ga:hostname'
-            },
-            {
-              'name': 'ga:pagePath'
+              'expression': 'ga:avgTimeOnPage'
             }
           ],
           'dimensionFilterClauses': {
@@ -146,7 +138,7 @@ class GoogleAnalytics extends GoogleDataSource {
       reportRequests.push({
         'metrics': [
           {
-            'expression': 'ga:hits'
+            'expression': 'ga:pageviews'
           }
         ],
         'dimensions': [
@@ -162,7 +154,7 @@ class GoogleAnalytics extends GoogleDataSource {
         ],
         'orderBys': [
           {
-            'fieldName': 'ga:hits',
+            'fieldName': 'ga:pageviews',
             'orderType': 'VALUE',
             'sortOrder': 'DESCENDING'
           }
@@ -176,7 +168,7 @@ class GoogleAnalytics extends GoogleDataSource {
       reportRequests.push({
         'metrics': [
           {
-            'expression': 'ga:hits'
+            'expression': 'ga:pageviews'
           }
         ],
         'dimensions': [
@@ -186,7 +178,7 @@ class GoogleAnalytics extends GoogleDataSource {
         ],
         'orderBys': [
           {
-            'fieldName': 'ga:hits',
+            'fieldName': 'ga:pageviews',
             'orderType': 'VALUE',
             'sortOrder': 'DESCENDING'
           }
@@ -200,13 +192,13 @@ class GoogleAnalytics extends GoogleDataSource {
       reportRequests.push({
         'metrics': [
           {
-            'expression': 'ga:hits'
+            'expression': 'ga:pageviews'
           },
           {
-            'expression': 'ga:sessions'
+            'expression': 'ga:uniquePageviews'
           },
           {
-            'expression': 'ga:bounceRate'
+            'expression': 'ga:avgTimeOnPage'
           },
           {
             'expression': 'ga:percentNewSessions'
@@ -294,7 +286,7 @@ class GoogleAnalytics extends GoogleDataSource {
           'label': 'Top Pages',
           'data': dataset,
           'key': 'Name',
-          'value': 'Hits'
+          'value': 'Views'
         });
       });
     }
@@ -305,7 +297,7 @@ class GoogleAnalytics extends GoogleDataSource {
           'label': 'Top Referrers',
           'data': dataset,
           'key': 'Referrer',
-          'value': 'Hits'
+          'value': 'Views'
         });
       });
     }
@@ -351,26 +343,19 @@ class GoogleAnalytics extends GoogleDataSource {
       return {
         'Name': config.name,
         'URL': config.url,
-        'Sessions': 0,
-        'Hits': 0,
-        'Bounce Rate': 0
+        'Views': 0,
+        'Unique Views': 0,
+        'Average Time on Page': 0
       };
-    } else if (report.data.rows.length == 1) {
-      const reportRow = report.data.rows[0];
-      const configURLObject = url.parse(config.url);
-      if (configURLObject.host != reportRow.dimensions[0] && configURLObject.path != reportRow.dimensions[1]) {
-        throw new Error('Page report mismatch: ' + [configURLObject.host+'/'+reportRow.dimensions[0] , configURLObject.path+'/'+reportRow.dimensions[1]].join(', '));
-      } else {
-        return {
-          'Name': config.name,
-          'URL': config.url,
-          'Sessions': parseInt(reportRow.metrics[0].values[0]),
-          'Hits': parseInt(reportRow.metrics[0].values[1]),
-          'Bounce Rate': parseFloat(reportRow.metrics[0].values[2])
-        };
-      }
     } else {
-      throw new Error('Unexpected number of page rows: ' + report.data.rows.length);
+      const reportRow = report.data.rows[0];
+      return {
+        'Name': config.name,
+        'URL': config.url,
+        'Views': parseInt(reportRow.metrics[0].values[1]),
+        'Unique Views': parseInt(reportRow.metrics[0].values[0]),
+        'Average Time on Page': parseFloat(reportRow.metrics[0].values[2])
+      };
     }
   }
 
@@ -391,7 +376,7 @@ class GoogleAnalytics extends GoogleDataSource {
       return {
         'Name': row.dimensions[2],
         'URL': url.parse('http://' + row.dimensions[0] + row.dimensions[1]).href,
-        'Hits': parseInt(row.metrics[0].values[0])
+        'Views': parseInt(row.metrics[0].values[0])
       }
     });
   }
@@ -400,7 +385,7 @@ class GoogleAnalytics extends GoogleDataSource {
     return report.data.rows.map(function(row) {
       return {
         'Referrer': row.dimensions[0],
-        'Hits': parseInt(row.metrics[0].values[0])
+        'Views': parseInt(row.metrics[0].values[0])
       }
     });
   }
@@ -408,9 +393,9 @@ class GoogleAnalytics extends GoogleDataSource {
   parseOverallMetricsReport(report,offset) {
     if (report.data.totals) {
       return {
-        'Hits': parseInt(report.data.totals[0].values[0]),
-        'Sessions': parseInt(report.data.totals[0].values[1]),
-        'Bounce Rate': parseFloat(report.data.totals[0].values[2]),
+        'Views': parseInt(report.data.totals[0].values[0]),
+        'Unique Views': parseInt(report.data.totals[0].values[1]),
+        'Average Time on Page': parseFloat(report.data.totals[0].values[2]),
         'New Users': parseFloat(report.data.totals[0].values[3]).toLocaleString() + '%',
       };
     } else {

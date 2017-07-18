@@ -39,7 +39,7 @@ class GoogleDataSource {
   getURLForHostnameAndPath(urls,hostname,path) {
     const submittedURL = url.parse('http://' + hostname + path);
     return urls.find(function(url) {
-      return url.host == submittedURL.host && url.pathname == submittedURL.pathname;
+      return url.host == submittedURL.host && url.path == submittedURL.path && url.hash == submittedURL.hash;
     })
   }
 }

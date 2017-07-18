@@ -1,7 +1,8 @@
 [
   'GoogleAnalytics',
   'FeedBenchmarks',
-  'MailchimpStats'
+  'MailchimpStats',
+  'FeedTable'
 ].forEach((className) => {
   module.exports[className] = require('./' + className);
 });
