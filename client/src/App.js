@@ -10,6 +10,7 @@ import _ from 'lodash';
 import DashboardControl from './DashboardControl';
 import Widgets from './Widgets';
 import './App.scss';
+import logo from './logo.svg';
 
 class App extends Component {
   componentDidMount() {
@@ -23,7 +24,9 @@ class App extends Component {
         <nav className="navbar navbar-inverse navbar-static-top">
           <div className="container-fluid">
             <div className="navbar-header">
-              <a className="navbar-brand" href="#">Case Foundation</a>
+              <a className="navbar-brand" href="/">
+                <img src={logo} alt="Logo" className="logo" />
+              </a>
             </div>
             <div className="navbar-form navbar-right">
               <DashboardControl />
