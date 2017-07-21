@@ -365,7 +365,7 @@ class GoogleAnalytics extends GoogleDataSource {
     if (report.data.totals) {
       return {
         'Name': config.name,
-        'Conversion Rate': (Math.round(parseFloat(report.data.totals[0].values[0]) * 100) / 100) + '%',
+        'Conversion Rate': (Math.round(parseFloat(report.data.totals[0].values[0]) * 10) / 10) + '%',
         'helptext': config.helptext
       };
     } else {
@@ -408,7 +408,7 @@ class GoogleAnalytics extends GoogleDataSource {
           'helptext': 'The average time users spend on every page of the site in seconds.'
         },
         'New Users': {
-          'value': parseFloat(report.data.totals[0].values[3]).toLocaleString() + '%',
+          'value': (Math.round(parseFloat(report.data.totals[0].values[3]) * 10) / 10).toLocaleString() + '%',
           'helptext': 'The portion of users coming to the site who have not visited before.'
         },
       };

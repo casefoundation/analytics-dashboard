@@ -34,12 +34,12 @@ class MailchimpStats {
             'data': [
               {
                 'key': 'Open Rate',
-                'value': list.stats.open_rate.toLocaleString() + '%',
+                'value': (Math.round(parseFloat(list.stats.open_rate) * 10) / 10).toLocaleString() + '%',
                 'helptext': 'The average percentage of subscribers who open e-mails from the ' + list.name + ' list in MailChimp'
               },
               {
                 'key': 'Click Rate',
-                'value': list.stats.click_rate.toLocaleString() + '%',
+                'value': (Math.round(parseFloat(list.stats.click_rate) * 10) / 10).toLocaleString() + '%',
                 'helptext': 'The average percentage of subscribers who click links e-mails from the ' + list.name + ' list in MailChimp'
               }
             ],
