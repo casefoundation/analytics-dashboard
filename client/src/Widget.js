@@ -113,6 +113,25 @@ class Widget extends Component {
           </div>
         )
       case 'sparklines':
+        let max = 0;
+        let min = Number.MAX_VALUE;
+        this.props.data.data.forEach((row) => {
+          row.data.forEach((point) => {
+            if (point[this.props.data.primary] > max) {
+              max = point[this.props.data.primary];
+            }
+            if (point[this.props.data.primary] < min) {
+              min = point[this.props.data.primary];
+            }
+            if (point[this.props.data.secondary] > max) {
+              max = point[this.props.data.secondary];
+            }
+            if (point[this.props.data.secondary] < min) {
+              min = point[this.props.data.secondary];
+            }
+          });
+        });
+        console.log(max,min);
         return (
           <div className="row">
             {
@@ -126,8 +145,9 @@ class Widget extends Component {
                       <ResponsiveContainer width="100%" height={100}>
                         <LineChart data={row.data}>
                           <XAxis dataKey={this.props.data.xAxis} hide={true} label="Date" tick={false} tickLine={false} axisLine={false} />
-                          <Line dot={false} type='monotone' dataKey={this.props.data.secondary} stroke={COLORS.GRAY} strokeWidth={1} />
+                          <YAxis domain={[min,max]} hide={true} label="Date" tick={false} tickLine={false} axisLine={false} />
                           <Line dot={false} type='monotone' dataKey={this.props.data.primary} stroke={COLORS.GRADIENT_BLUE[0]} strokeWidth={1} />
+                          <Line dot={false} type='monotone' dataKey={this.props.data.secondary} stroke={COLORS.GRAY} strokeWidth={1} />
                           <Tooltip formatter={this.formatNumber} />
                         </LineChart>
                       </ResponsiveContainer>
