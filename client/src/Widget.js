@@ -14,7 +14,9 @@ class Widget extends Component {
     super(props);
     this.formatNumber = this.formatNumber.bind(this);
     this.state = {
-      'page': 0
+      'page': 0,
+      'sort': 0,
+      'sortAsc': true
     }
   }
 
@@ -43,11 +45,46 @@ class Widget extends Component {
     switch(this.props.data.type) {
       case 'table':
         const headers = this.props.data.data.length > 0 ? _.keys(this.props.data.data[0]).filter((header) => header !== 'URL') : [];
+        this.props.data.data.sort((rowA,rowB) => {
+          const rowAValue = rowA[headers[this.state.sort]];
+          const rowAValueNumber = parseFloat(rowAValue);
+          const rowBValue = rowB[headers[this.state.sort]];
+          const rowBValueNumber = parseFloat(rowBValue);
+          if (isNaN(rowAValueNumber) || isNaN(rowBValueNumber)) {
+            if (this.state.sortAsc) {
+              return rowAValue.localeCompare(rowBValue);
+            } else {
+              return rowBValue.localeCompare(rowAValue);
+            }
+          } else {
+            if (this.state.sortAsc) {
+              return rowAValueNumber - rowBValueNumber;
+            } else {
+              return rowBValueNumber - rowAValueNumber;
+            }
+          }
+        })
         return (
-          <table className="table table-striped">
+          <table className="table table-striped table-sortable">
             <thead>
               <tr>
-                { headers.map((header,i) => (<th key={i}>{header}</th>)) }
+                { headers.map((header,i) => {
+                  return (
+                    <th key={i} onClick={() => this.state.sort === i ? this.setState({sortAsc: !this.state.sortAsc}) : this.setState({sort: i, sortAsc: true})}>
+                      {header}
+                      &nbsp;
+                      { this.state.sort === i ? (
+                          this.state.sortAsc ?
+                            <span className="glyphicon glyphicon-triangle-bottom">
+                              <span className="sr-only">Sorted Ascending</span>
+                            </span>
+                            : <span className="glyphicon glyphicon-triangle-top">
+                              <span className="sr-only">Sorted Descending</span>
+                            </span>
+                      ) : null }
+                    </th>
+                  )
+                }) }
               </tr>
             </thead>
             <tbody>
@@ -131,7 +168,6 @@ class Widget extends Component {
             }
           });
         });
-        console.log(max,min);
         return (
           <div className="row">
             {
@@ -146,8 +182,8 @@ class Widget extends Component {
                         <LineChart data={row.data}>
                           <XAxis dataKey={this.props.data.xAxis} hide={true} label="Date" tick={false} tickLine={false} axisLine={false} />
                           <YAxis domain={[min,max]} hide={true} label="Date" tick={false} tickLine={false} axisLine={false} />
-                          <Line dot={false} type='monotone' dataKey={this.props.data.primary} stroke={COLORS.GRADIENT_BLUE[0]} strokeWidth={1} />
                           <Line dot={false} type='monotone' dataKey={this.props.data.secondary} stroke={COLORS.GRAY} strokeWidth={1} />
+                          <Line dot={false} type='monotone' dataKey={this.props.data.primary} stroke={COLORS.GRADIENT_BLUE[0]} strokeWidth={1} />
                           <Tooltip formatter={this.formatNumber} />
                         </LineChart>
                       </ResponsiveContainer>

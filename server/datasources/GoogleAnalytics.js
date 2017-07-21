@@ -346,7 +346,7 @@ class GoogleAnalytics extends GoogleDataSource {
         'URL': config.url,
         'Views': 0,
         'Unique Views': 0,
-        'Average Time on Page': 0
+        'Average Time on Page (seconds)': 0
       };
     } else {
       const reportRow = report.data.rows[0];
@@ -355,7 +355,7 @@ class GoogleAnalytics extends GoogleDataSource {
         'URL': config.url,
         'Views': parseInt(reportRow.metrics[0].values[1]),
         'Unique Views': parseInt(reportRow.metrics[0].values[0]),
-        'Average Time on Page': parseFloat(reportRow.metrics[0].values[2])
+        'Average Time on Page (seconds)': parseInt(reportRow.metrics[0].values[2])
       };
     }
   }
@@ -404,8 +404,8 @@ class GoogleAnalytics extends GoogleDataSource {
           'helptext': 'All page views not counting repeat visits'
         },
         'Average Time on Page': {
-          'value': parseFloat(report.data.totals[0].values[2]),
-          'helptext': 'The average time users spend on every page of the site.'
+          'value': parseInt(report.data.totals[0].values[2]),
+          'helptext': 'The average time users spend on every page of the site in seconds.'
         },
         'New Users': {
           'value': parseFloat(report.data.totals[0].values[3]).toLocaleString() + '%',

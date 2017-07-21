@@ -68,7 +68,7 @@ class FeedStats extends FeedDataSource {
     const metricNameMap = {
       'pageviews': 'Views',
       'users': 'Unique Views',
-      'avgTimeOnPage': 'Average Time on Page'
+      'avgTimeOnPage': 'Average Time on Page (Seconds)'
     }
     const consolidatedReport = {};
     responseBodies.forEach((responseBodySet,i) => {
@@ -94,9 +94,6 @@ class FeedStats extends FeedDataSource {
                       throw new Error('Property already set: ' + foundURL.href + '|' + metricName);
                     } else {
                       switch(j) {
-                        case 2:
-                          consolidatedReport[foundURL.href][metricNameMap[metricName]] = parseFloat(row.metrics[0].values[j]);
-                          break;
                         default:
                           consolidatedReport[foundURL.href][metricNameMap[metricName]] = parseInt(row.metrics[0].values[j]);
                           break;

@@ -9,3 +9,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.table-sortable {
+  th {
+    cursor: pointer;
+  }
+}
