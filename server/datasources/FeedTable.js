@@ -43,7 +43,8 @@ class FeedStats extends FeedDataSource {
       {
         'data': report,
         'type': 'table',
-        'label': 'Recent Posts'
+        'label': 'Recent Posts',
+        'helptext': 'This is a table of posts and performance metrics from an RSS feed on ' + this.config.sourceName + '.'
       }
     ];
   }

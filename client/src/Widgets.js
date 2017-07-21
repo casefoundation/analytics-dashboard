@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import Masonry from 'react-masonry-component';
 import Widget from './Widget';
+import Info from './Info';
+import './Widgets.scss';
 
 class Widgets extends Component {
 
@@ -32,12 +34,15 @@ class Widgets extends Component {
               <div key={i} className={[this.getWidgetWidthClass(widget),widget.datasource.data.loading ? 'loading' : null].join(' ')}>
                 <div className="panel panel-default">
                   <div className="panel-heading">
-                    <h3 className="panel-title">
+                    <h3 className="panel-title pull-left">
                       {widget.data.label}
                       { widget.datasource.data.loading ? (
                         <span> (Loading)</span>
                       ) : null }
                     </h3>
+                    <div className="pull-right">
+                      <Info helptext={widget.data.helptext} offsetRight={20} offsetTop={0} />
+                    </div>
                   </div>
                   <div className="panel-body">
                     <Widget datasource={widget.datasource} data={widget.data} />

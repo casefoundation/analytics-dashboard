@@ -11,6 +11,7 @@ import DashboardControl from './DashboardControl';
 import Widgets from './Widgets';
 import './App.scss';
 import logo from './logo.svg';
+import Info from './Info';
 
 class App extends Component {
   componentDidMount() {
@@ -43,8 +44,9 @@ class App extends Component {
                     return datasource.data.data.filter((data) => data.type === 'quickstat').map((data) => {
                       return (
                         <div className="callout">
+                          <Info helptext={data.data.helptext} offsetRight={-10} offsetTop={-10} />
                           <div className="callout-value">
-                            {isNaN(data.data) ? data.data : data.data.toLocaleString()}
+                            {isNaN(data.data.value) ? data.data.value : data.data.value.toLocaleString()}
                           </div>
                           <div className="callout-label">
                             <span className="label">

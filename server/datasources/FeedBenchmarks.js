@@ -19,7 +19,8 @@ class FeedBenchmarks extends FeedDataSource {
         'label': 'Pageview Performance vs Rolling Average',
         'primary': 'Actual',
         'secondary': 'Average',
-        'xAxis': 'Date'
+        'xAxis': 'Date',
+        'helptext': 'This displays a comparison graph between each post from its publish date plus ' + this.config.nDays + ' days compared to a rolling average of previous posts from their publish date plus ' + this.config.nDays + ' days.'
       }
     ];
   }

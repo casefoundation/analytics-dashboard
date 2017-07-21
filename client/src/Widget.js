@@ -4,7 +4,8 @@ import _ from 'lodash';
 import {
   COLORS
 } from './constants';
-import './Widget.scss'
+import './Widget.scss';
+import Info from './Info';
 
 const pageLength = 10;
 
@@ -77,6 +78,7 @@ class Widget extends Component {
                     return (
                       <div key={j} className={columns}>
                         <div className="callout">
+                          { item.helptext ? <Info helptext={item.helptext} offsetRight={-10} offsetTop={-10} /> : null }
                           <div className="callout-value">
                             {this.formatNumber(item[this.props.data.value])}
                           </div>

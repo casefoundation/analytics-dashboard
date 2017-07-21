@@ -260,14 +260,16 @@ class GoogleAnalytics extends GoogleDataSource {
         'label': 'Events',
         'data': intermediateReport.events,
         'key': 'Name',
-        'value': 'Total Events'
+        'value': 'Total Events',
+        'helptext': 'These are Google Analytics Events which are triggers setup on a website to record user actions.'
       })
     }
     if (intermediateReport.pages && intermediateReport.pages.length > 0) {
       finalReport.push({
         'type': 'table',
         'label': 'Key Pages',
-        'data': intermediateReport.pages
+        'data': intermediateReport.pages,
+        'helptext': 'These are performance metrics for specific pages.'
       })
     }
     if (intermediateReport.goals && intermediateReport.goals.length > 0) {
@@ -276,7 +278,8 @@ class GoogleAnalytics extends GoogleDataSource {
         'label': 'Goals',
         'data': intermediateReport.goals,
         'key': 'Name',
-        'value': 'Conversion Rate'
+        'value': 'Conversion Rate',
+        'helptext': 'These are Google Analytics Goals which are conversion rates for specific events.'
       })
     }
     if (intermediateReport.topPages && intermediateReport.topPages.length > 0) {
@@ -286,7 +289,8 @@ class GoogleAnalytics extends GoogleDataSource {
           'label': 'Top Pages',
           'data': dataset,
           'key': 'Name',
-          'value': 'Views'
+          'value': 'Views',
+          'helptext': 'These are the top performing pages based on pageviews.'
         });
       });
     }
@@ -297,7 +301,8 @@ class GoogleAnalytics extends GoogleDataSource {
           'label': 'Top Referrers',
           'data': dataset,
           'key': 'Referrer',
-          'value': 'Views'
+          'value': 'Views',
+          'helptext': 'These are the top traffic referrers to the site based on landing-page pageviews.'
         });
       });
     }
@@ -321,12 +326,14 @@ class GoogleAnalytics extends GoogleDataSource {
       },0);
       return {
         'Name': config.name,
-        'Total Events': total
+        'Total Events': total,
+        'helptext': config.helptext
       };
     } else {
       return {
         'Name': config.name,
-        'Total Events': 0
+        'Total Events': 0,
+        'helptext': config.helptext
       };
     }
   }
@@ -358,7 +365,8 @@ class GoogleAnalytics extends GoogleDataSource {
     if (report.data.totals) {
       return {
         'Name': config.name,
-        'Conversion Rate': (Math.round(parseFloat(report.data.totals[0].values[0]) * 100) / 100) + '%'
+        'Conversion Rate': (Math.round(parseFloat(report.data.totals[0].values[0]) * 100) / 100) + '%',
+        'helptext': config.helptext
       };
     } else {
       throw new Error('Unexpected number of goal report');
@@ -387,10 +395,22 @@ class GoogleAnalytics extends GoogleDataSource {
   parseOverallMetricsReport(report,offset) {
     if (report.data.totals) {
       return {
-        'Views': parseInt(report.data.totals[0].values[0]),
-        'Unique Views': parseInt(report.data.totals[0].values[1]),
-        'Average Time on Page': parseFloat(report.data.totals[0].values[2]),
-        'New Users': parseFloat(report.data.totals[0].values[3]).toLocaleString() + '%',
+        'Views': {
+          'value': parseInt(report.data.totals[0].values[0]),
+          'helptext': 'All page views'
+        },
+        'Unique Views': {
+          'value': parseInt(report.data.totals[0].values[1]),
+          'helptext': 'All page views not counting repeat visits'
+        },
+        'Average Time on Page': {
+          'value': parseFloat(report.data.totals[0].values[2]),
+          'helptext': 'The average time users spend on every page of the site.'
+        },
+        'New Users': {
+          'value': parseFloat(report.data.totals[0].values[3]).toLocaleString() + '%',
+          'helptext': 'The portion of users coming to the site who have not visited before.'
+        },
       };
     } else {
       throw new Error('Unexpected number of overall report');

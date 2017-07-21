@@ -21,7 +21,10 @@ class MailchimpStats {
           returnData.push({
             'type': 'quickstat',
             'label': list.name + ' Size',
-            'data': list.stats.member_count
+            'data': {
+              'value': list.stats.member_count,
+              'helptext': 'The number of subscribers in the ' + list.name + ' list in MailChimp'
+            }
           });
           returnData.push({
             'type': 'callout',
@@ -31,13 +34,16 @@ class MailchimpStats {
             'data': [
               {
                 'key': 'Open Rate',
-                'value': list.stats.open_rate.toLocaleString() + '%'
+                'value': list.stats.open_rate.toLocaleString() + '%',
+                'helptext': 'The average percentage of subscribers who open e-mails from the ' + list.name + ' list in MailChimp'
               },
               {
                 'key': 'Click Rate',
-                'value': list.stats.click_rate.toLocaleString() + '%'
+                'value': list.stats.click_rate.toLocaleString() + '%',
+                'helptext': 'The average percentage of subscribers who click links e-mails from the ' + list.name + ' list in MailChimp'
               }
-            ]
+            ],
+            'helptext': 'These are the average open and click rates for email campaigns sent from the ' + list.name + ' list in MailChimp.'
           })
         })
       })
@@ -60,7 +66,8 @@ class MailchimpStats {
             'Open Rate',
             'Click Rate'
           ],
-          'percent': true
+          'percent': true,
+          'helptext': 'These are open and click rates for email campaigns sent in MailChimp.'
         })
       })
       .then(() => {
