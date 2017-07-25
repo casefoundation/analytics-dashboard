@@ -122,20 +122,19 @@ class DashboardControl extends Component {
   }
 
   rangeChanged(event) {
-    const {start,end} = dateRangeOptions[parseInt(event.target.value)];
+    const {start,end} = dateRangeOptions[parseInt(event.target.value,10)];
     this.props.setQueryRange(start,end);
     this.props.fetchAllDatasourcesData();
   }
 
   render() {
-    const now = new Date().getTime();
     const selectedRange = dateRangeOptions.findIndex((range) => {
       return range.start.getTime() === this.props.datasources.range.startDate.getTime() && range.end.getTime() === this.props.datasources.range.endDate.getTime();
     });
     return (
       <div className="form-group">
         <label className="sr-only">Time Range:</label>
-        <select className="form-control" defaultValue={[,].join(',')} onChange={this.rangeChanged}>
+        <select className="form-control" defaultValue={selectedRange} onChange={this.rangeChanged}>
           {
             dateRangeOptions.map((range,i) => (<option key={i} value={i}>{range.label}</option>))
           }

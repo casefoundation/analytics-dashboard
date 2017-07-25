@@ -52,6 +52,8 @@ const datasources = (state = initialDatasourcesState, action) => {
         return Object.assign({},state,{
           'data': Object.assign({},state.data,update)
         });
+      } else {
+        return state;
       }
     default:
       return state;

@@ -9,7 +9,9 @@ import thunk from 'redux-thunk';
 import rootReducer from './reducers';
 import './bootstrap/stylesheets/_bootstrap.scss';
 
-const logger = createLogger()
+const logger = createLogger({
+  'predicate': () => window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+})
 
 const store = createStore(
   rootReducer,
