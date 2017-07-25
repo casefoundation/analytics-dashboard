@@ -14,9 +14,9 @@ export const COLORS = {
   BLUE: '#0367b0',
   GRADIENT_BLUE: [
     '#0367b0',
-    '#4e7cbd',
-    '#7794cb',
-    '#9fb2db'
+    '#4a85b0',
+    '#90a3b0',
+    '#b0b0b0'
   ],
   GRAY: '#ccc'
 }

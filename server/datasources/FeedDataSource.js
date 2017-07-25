@@ -9,12 +9,12 @@ const GoogleDataSource = require('./GoogleDataSource');
 const request = require('request');
 
 class FeedDataSource extends GoogleDataSource {
-  query(range) {
+  query(startDate,endDate) {
     return this.getFeedItems()
       .then((feed) => {
         this.sortFeed(feed);
-        const newFeed = this.filterReportFeed(feed,range);
-        return this.fetchAnalytics(newFeed,range);
+        const newFeed = this.filterReportFeed(feed,startDate,endDate);
+        return this.fetchAnalytics(newFeed,startDate,endDate);
       })
       .then(({feed,report}) => {
         return this.generateWidgets(feed,report);
@@ -74,8 +74,8 @@ class FeedDataSource extends GoogleDataSource {
     });
   }
 
-  fetchAnalytics(feed,range) {
-    const dateBounds = this.getDateBounds(feed,range);
+  fetchAnalytics(feed,startDate,endDate) {
+    const dateBounds = this.getDateBounds(feed,startDate,endDate);
     const urls = this.convertFeedToUrls(feed);
     const baseBodies = this.getGoogleRequestMetricsDimensions().map((a) => []);
     return this.executeGoogleRequest(baseBodies,null,dateBounds,urls)
@@ -89,83 +89,87 @@ class FeedDataSource extends GoogleDataSource {
 
   executeGoogleRequest(previousResponseBodies,pageTokens,dateBounds,urls) {
     return new Promise((resolve,reject) => {
-      const resultsMap = [];
-      let includedReportsCount = 0;
-      const reportTypes = this.getGoogleRequestMetricsDimensions();
-      const reportRequests = reportTypes.filter((request,i) => {
-        if (pageTokens === null || pageTokens[i] !== null) {
-          resultsMap[includedReportsCount] = i;
-          includedReportsCount++;
-          return true;
-        } else {
-          return false;
-        }
-      }).map((request,i) => {
-        return {
-          'metrics': request.metrics.map(function(metric) {
-            return {
-              'expression': metric
-            }
-          }),
-          'dimensions': request.dimensions.map(function(dimension) {
-            return {
-              'name': dimension
-            }
-          }),
-          'viewId': 'ga:' + this.config.profile,
-          'dateRanges': [{
-            'startDate': this.formatDate(dateBounds.start),
-            'endDate': this.formatDate(dateBounds.end),
-          }],
-          'samplingLevel': 'LARGE',
-          'dimensionFilterClauses': [{
-            'operator': 'AND',
-            'filters': {
-              'dimensionName': 'ga:pagePath',
-              'operator': 'IN_LIST',
-              'expressions': urls.map((url) => {
-                return url.path;
-              })
-            }
-          }].concat(this.getGoogleRequestDimensionFilterClauses(i)),
-          'pageSize': 10000,
-          'pageToken': (pageTokens && i < pageTokens.length) ? pageTokens[i] : null,
-          'includeEmptyRows': true,
-          'hideTotals': true,
-          'hideValueRanges': true
-        };
-      });
-      analyticsreporting.reports.batchGet({
-        'auth': this.jwt,
-        'resource': {
-          'reportRequests': reportRequests
-        }
-      },{},(err,response) => {
-        if (err) {
-          reject(err);
-        } else if (response.reports && response.reports.length == reportRequests.length) {
-          const pageTokens = reportTypes.map(function(report) {
-            return null;
-          });
-          let hasTokens = false;
-          response.reports.forEach(function(report,i) {
-            previousResponseBodies[resultsMap[i]].push(report);
-            if (report.nextPageToken) {
-              hasTokens = true;
-              pageTokens[resultsMap[i]] = report.nextPageToken;
-            }
-          });
-          if (hasTokens) {
-            this.executeRequest(previousResponseBodies,pageTokens,dateBounds,urls);
+      if (urls.length > 0) {
+        const resultsMap = [];
+        let includedReportsCount = 0;
+        const reportTypes = this.getGoogleRequestMetricsDimensions();
+        const reportRequests = reportTypes.filter((request,i) => {
+          if (pageTokens === null || pageTokens[i] !== null) {
+            resultsMap[includedReportsCount] = i;
+            includedReportsCount++;
+            return true;
           } else {
-            resolve(previousResponseBodies);
+            return false;
           }
-        } else if (body.error) {
-          reject(new Error(body.error.message));
-        } else {
-          reject(new Error('Unknown response'))
-        }
-      });
+        }).map((request,i) => {
+          return {
+            'metrics': request.metrics.map(function(metric) {
+              return {
+                'expression': metric
+              }
+            }),
+            'dimensions': request.dimensions.map(function(dimension) {
+              return {
+                'name': dimension
+              }
+            }),
+            'viewId': 'ga:' + this.config.profile,
+            'dateRanges': [{
+              'startDate': this.formatDate(dateBounds.start),
+              'endDate': this.formatDate(dateBounds.end),
+            }],
+            'samplingLevel': 'LARGE',
+            'dimensionFilterClauses': [{
+              'operator': 'AND',
+              'filters': {
+                'dimensionName': 'ga:pagePath',
+                'operator': 'IN_LIST',
+                'expressions': urls.map((url) => {
+                  return url.path;
+                })
+              }
+            }].concat(this.getGoogleRequestDimensionFilterClauses(i)),
+            'pageSize': 10000,
+            'pageToken': (pageTokens && i < pageTokens.length) ? pageTokens[i] : null,
+            'includeEmptyRows': true,
+            'hideTotals': true,
+            'hideValueRanges': true
+          };
+        });
+        analyticsreporting.reports.batchGet({
+          'auth': this.jwt,
+          'resource': {
+            'reportRequests': reportRequests
+          }
+        },{},(err,response) => {
+          if (err) {
+            reject(err);
+          } else if (response.reports && response.reports.length == reportRequests.length) {
+            const pageTokens = reportTypes.map(function(report) {
+              return null;
+            });
+            let hasTokens = false;
+            response.reports.forEach(function(report,i) {
+              previousResponseBodies[resultsMap[i]].push(report);
+              if (report.nextPageToken) {
+                hasTokens = true;
+                pageTokens[resultsMap[i]] = report.nextPageToken;
+              }
+            });
+            if (hasTokens) {
+              this.executeRequest(previousResponseBodies,pageTokens,dateBounds,urls);
+            } else {
+              resolve(previousResponseBodies);
+            }
+          } else if (body.error) {
+            reject(new Error(body.error.message));
+          } else {
+            reject(new Error('Unknown response'))
+          }
+        });
+      } else {
+        resolve([]);
+      }
     });
   }
 }

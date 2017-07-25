@@ -29,8 +29,9 @@ function setupRoutes(datasources) {
     const datasource = datasources.find((datasource) => {
       return datasource.name == req.params.datasource;
     });
-    const range = parseInt(req.query.range) || (1000 * 60 * 60 * 24 * 30);
-    datasource._.query(range)
+    const startDate = new Date(parseInt(req.query.startDate) || (new Date().getTime()-(1000 * 60 * 60 * 24 * 30)));
+    const endDate = new Date(parseInt(req.query.endDate) || new Date().getTime());
+    datasource._.query(startDate,endDate)
       .then((data) => {
         res.send(data);
       })

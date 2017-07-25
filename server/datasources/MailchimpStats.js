@@ -13,7 +13,7 @@ class MailchimpStats {
     });
   }
 
-  query(range) {
+  query(startDate,endDate) {
     const returnData = [];
     return this.fetchListStats()
       .then((stats) => {
@@ -48,7 +48,7 @@ class MailchimpStats {
         })
       })
       .then(() => {
-        return this.fetchCampaignStats(range);
+        return this.fetchCampaignStats(startDate,endDate);
       })
       .then((campaigns) => {
         returnData.push({
@@ -96,21 +96,26 @@ class MailchimpStats {
     })
   }
 
-  fetchCampaignStats(range) {
-    const now = new Date();
+  fetchCampaignStats(startDate,endDate) {
     return this.mailchimp.get({
       'path': '/campaigns',
       'query': {
         'count': 100,
         'status': 'sent',
-        'since_send_time': new Date(now.getTime() - range).toISOString(),
-        'before_send_time': now.toISOString(),
+        'since_send_time': startDate.toISOString(),
+        'before_send_time': endDate.toISOString(),
         'sort_field': 'send_time',
         'sort_dir': 'DESC'
       }
     })
       .then((campaigns) => {
-        return campaigns.campaigns;
+        if (this.config.campaignWhitelist) {
+          return campaigns.campaigns.filter((campaign) => {
+            return this.config.campaignWhitelist.indexOf(campaign.recipients.list_id) >= 0;
+          });
+        } else {
+          return campaigns.campaigns;
+        }
       })
   }
 }

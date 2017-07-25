@@ -25,7 +25,7 @@ class FeedBenchmarks extends FeedDataSource {
     ];
   }
 
-  getDateBounds(feed,range) {
+  getDateBounds(feed,startDate,endDate) {
     const dates = {
       'start': null,
       'end': null
@@ -43,7 +43,7 @@ class FeedBenchmarks extends FeedDataSource {
     return dates;
   }
 
-  filterReportFeed(feed,range) {
+  filterReportFeed(feed,startDate,endDate) {
     if (feed.length < this.config.nPosts * 2) {
       throw new Error('Feed too short.');
     } else {

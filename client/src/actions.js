@@ -3,10 +3,13 @@ import {
   API_URL
 } from './constants';
 
-export const setQueryRange = (range) => {
+export const setQueryRange = (startDate,endDate) => {
   return {
     'type': ACTION.DATASOURCE.SET_RANGE,
-    range
+    'range': {
+      startDate,
+      endDate
+    }
   }
 }
 
@@ -45,7 +48,7 @@ export const fetchDatasourceData = (datasourceName) => {
       'datasource': datasourceName,
       'loading': true
     });
-    fetch(API_URL+'/api/datasource/' + datasourceName + '?range=' + encodeURIComponent(getState().datasources.range))
+    fetch(API_URL+'/api/datasource/' + datasourceName + '?startDate=' + encodeURIComponent(getState().datasources.range.startDate.getTime()) + '&endDate=' + encodeURIComponent(getState().datasources.range.endDate.getTime()))
       .then((response) => response.json())
       .then((data) => {
         const action = {

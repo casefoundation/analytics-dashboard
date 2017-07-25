@@ -49,18 +49,16 @@ class FeedStats extends FeedDataSource {
     ];
   }
 
-  getDateBounds(feed,range) {
-    const now = new Date();
+  getDateBounds(feed,startDate,endDate) {
     return {
-      'start': new Date(now.getTime() - range),
-      'end': now
+      'start': startDate,
+      'end': endDate
     }
   }
 
-  filterReportFeed(feed,range) {
-    const base = new Date(new Date().getTime() - range);
+  filterReportFeed(feed,startDate,endDate) {
     return feed.filter((post) => {
-      return post.pubdate.getTime() > base.getTime();
+      return post.pubdate.getTime() >= startDate.getTime() && post.pubdate.getTime() <= endDate.getTime();
     })
   }
 
@@ -139,9 +137,13 @@ class FeedStats extends FeedDataSource {
         }
       });
 
-      row['Average Scroll Depth'] = Math.round((scrollDepths.reduce(function(total,current) {
-        return total + current;
-      }) / scrollDepths.length) * 100)+"%"
+      if (scrollDepths && scrollDepths.length > 0) {
+        row['Average Scroll Depth'] = Math.round((scrollDepths.reduce(function(total,current) {
+          return total + current;
+        }) / scrollDepths.length) * 100)+"%";
+      } else {
+        row['Average Scroll Depth'] = '0%';
+      }
     });
     return reportArray;
   }

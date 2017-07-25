@@ -5,7 +5,10 @@ import {
 
 const initialDatasourcesState = {
   'data': {},
-  'range': 1000 * 60 * 60 * 24 * 30,
+  'range': {
+    'startDate': new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 30),
+    'endDate': new Date()
+  },
   'error': null
 }
 

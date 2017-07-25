@@ -6,9 +6,9 @@ const url = require('url');
 const GoogleDataSource = require('./GoogleDataSource');
 
 class GoogleAnalytics extends GoogleDataSource {
-  query(range) {
+  query(startDate,endDate) {
     return new Promise((resolve,reject) => {
-      const requests = this.buildRequests(range);
+      const requests = this.buildRequests(startDate,endDate);
       async.series(
         _.chunk(requests.reportRequests,5).map((requestSet) => {
           return (next) => {
@@ -37,7 +37,7 @@ class GoogleAnalytics extends GoogleDataSource {
     });
   }
 
-  buildRequests(range) {
+  buildRequests(startDate,endDate) {
     const reportTypes = [];
     const reportRequests = [];
 
@@ -211,8 +211,8 @@ class GoogleAnalytics extends GoogleDataSource {
     reportRequests.forEach((request) => {
       request.viewId = this.config.profile;
       request.dateRanges = {
-        'startDate': this.formatDate(new Date(now.getTime() - range)),
-        'endDate': this.formatDate(now)
+        'startDate': this.formatDate(startDate),
+        'endDate': this.formatDate(endDate)
       };
       request.samplingLevel = 'LARGE';
       if (request.pageSize) {
@@ -340,7 +340,7 @@ class GoogleAnalytics extends GoogleDataSource {
 
   parsePagesReport(report,offset) {
     const config = this.config.elements.pages[offset];
-    if (report.data.rows.length == 0) {
+    if (!report.data.rows || report.data.rows.length == 0) {
       return {
         'Name': config.name,
         'URL': config.url,
