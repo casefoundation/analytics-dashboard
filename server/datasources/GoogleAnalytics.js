@@ -207,6 +207,28 @@ class GoogleAnalytics extends GoogleDataSource {
       });
     }
 
+    if (this.config.elements.authorDimension && this.config.elements.authorDimension >= 1) {
+      reportTypes.push('topAuthors');
+      reportRequests.push({
+        'metrics': [
+          {
+            'expression': 'ga:uniquePageviews'
+          },
+          {
+            'expression': 'ga:pageviews'
+          },
+          {
+            'expression': 'ga:avgTimeOnPage'
+          }
+        ],
+        'dimensions': [
+          {
+            'name': 'ga:dimension' + this.config.elements.authorDimension
+          },
+        ],
+      });
+    }
+
     const now = new Date();
     reportRequests.forEach((request) => {
       request.viewId = this.config.profile;
@@ -250,6 +272,9 @@ class GoogleAnalytics extends GoogleDataSource {
           break;
         case 'overallMetrics':
           intermediateReport.overallMetrics.push(this.parseOverallMetricsReport(report,intermediateReport.overallMetrics.length));
+          break;
+        case 'topAuthors':
+          intermediateReport.topAuthors.push(this.parseTopAuthorsReport(report,intermediateReport.topAuthors.length));
           break;
       }
     });
@@ -314,6 +339,14 @@ class GoogleAnalytics extends GoogleDataSource {
           'data': intermediateReport.overallMetrics[0][metric]
         })
       }
+    }
+    if (intermediateReport.topAuthors && intermediateReport.topAuthors.length > 0) {
+      finalReport.push({
+        'type': 'table',
+        'label': 'Authors',
+        'data': intermediateReport.topAuthors[0],
+        'helptext': 'These are performance metrics for individual authors.'
+      })
     }
     return finalReport;
   }
@@ -415,6 +448,17 @@ class GoogleAnalytics extends GoogleDataSource {
     } else {
       throw new Error('Unexpected number of overall report');
     }
+  }
+
+  parseTopAuthorsReport(report,offset) {
+    return report.data.rows.map(function(row) {
+      return {
+        'Name': row.dimensions[0],
+        'Views': parseInt(row.metrics[0].values[1]),
+        'Unique Views': parseInt(row.metrics[0].values[0]),
+        'Average Time on Page (seconds)': parseInt(row.metrics[0].values[2])
+      };
+    }).filter((data) => data.Name && data.Name != 'null');
   }
 }
 
