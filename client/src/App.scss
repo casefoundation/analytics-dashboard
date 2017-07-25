@@ -10,7 +10,6 @@
   position: relative;
   white-space: nowrap;
   text-overflow: clip;
-  overflow: hidden;
 
   .callout-value {
     font-size: 4em;
@@ -27,6 +26,7 @@
 
   .callout-label {
     margin-top: 0.25em;
+    overflow: hidden;
   }
 }
 
