@@ -65,44 +65,46 @@ class Widget extends Component {
           }
         })
         return (
-          <table className="table table-striped table-sortable">
-            <thead>
-              <tr>
-                { headers.map((header,i) => {
-                  return (
-                    <th key={i} onClick={() => this.state.sort === i ? this.setState({sortAsc: !this.state.sortAsc}) : this.setState({sort: i, sortAsc: true})}>
-                      {header}
-                      &nbsp;
-                      { this.state.sort === i ? (
-                          this.state.sortAsc ?
-                            <span className="glyphicon glyphicon-triangle-bottom">
-                              <span className="sr-only">Sorted Ascending</span>
-                            </span>
-                            : <span className="glyphicon glyphicon-triangle-top">
-                              <span className="sr-only">Sorted Descending</span>
-                            </span>
-                      ) : null }
-                    </th>
-                  )
-                }) }
-              </tr>
-            </thead>
-            <tbody>
-              {
-                this.props.data.data.map((row,i) => {
-                  return (
-                    <tr key={i}>
-                      { headers.map((header,j) => (
-                        <td key={j}>
-                          {this.formatNumber(row[header])}
-                        </td>
-                      )) }
-                    </tr>
-                  )
-                })
-              }
-            </tbody>
-          </table>
+          <div className="table-scroller">
+            <table className="table table-striped table-sortable">
+              <thead>
+                <tr>
+                  { headers.map((header,i) => {
+                    return (
+                      <th key={i} onClick={() => this.state.sort === i ? this.setState({sortAsc: !this.state.sortAsc}) : this.setState({sort: i, sortAsc: true})}>
+                        {header}
+                        &nbsp;
+                        { this.state.sort === i ? (
+                            this.state.sortAsc ?
+                              <span className="glyphicon glyphicon-triangle-bottom">
+                                <span className="sr-only">Sorted Ascending</span>
+                              </span>
+                              : <span className="glyphicon glyphicon-triangle-top">
+                                <span className="sr-only">Sorted Descending</span>
+                              </span>
+                        ) : null }
+                      </th>
+                    )
+                  }) }
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  this.props.data.data.map((row,i) => {
+                    return (
+                      <tr key={i}>
+                        { headers.map((header,j) => (
+                          <td key={j}>
+                            {this.formatNumber(row[header])}
+                          </td>
+                        )) }
+                      </tr>
+                    )
+                  })
+                }
+              </tbody>
+            </table>
+          </div>
         )
       case 'callout':
         return (

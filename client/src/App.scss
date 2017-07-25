@@ -8,12 +8,21 @@
   margin-left: auto;
   margin-right: auto;
   position: relative;
+  white-space: nowrap;
+  text-overflow: clip;
+  overflow: hidden;
 
   .callout-value {
     font-size: 4em;
     font-weight: bold;
     line-height: 1em;
     color: white;
+    @media (max-width: 1450px) {
+      font-size: 3em;
+    }
+    @media (max-width: 1200px) {
+      font-size: 2em;
+    }
   }
 
   .callout-label {
