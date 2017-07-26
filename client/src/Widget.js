@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Line, LineChart} from 'recharts';
+import {ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Line, LineChart, AreaChart, Area, CartesianGrid} from 'recharts';
 import _ from 'lodash';
 import {
   COLORS
@@ -150,7 +150,7 @@ class Widget extends Component {
             </ResponsiveContainer>
             { this.renderPaging() }
           </div>
-        )
+        );
       case 'sparklines':
         let max = 0;
         let min = Number.MAX_VALUE;
@@ -195,7 +195,32 @@ class Widget extends Component {
               })
             }
           </div>
-        )
+        );
+      case 'stackedchart':
+        const areas = [];
+        this.props.data.data.forEach((row) => {
+          _.keys(row).forEach((value) => {
+            if (areas.indexOf(value) < 0 && value != this.props.data.xAxis) {
+              areas.push(value);
+            }
+          });
+        });
+        console.log(areas);
+        return (
+          <div>
+            <ResponsiveContainer width="100%" height={450}>
+              <AreaChart data={this.props.data.data}>
+                <XAxis dataKey={this.props.data.xAxis} />
+                <YAxis />
+                <Tooltip formatter={this.formatNumber} />
+                <CartesianGrid strokeDasharray="3 3"/>
+                {
+                  areas.map((key,i) => (<Area type="monotone" stackId="1" key={i} dataKey={key} fill={COLORS.GRADIENT_BLUE[i]} />))
+                }
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        );
       default:
         return <div></div>
     }

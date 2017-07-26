@@ -5,8 +5,10 @@ import {
   fetchAllDatasourcesData,
   setQueryRange
 } from './actions';
-
-const now = new Date();
+import {
+  NOW,
+  ONE_DAY
+} from './constants';
 
 const quarterRanges = [
   {
@@ -65,46 +67,46 @@ const quarterRanges = [
 
 const dateRangeOptions = [
   {
-    'start': new Date(now.getTime() - (1000 * 60 * 60 * 24)),
-    'end': now,
+    'start': new Date(NOW.getTime() - ONE_DAY),
+    'end': NOW,
     'label': 'Previous Day'
   },
   {
-    'start': new Date(now.getTime() - (1000 * 60 * 60 * 24 * 7)),
-    'end': now,
+    'start': new Date(NOW.getTime() - (ONE_DAY * 7)),
+    'end': NOW,
     'label': 'Previous Week'
   },
   {
-    'start': new Date(now.getTime() - (1000 * 60 * 60 * 24 * 30)),
-    'end': now,
+    'start': new Date(NOW.getTime() - (ONE_DAY * 30)),
+    'end': NOW,
     'label': 'Previous 30 Days'
   },
   {
-    'start': new Date(now.getTime() - (1000 * 60 * 60 * 24 * 182.5)),
-    'end': now,
+    'start': new Date(NOW.getTime() - (ONE_DAY * 182.5)),
+    'end': NOW,
     'label': 'Previous 6 Months'
   },
   {
-    'start': new Date(now - (1000 * 60 * 60 * 24 * 365)),
-    'end': now,
+    'start': new Date(NOW - (ONE_DAY * 365)),
+    'end': NOW,
     'label': 'Previous Year'
   },
   {
-    'start': new Date(now.getTime() - (1000 * 60 * 60 * 24 * 365 * 5)),
-    'end': now,
+    'start': new Date(NOW.getTime() - (ONE_DAY * 365 * 5)),
+    'end': NOW,
     'label': 'Previous 5 Years'
   },
   {
-    'start': new Date(now.getTime() - (1000 * 60 * 60 * 24 * 365 * 10)),
-    'end': now,
+    'start': new Date(NOW.getTime() - (ONE_DAY * 365 * 10)),
+    'end': NOW,
     'label': 'Previous 10 Years'
   }
 ];
 
-[now.getFullYear() - 1,now.getFullYear()].forEach((year) => {
+[NOW.getFullYear() - 1,NOW.getFullYear()].forEach((year) => {
   quarterRanges.forEach((range) => {
     const startDate = new Date(year,range.values.start.month,range.values.start.day,0,0,0);
-    if (startDate.getTime() < now.getTime()) {
+    if (startDate.getTime() < NOW.getTime()) {
       const endDate = new Date(year,range.values.end.month,range.values.end.day,23,59,59);
       dateRangeOptions.push({
         'start': startDate,

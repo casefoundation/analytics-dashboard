@@ -20,3 +20,6 @@ export const COLORS = {
   ],
   GRAY: '#ccc'
 }
+
+export const NOW = new Date();
+export const ONE_DAY = 1000 * 60 * 60 * 24;

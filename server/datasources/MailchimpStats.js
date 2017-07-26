@@ -1,5 +1,6 @@
 const Mailchimp = require('mailchimp-api-v3');
 const async = require('async');
+const _ = require('lodash');
 
 class MailchimpStats {
   constructor(config) {
@@ -44,8 +45,22 @@ class MailchimpStats {
               }
             ],
             'helptext': 'These are the average open and click rates for email campaigns sent from the ' + list.name + ' list in MailChimp.'
-          })
-        })
+          });
+        });
+      })
+      .then(() => {
+        return this.fetchMemberSignupStats(startDate,endDate);
+      })
+      .then((arraysOfDaysAndSignups) => {
+        arraysOfDaysAndSignups.forEach((daysAndSignups) => {
+          returnData.push({
+            'type': 'stackedchart',
+            'label': 'Signup Sources',
+            'xAxis': 'date',
+            'data': daysAndSignups,
+            'helptext': 'This is a daily graph of email list signups in Mailchimp and where the subscribers are coming from.'
+          });
+        });
       })
       .then(() => {
         return this.fetchCampaignStats(startDate,endDate);
@@ -93,7 +108,7 @@ class MailchimpStats {
           }
         }
       )
-    })
+    });
   }
 
   fetchCampaignStats(startDate,endDate) {
@@ -117,6 +132,73 @@ class MailchimpStats {
           return campaigns.campaigns;
         }
       })
+  }
+
+  fetchMemberSignupStats(startDate,endDate) {
+    return new Promise((resolve,reject) => {
+      async.series(
+        this.config.lists.map((listId) => {
+          return (next) => {
+            const aggregatedMembers = [];
+            const makeMCCall = (page) => {
+              return this.mailchimp.get({
+                'path': '/lists/' + listId + '/members',
+                'query': {
+                  'count': 1000,
+                  'offset': page * 1000,
+                  'status': 'subscribed',
+                  'since_timestamp_opt': startDate.toISOString(),
+                  'before_timestamp_opt': endDate.toISOString()
+                }
+              }).then((members) => {
+                members.members.forEach((member) => {
+                  aggregatedMembers.push(member);
+                });
+                if (members.members.length == 1000) {
+                  return makeMCCall(page+1);
+                }
+              });
+            }
+            makeMCCall(0)
+              .then(() => {
+                const dayMap = {};
+                aggregatedMembers.forEach((member) => {
+                  const signupDate = new Date(Date.parse(member.timestamp_opt));
+                  const signupDay = new Date(signupDate.getFullYear(),signupDate.getMonth(),signupDate.getDate());
+                  const stamp = signupDay.getTime();
+                  if (!dayMap[stamp]) {
+                    dayMap[stamp] = {
+                      'date': signupDay
+                    };
+                  }
+                  const source = member.merge_fields[this.config.sourceField] && member.merge_fields[this.config.sourceField].trim().length > 0 ? member.merge_fields[this.config.sourceField] : 'Unknown';
+                  if (!dayMap[stamp][source]) {
+                    dayMap[stamp][source] = 1;
+                  } else {
+                    dayMap[stamp][source]++;
+                  }
+                });
+                const days = _.values(dayMap);
+                days.sort((a,b) => {
+                  return a.date.getTime() - b.date.getTime();
+                });
+                days.forEach((day) => {
+                  day.date = day.date.toDateString();
+                });
+                next(null,days);
+              })
+              .catch(next);
+          }
+        }),
+        (err,members) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(members);
+          }
+        }
+      )
+    });
   }
 }
 

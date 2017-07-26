@@ -1,13 +1,15 @@
 import { combineReducers } from 'redux';
 import {
-  ACTION
+  ACTION,
+  NOW,
+  ONE_DAY
 } from './constants';
 
 const initialDatasourcesState = {
   'data': {},
   'range': {
-    'startDate': new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 30),
-    'endDate': new Date()
+    'startDate': new Date(NOW.getTime() - ONE_DAY * 30),
+    'endDate': NOW
   },
   'error': null
 }
