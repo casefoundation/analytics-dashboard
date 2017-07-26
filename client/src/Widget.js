@@ -205,7 +205,6 @@ class Widget extends Component {
             }
           });
         });
-        console.log(areas);
         return (
           <div>
             <ResponsiveContainer width="100%" height={450}>

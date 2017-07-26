@@ -13,3 +13,5 @@ rm -rf server/build
 mv client/build server/build
 
 docker build -t analytics-dashboard .
+
+rm -rf server/build
