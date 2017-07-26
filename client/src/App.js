@@ -10,7 +10,7 @@ import _ from 'lodash';
 import DashboardControl from './DashboardControl';
 import Widgets from './Widgets';
 import './App.scss';
-import logo from './logo.svg';
+import logo from './theme/logo.svg';
 import Info from './Info';
 
 class App extends Component {

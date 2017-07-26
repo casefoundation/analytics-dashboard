@@ -1,3 +1,6 @@
+import theme from './theme/theme.json';
+import Color from 'color';
+
 export const ACTION = {
   DATASOURCE: {
     ERROR:     'DATASOURCE_ERROR',
@@ -10,14 +13,16 @@ export const ACTION = {
 
 export const API_URL = '';
 
+const primary = theme.colors['brand-primary'];
+const gradient = [primary];
+const gradientSteps = 4;
+for(var i = 1; i < gradientSteps; i++) {
+  gradient.push(new Color(primary).lighten((i/gradientSteps)).toString())
+}
+
 export const COLORS = {
-  BLUE: '#0367b0',
-  GRADIENT_BLUE: [
-    '#0367b0',
-    '#4a85b0',
-    '#90a3b0',
-    '#b0b0b0'
-  ],
+  BLUE: primary,
+  GRADIENT_BLUE: gradient,
   GRAY: '#ccc'
 }
 

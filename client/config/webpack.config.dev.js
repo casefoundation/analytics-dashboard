@@ -112,7 +112,12 @@ module.exports = {
       {
         test: /\.scss$/,
         include: paths.appSrc,
-        loaders: ["style-loader", "css-loader", "sass-loader"]
+        loaders: ["style-loader", "css-loader", {
+          loader: "sass-loader",
+          options: {
+            data: require('./sassVars')()
+          }
+        }]
       },
       {
         test: /\.(js|jsx)$/,

@@ -19,3 +19,9 @@
 .table-scroller {
   overflow-x: scroll;
 }
+
+.table {
+  th {
+    color: $brand-primary;
+  }
+}
