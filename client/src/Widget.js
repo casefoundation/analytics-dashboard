@@ -200,7 +200,7 @@ class Widget extends Component {
         const areas = [];
         this.props.data.data.forEach((row) => {
           _.keys(row).forEach((value) => {
-            if (areas.indexOf(value) < 0 && value != this.props.data.xAxis) {
+            if (areas.indexOf(value) < 0 && value !== this.props.data.xAxis) {
               areas.push(value);
             }
           });
@@ -215,7 +215,7 @@ class Widget extends Component {
                 <Tooltip formatter={this.formatNumber} />
                 <CartesianGrid strokeDasharray="3 3"/>
                 {
-                  areas.map((key,i) => (<Area type="monotone" stackId="1" key={i} dataKey={key} fill={COLORS.GRADIENT_BLUE[i]} />))
+                  areas.map((key,i) => (<Area type="monotone" stroke="none" stackId="1" key={i} dataKey={key} fillOpacity={1} fill={COLORS.GRADIENT_BLUE[i]} />))
                 }
               </AreaChart>
             </ResponsiveContainer>

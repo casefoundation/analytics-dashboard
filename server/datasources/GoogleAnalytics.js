@@ -207,8 +207,8 @@ class GoogleAnalytics extends GoogleDataSource {
       });
     }
 
-    if (this.config.elements.authorDimension && this.config.elements.authorDimension >= 1) {
-      reportTypes.push('topAuthors');
+    this.config.elements.dimensions.forEach((dimension) => {
+      reportTypes.push('dimensions');
       reportRequests.push({
         'metrics': [
           {
@@ -223,11 +223,11 @@ class GoogleAnalytics extends GoogleDataSource {
         ],
         'dimensions': [
           {
-            'name': 'ga:dimension' + this.config.elements.authorDimension
+            'name': 'ga:dimension' + dimension.number
           },
         ],
       });
-    }
+    });
 
     const now = new Date();
     reportRequests.forEach((request) => {
@@ -273,8 +273,8 @@ class GoogleAnalytics extends GoogleDataSource {
         case 'overallMetrics':
           intermediateReport.overallMetrics.push(this.parseOverallMetricsReport(report,intermediateReport.overallMetrics.length));
           break;
-        case 'topAuthors':
-          intermediateReport.topAuthors.push(this.parseTopAuthorsReport(report,intermediateReport.topAuthors.length));
+        case 'dimensions':
+          intermediateReport.dimensions.push(this.parseTopDimensionsReport(report,intermediateReport.dimensions.length));
           break;
       }
     });
@@ -340,13 +340,15 @@ class GoogleAnalytics extends GoogleDataSource {
         })
       }
     }
-    if (intermediateReport.topAuthors && intermediateReport.topAuthors.length > 0) {
-      finalReport.push({
-        'type': 'table',
-        'label': 'Authors',
-        'data': intermediateReport.topAuthors[0],
-        'helptext': 'These are performance metrics for individual authors.'
-      })
+    if (intermediateReport.dimensions && intermediateReport.dimensions.length > 0) {
+      intermediateReport.dimensions.forEach((dimensionReport,i) => {
+        finalReport.push({
+          'type': 'table',
+          'label': this.config.elements.dimensions[i].name,
+          'data': dimensionReport,
+          'helptext': this.config.elements.dimensions[i].helptext
+        });
+      });
     }
     return finalReport;
   }
@@ -450,7 +452,7 @@ class GoogleAnalytics extends GoogleDataSource {
     }
   }
 
-  parseTopAuthorsReport(report,offset) {
+  parseTopDimensionsReport(report,offset) {
     return report.data.rows.map(function(row) {
       return {
         'Name': row.dimensions[0],
