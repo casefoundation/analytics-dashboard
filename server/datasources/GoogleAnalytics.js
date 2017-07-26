@@ -279,16 +279,6 @@ class GoogleAnalytics extends GoogleDataSource {
       }
     });
     const finalReport = [];
-    if (intermediateReport.events && intermediateReport.events.length > 0) {
-      finalReport.push({
-        'type': 'callout',
-        'label': 'Events',
-        'data': intermediateReport.events,
-        'key': 'Name',
-        'value': 'Total Events',
-        'helptext': 'These are Google Analytics Events which are triggers setup on a website to record user actions.'
-      })
-    }
     if (intermediateReport.pages && intermediateReport.pages.length > 0) {
       finalReport.push({
         'type': 'table',
@@ -347,6 +337,18 @@ class GoogleAnalytics extends GoogleDataSource {
           'label': this.config.elements.dimensions[i].name,
           'data': dimensionReport,
           'helptext': this.config.elements.dimensions[i].helptext
+        });
+      });
+    }
+    if (intermediateReport.events && intermediateReport.events.length > 0) {
+      intermediateReport.events.forEach((event) => {
+        finalReport.push({
+          'type': 'quickstat',
+          'label': event.Name,
+          'data': {
+            'value': event['Total Events'],
+            'helptext': event.helptext
+          }
         });
       });
     }
