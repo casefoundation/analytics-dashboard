@@ -1,13 +1,14 @@
 const google = require('googleapis');
 const url = require('url');
+const secrets = require('../config/secrets');
 
 class GoogleDataSource {
   constructor(config) {
     this.config = config;
     this.jwt = new google.auth.JWT(
-      config.auth.client_email,
+      secrets.google.client_email,
       null,
-      config.auth.private_key,
+      secrets.google.private_key,
       ['https://www.googleapis.com/auth/analytics.readonly'],
       null
     );

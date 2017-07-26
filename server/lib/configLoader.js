@@ -8,7 +8,7 @@ exports.load = () => {
   return fs.readdir(configPath)
     .then((contents) => {
       const configFiles = contents.filter((file) => {
-        return path.extname(file) === '.json';
+        return path.extname(file) === '.json' && file !== 'secrets.json';
       });
       return new Promise((resolve,reject) => {
         async.parallel(
