@@ -1,10 +1,10 @@
 const google = require('googleapis');
 const url = require('url');
-const secrets = require('../config/secrets');
+const DataSource = require('./DataSource');
 
-class GoogleDataSource {
-  constructor(config) {
-    this.config = config;
+class GoogleDataSource extends DataSource {
+  constructor(config,secrets) {
+    super(config,secrets);
     this.jwt = new google.auth.JWT(
       secrets.google.client_email,
       null,
@@ -16,13 +16,17 @@ class GoogleDataSource {
 
   setup() {
     return new Promise((resolve,reject) => {
-      this.jwt.authorize((err,tokens) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      })
+      if (process.env.NODE_ENV === 'test') {
+        resolve();
+      } else {
+        this.jwt.authorize((err,tokens) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      }
     });
   }
 

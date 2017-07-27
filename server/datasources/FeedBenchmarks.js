@@ -25,7 +25,7 @@ class FeedBenchmarks extends FeedDataSource {
     ];
   }
 
-  getDateBounds(feed,startDate,endDate) {
+  getDateBounds(feed,dateStart,dateEnd) {
     const dates = {
       'start': null,
       'end': null
@@ -40,14 +40,23 @@ class FeedBenchmarks extends FeedDataSource {
     });
     dates.start = new Date(dates.start.getTime() - (this.config.nDays * FeedDataSource.OneDay));
     dates.end = new Date(dates.end.getTime() + (this.config.nDays * FeedDataSource.OneDay));
+    this.testData.getDateBounds = {
+      feed,
+      dates
+    };
     return dates;
   }
 
-  filterReportFeed(feed,startDate,endDate) {
+  filterReportFeed(feed,dateStart,dateEnd) {
     if (feed.length < this.config.nPosts * 2) {
       throw new Error('Feed too short.');
     } else {
-      return feed.slice(0,this.config.nPosts * 2);
+      const filtered = feed.slice(0,this.config.nPosts * 2);
+      this.testData.filterReportFeed = {
+        feed,
+        filtered
+      };
+      return filtered;
     }
   }
 
@@ -85,6 +94,14 @@ class FeedBenchmarks extends FeedDataSource {
         }
       });
     });
+    this.testData.processGoogleResponseBodies = {
+      feed,
+      urls: urls.map((url) => {
+        return url.href;
+      }),
+      responseBodies,
+      consolidatedReport
+    }
     return consolidatedReport;
   }
 
@@ -99,7 +116,6 @@ class FeedBenchmarks extends FeedDataSource {
         'endDate': new Date(Math.min(Date.parse(this.formatDate(reportPost.pubdate)) + (this.config.nDays * FeedDataSource.OneDay),new Date().getTime())),
         'data': data
       };
-
       reports.push(thisReport);
 
       const computePosts = feed.slice(i+1,i+this.config.nPosts);
@@ -140,6 +156,11 @@ class FeedBenchmarks extends FeedDataSource {
         }
       }
     });
+    this.testData.analyzeReport = {
+      feed,
+      report,
+      reports
+    };
     return reports;
   }
 }

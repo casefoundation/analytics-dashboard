@@ -1,11 +1,11 @@
 const Mailchimp = require('mailchimp-api-v3');
 const async = require('async');
 const _ = require('lodash');
-const secrets = require('../config/secrets');
+const DataSource = require('./DataSource');
 
-class MailchimpStats {
-  constructor(config) {
-    this.config = config;
+class MailchimpStats extends DataSource {
+  constructor(config,secrets) {
+    super(config,secrets);
     this.mailchimp = new Mailchimp(secrets.mailchimp);
   }
 

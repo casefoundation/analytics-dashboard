@@ -2,9 +2,10 @@ const fs = require('fs-extra');
 const path = require('path');
 const async = require('async');
 const datasources = require('../datasources');
+const secrets = process.env.NODE_ENV === 'test' ? require('../test/config/secrets') : require('../config/secrets');
 
 exports.load = () => {
-  const configPath = './config';
+  const configPath = process.env.NODE_ENV === 'test' ? './test/config' : './config';
   return fs.readdir(configPath)
     .then((contents) => {
       const configFiles = contents.filter((file) => {
@@ -16,15 +17,19 @@ exports.load = () => {
             return (next) => {
               fs.readJson(path.join(configPath,configFile))
                 .then((config) => {
-                  const datasource = new datasources[config.klass](config);
-                  return datasource.setup()
-                    .then(() => {
-                      next(null,{
-                        'name': configFile.replace('.json',''),
-                        'config': config,
-                        '_': datasource
-                      });
-                    })
+                  if (config.klass) {
+                    const datasource = new datasources[config.klass](config,secrets);
+                    return datasource.setup()
+                      .then(() => {
+                        next(null,{
+                          'name': configFile.replace('.json',''),
+                          'config': config,
+                          '_': datasource
+                        });
+                      })
+                  } else {
+                    next(null,null);
+                  }
                 })
                 .catch(next);
             }
@@ -33,7 +38,7 @@ exports.load = () => {
             if (err) {
               reject(err)
             } else {
-              resolve(configs);
+              resolve(configs.filter((config) => config !== null));
             }
           }
         )

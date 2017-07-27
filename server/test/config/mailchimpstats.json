@@ -1,0 +1,11 @@
+{
+  "klass": "MailchimpStats",
+  "lists": [
+    "abcdefg"
+  ],
+  "campaignWhitelist": [
+    "qwerty",
+    "asdf"
+  ],
+  "sourceField": "SOURCE"
+}

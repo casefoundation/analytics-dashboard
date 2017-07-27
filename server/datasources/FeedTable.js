@@ -1,7 +1,7 @@
 const FeedDataSource = require('./FeedDataSource');
 const _ = require('lodash');
 
-class FeedStats extends FeedDataSource {
+class FeedTable extends FeedDataSource {
 
   getGoogleRequestMetricsDimensions() {
     return [
@@ -149,4 +149,4 @@ class FeedStats extends FeedDataSource {
   }
 }
 
-module.exports = FeedStats;
+module.exports = FeedTable;

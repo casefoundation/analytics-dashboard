@@ -1,0 +1,13 @@
+{
+  "klass": "GoogleAnalytics",
+  "profile": "abcdef",
+  "elements": {
+    "events": [],
+    "pages": [],
+    "dimensions": [],
+    "goals": [],
+    "topPages": true,
+    "referrals": true,
+    "overallMetrics": true
+  }
+}
