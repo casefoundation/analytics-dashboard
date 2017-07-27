@@ -3,16 +3,16 @@ node_js:
 - '6'
 install:
   - npm install -g codecov nyc mocha
-  - cd server
+  - cd $TRAVIS_BUILD_DIR/server
   - npm install
-  - cd ../client
+  - cd $TRAVIS_BUILD_DIR/client
   - npm install
 script:
-- cd server
+- cd $TRAVIS_BUILD_DIR/server
 - npm test
 - npm run report-coverage
 - codecov
-- cd ../client
+- cd $TRAVIS_BUILD_DIR/client
 - npm build
 env:
   matrix:
