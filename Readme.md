@@ -1,5 +1,7 @@
 # Analytics Dashboard
 
+[![Build Status](https://travis-ci.org/casefoundation/analytics-dashboard.svg?branch=master)](https://travis-ci.org/casefoundation/analytics-dashboard)
+
 ## About
 
 ## Configuration and Use
