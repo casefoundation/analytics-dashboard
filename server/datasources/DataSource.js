@@ -10,7 +10,7 @@ class DataSource {
   }
 
   writeTestData() {
-    const savePath = path.join('./test-data',this.constructor.name+'.data');
+    const savePath = path.join('./test/data',this.constructor.name+'.data');
     return new JSONEncrypter().encrypt(this.testData)
       .then((encrypted) => {
         return fs.writeFile(savePath,encrypted);

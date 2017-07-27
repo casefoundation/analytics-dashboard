@@ -20,12 +20,13 @@ chai.use(chaiHttp);
 const fixFeed = (feed) => {
   feed.forEach((feedItem) => {
     feedItem.pubdate = new Date(Date.parse(feedItem.pubdate));
+    feedItem.pubDate = new Date(Date.parse(feedItem.pubDate));
   });
 }
 
 const fixUrls = (urls) => {
   return urls.map((urlStr) => {
-    return url.parse(urlStr);
+    return url.parse(urlStr.href || urlStr);
   });
 }
 
@@ -137,16 +138,58 @@ describe('Datasources',() => {
         });
     });
 
+    it('getGoogleRequestMetricsDimensions',() => {
+      const array = ds.getGoogleRequestMetricsDimensions();
+      assert.equal(array.length,2);
+    });
+
+    it('getGoogleRequestDimensionFilterClauses',() => {
+      const populatedArray = ds.getGoogleRequestDimensionFilterClauses(1);
+      assert.equal(populatedArray.length,1);
+
+      const unPpulatedArray = ds.getGoogleRequestDimensionFilterClauses(0);
+      assert.equal(unPpulatedArray.length,0);
+    });
+
+    it('generateWidgets',() => {
+      const report = [];
+      const widgets = ds.generateWidgets(null,report);
+      assert.equal(widgets.length,1);
+      assert.equal(widgets[0].data,report);
+    })
+
     it('getDateBounds',() => {
-      //TODO
+      const a = new Date();
+      const b = new Date(Date.now()+(Math.random() * 1000));
+      const bounds = ds.getDateBounds(null,a,b);
+      assert.equal(bounds.start,a);
+      assert.equal(bounds.end,b);
     });
 
     it('filterReportFeed',() => {
-      //TODO
+      fixFeed(data.filterReportFeed.feed);
+      const startDate = new Date(Date.parse(data.filterReportFeed.startDate));
+      const endDate = new Date(Date.parse(data.filterReportFeed.endDate));
+      const filtered = ds.filterReportFeed(data.filterReportFeed.feed,startDate,endDate);
+      assert.equal(filtered.length,data.filterReportFeed.filtered.length);
+      for(var i = 0; i < filtered.length; i++) {
+        assert.equal(JSON.stringify(filtered[i]),JSON.stringify(data.filterReportFeed.filtered[i]));
+      }
     });
 
     it('processGoogleResponseBodies',() => {
-      //TODO
+      fixFeed(data.processGoogleResponseBodies.feed);
+      const urls = fixUrls(data.processGoogleResponseBodies.urls);
+      const reportArray = ds.processGoogleResponseBodies(data.processGoogleResponseBodies.feed,urls,data.processGoogleResponseBodies.responseBodies);
+      assert.equal(reportArray.length,data.processGoogleResponseBodies.reportArray.length);
+      data.processGoogleResponseBodies.reportArray.forEach((reportRow,i) => {
+        assert.equal(reportRow['URL'],reportArray[i]['URL']);
+        assert.equal(reportRow['Name'],reportArray[i]['Name']);
+        assert.equal(reportRow['Views'],reportArray[i]['Views']);
+        assert.equal(reportRow['Unique Views'],reportArray[i]['Unique Views']);
+        assert.equal(reportRow['Average Time on Page (Seconds)'],reportArray[i]['Average Time on Page (Seconds)']);
+        assert.equal(reportRow['Average Scroll Depth'],reportArray[i]['Average Scroll Depth']);
+      });
     });
   });
 

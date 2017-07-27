@@ -21,7 +21,7 @@ class FeedTable extends FeedDataSource {
   }
 
   getGoogleRequestDimensionFilterClauses(requestNum) {
-    if (requestNum == 1) {
+    if (requestNum === 1) {
       return [
         {
           'operator': 'AND',
@@ -57,9 +57,16 @@ class FeedTable extends FeedDataSource {
   }
 
   filterReportFeed(feed,startDate,endDate) {
-    return feed.filter((post) => {
+    const filtered = feed.filter((post) => {
       return post.pubdate.getTime() >= startDate.getTime() && post.pubdate.getTime() <= endDate.getTime();
-    })
+    });
+    this.testData.filterReportFeed = {
+      feed,
+      startDate,
+      endDate,
+      filtered
+    };
+    return filtered;
   }
 
   processGoogleResponseBodies(feed,urls,responseBodies) {
@@ -78,11 +85,11 @@ class FeedTable extends FeedDataSource {
               if (!consolidatedReport[foundURL.href]) {
                 const feedRow = feed.find((feedItem) => {
                   return feedItem.link == foundURL.href;
-                })
+                });
                 consolidatedReport[foundURL.href] = {
                   'URL': foundURL.href,
                   'Name': feedRow ? feedRow.title : foundURL.href,
-                  'Date': feedRow ? feedRow.pubDate : null
+                  'Date': feedRow ? feedRow.pubdate : null
                 };
               }
               switch(i) {
@@ -145,6 +152,12 @@ class FeedTable extends FeedDataSource {
         row['Average Scroll Depth'] = '0%';
       }
     });
+    this.testData.processGoogleResponseBodies = {
+      feed,
+      urls,
+      responseBodies,
+      reportArray
+    };
     return reportArray;
   }
 }
