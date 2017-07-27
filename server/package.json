@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha test.js"
+    "test": "mocha test.js",
+    "report-coverage": "nyc report --reporter=lcov mocha test.js"
   },
   "author": "",
   "license": "ISC",

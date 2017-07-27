@@ -1,12 +1,18 @@
 language: node_js
 node_js:
 - '6'
+install:
+  - npm install -g codecov nyc mocha
+  - cd server
+  - npm install
+  - cd ../client
+  - npm install
 script:
 - cd server
-- npm install
 - npm test
+- npm run report-coverage
+- codecov
 - cd ../client
-- npm install
 - npm build
 env:
   matrix:
