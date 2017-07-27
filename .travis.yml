@@ -10,6 +10,7 @@ install:
 script:
 - cd $TRAVIS_BUILD_DIR/server
 - npm test
+- mkdir .nyc_output
 - npm run report-coverage
 - codecov
 - cd $TRAVIS_BUILD_DIR/client
