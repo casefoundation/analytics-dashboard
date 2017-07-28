@@ -1,11 +1,55 @@
 {
   "klass": "GoogleAnalytics",
-  "profile": "abcdef",
+  "profile": "12345678",
   "elements": {
-    "events": [],
-    "pages": [],
-    "dimensions": [],
-    "goals": [],
+    "events": [
+      {
+        "name": "Event Test 1",
+        "category": "cate",
+        "label": [
+          "l1",
+          "l2"
+        ],
+        "action": "act",
+        "helptext": "help1"
+      },
+      {
+        "name": "Event Test 2",
+        "category": "cate 2",
+        "label": "l22",
+        "action": "act 2",
+        "helptext": "help2"
+      }
+    ],
+    "pages": [
+      {
+        "name": "Home",
+        "url": "/"
+      },
+      {
+        "name": "About",
+        "url": "/about"
+      }
+    ],
+    "dimensions": [
+      {
+        "number": 1,
+        "name": "Authors",
+        "helptext": "These are performance metrics for individual authors."
+      }
+    ],
+    "goals": [
+      {
+        "name": "Signups",
+        "number": 3,
+        "helptext": "Helptext 1"
+      },
+      {
+        "name": "Downloads",
+        "number": 4,
+        "helptext": "Helptext 2"
+      }
+    ],
     "topPages": true,
     "referrals": true,
     "overallMetrics": true

@@ -71,6 +71,17 @@ describe('Datasources',() => {
         });
     });
 
+    it('getGoogleRequestMetricsDimensions',() => {
+      const response = ds.getGoogleRequestMetricsDimensions();
+      assert.equal(response.length,1);
+    });
+
+    it('generateWidgets',() => {
+      const widgets = ds.generateWidgets([],[]);
+      assert.equal(widgets.length,1);
+
+    })
+
     it('getDateBounds',() => {
       fixFeed(data.getDateBounds.feed);
       const bounds = ds.getDateBounds(data.getDateBounds.feed);
@@ -195,7 +206,7 @@ describe('Datasources',() => {
 
   describe('GoogleAnalytics',() => {
     const config = require('./test/config/googleanalytics');
-    const ds = new FeedTable(config,secrets);
+    const ds = new GoogleAnalytics(config,secrets);
     let data;
 
     before(() => {
@@ -209,7 +220,18 @@ describe('Datasources',() => {
     });
 
     it('buildRequests',() => {
-      //TODO
+      const specificData = require('./test/data/GoogleAnalytics_buildRequests.json');
+      const startDate = new Date(Date.parse(specificData.startDate));
+      const endDate = new Date(Date.parse(specificData.endDate));
+      const {reportTypes,reportRequests} = ds.buildRequests(startDate,endDate);
+      assert.equal(reportTypes.length,specificData.reportTypes.length);
+      assert.equal(reportRequests.length,specificData.reportRequests.length);
+      specificData.reportTypes.forEach((reportType,i) => {
+        assert.equal(reportType,reportTypes[i]);
+      });
+      specificData.reportRequests.forEach((reportRequest,i) => {
+        assert.equal(JSON.stringify(reportRequest),JSON.stringify(reportRequests[i]));
+      });
     });
 
     it('processResponse',() => {
