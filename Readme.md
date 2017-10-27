@@ -5,7 +5,13 @@
 
 ## About
 
-## Configuration and Use
+This is the dashboard use by the Case Foundation to display key web, email, and social metrics for internal analysis and planning.
+
+## Theme Customization
+
+To customize the dashboard's theme, copy the file `client/src/theme/theme.sample` to `client/src/theme/theme.json`. Inside of that file, update the color codes to match your preferred colors. Also, Inside of `client/src/theme`, place your organization's logo as an SVG file named `logo.svg`.
+
+## Data Source Configuration
 
 The dashboard relies on information from a set of "data sources" that each represent a different API service. Datasources may expose multiple widgets from their data. To enable new datasources, and therefore new widgets, create the necessary configuration file under the `server/config` directory. By default, the project ships with several sample configurations that should be altered per their directions and re-saved as `.json` files. (Also remove all `/* */` comments.)
 

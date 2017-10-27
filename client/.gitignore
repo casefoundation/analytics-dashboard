@@ -20,6 +20,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-src/theme
+src/theme/logo.svg
+src/theme/theme.json
 
 .env
