@@ -8,7 +8,8 @@
         "name": "/* Display ame for front end */",
         "category": "/* GA event category or null */",
         "label": "/* GA event label or null */",
-        "action": "/* GA event action or null */"
+        "action": "/* GA event action or null */",
+        "helptext": "/* Explainer text for front end */"
       }
     ],
     "pages": [
@@ -17,10 +18,18 @@
         "url": "http://example.com/page"
       }
     ],
+    "dimensions": [
+      {
+        "number": "/* GA custom dimension index */",
+        "name": "/* Custom dimension name */",
+        "helptext": "/* Explainer text for front end */"
+      }
+    ],
     "goals": [
       {
         "name": "/* Display ame for front end */",
-        "number": /* GA goal number */
+        "number": /* GA goal number */,
+        "helptext": "/* Explainer text for front end */"
       }
     ],
     "topPages": /* boolean */,

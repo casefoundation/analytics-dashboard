@@ -1,0 +1,6 @@
+{
+  "klass": "FeedTable",  /* DO NOT CHANGE */
+  "profile": "/* GA profile ID */",
+  "feedUrl": "/* Website RSS URL */",
+  "sourceName": "/* Label string */"
+}

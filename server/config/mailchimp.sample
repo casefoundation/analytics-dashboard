@@ -1,7 +1,10 @@
 {
   "klass": "MailchimpStats", /* DO NOT CHANGE */
-  "apiKey": "/* Mailchimp API Key */",
   "lists": [
-    "/* Mailchimp list ID */"
-  ]
+    "/* Mailchimp list IDs for totals */"
+  ],
+  "campaignWhitelist": [
+    "/* Mailchimp list IDs to allow when showing recent campaign performance */"
+  ],
+  "sourceField": ""/* Mailchimp merge tag name to use for computing signup source totals */""
 }
