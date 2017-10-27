@@ -235,53 +235,152 @@ describe('Datasources',() => {
     });
 
     it('processResponse',() => {
-      //TODO
+      // TODO
+      // const {reportTypes,reports,finalReport} = data.processResponse;
+      // const generatedFinalReport = ds.processResponse(reportTypes,reports);
+      // assert.equal(finalReport.length,generatedFinalReport.length);
     });
 
     it('parseEventReport',() => {
-      //TODO
+      const report = ds.parseEventReport({
+        'data': {
+          'rows': [
+            {
+              'metrics': [
+                {
+                  'values': [1]
+                }
+              ]
+            }
+          ]
+        }
+      },0);
+      assert(report.Name,config.elements.events[0].name);
+      assert(report.helptext,config.elements.events[0].helptext);
+      assert(report['Total Events'],1);
     });
 
     it('parsePagesReport',() => {
-      //TODO
+      const report = ds.parsePagesReport({
+        'data': {
+          'rows': [
+            {
+              'metrics': [
+                {
+                  'values': [1,1,1]
+                }
+              ]
+            }
+          ]
+        }
+      },0);
+      assert.equal(report.Name,config.elements.pages[0].name);
+      assert.equal(report.URL,config.elements.pages[0].url);
+      assert.equal(report['Views'],1);
+      assert.equal(report['Unique Views'],1);
+      assert.equal(report['Average Time on Page (seconds)'],1);
     });
 
     it('parseGoalsReport',() => {
-      //TODO
+      const report = ds.parseGoalsReport({
+        'data': {
+          'totals': [
+            {
+              'values': [1]
+            }
+          ]
+        }
+      },0);
+      assert.equal(report.Name,config.elements.goals[0].name);
+      assert.equal(report.helptext,config.elements.goals[0].helptext);
+      assert.equal(report['Conversion Rate'],'1%');
     });
 
     it('parseTopPagesReport',() => {
-      //TODO
+      const report = ds.parseTopPagesReport({
+        'data': {
+          'rows': [
+            {
+              'dimensions': [
+                'test.com',
+                '/test',
+                'test'
+              ],
+              'metrics': [
+                {
+                  'values': [1]
+                }
+              ]
+            }
+          ]
+        }
+      },0);
+      assert.equal(report.length,1);
+      assert.equal(report[0].Name,'test');
+      assert.equal(report[0].URL,'http://test.com/test');
+      assert.equal(report[0].Views,1);
     });
 
     it('parseReferralsReport',() => {
-      //TODO
+      const report = ds.parseReferralsReport({
+        'data': {
+          'rows': [
+            {
+              'dimensions': [
+                'test',
+              ],
+              'metrics': [
+                {
+                  'values': [1]
+                }
+              ]
+            }
+          ]
+        }
+      },0);
+      assert.equal(report.length,1);
+      assert.equal(report[0].Referrer,'test');
+      assert.equal(report[0].Views,1);
     });
 
     it('parseOverallMetricsReport',() => {
-      //TODO
+      const report = ds.parseOverallMetricsReport({
+        'data': {
+          'totals': [
+            {
+              'values': [1,1,1,1]
+            }
+          ]
+        }
+      },0);
+      assert.equal(report['Views'].value,1);
+      assert.equal(report['Unique Views'].value,1);
+      assert.equal(report['Average Time on Page'].value,1);
+      assert.equal(report['New Users'].value,'1%');
     });
 
     it('parseTopDimensionsReport',() => {
-      //TODO
+      const report = ds.parseTopDimensionsReport({
+        'data': {
+          'rows': [
+            {
+              'dimensions': [
+                'test'
+              ],
+              'metrics': [
+                {
+                  'values': [1,1,1]
+                }
+              ]
+            }
+          ]
+        }
+      },0);
+      assert.equal(report.length,1);
+      assert.equal(report[0].Name,'test');
+      assert.equal(report[0].Views,1);
+      assert.equal(report[0]['Unique Views'],1);
+      assert.equal(report[0]['Average Time on Page (seconds)'],1);
     });
-  });
-
-  describe('MailchimpStats',() => {
-    const config = require('./test/config/mailchimpstats');
-    const ds = new MailchimpStats(config,secrets);
-    let data;
-
-    before(() => {
-      return fs.readFile('./test/data/MailchimpStats.data')
-        .then((encrypted) => {
-          return new JSONEncrypter().decrypt(encrypted);
-        })
-        .then((_data) => {
-          data = _data;
-        });
-    });
-
-    //TODO
   });
 });
