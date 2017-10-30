@@ -1,7 +1,8 @@
 # Analytics Dashboard
 
 [![Build Status](https://travis-ci.org/casefoundation/analytics-dashboard.svg?branch=master)](https://travis-ci.org/casefoundation/analytics-dashboard)
-[![codecov](https://codecov.io/gh/casefoundation/analytics-dashboard/branch/master/graph/badge.svg)](https://codecov.io/gh/casefoundation/analytics-dashboard)
+
+![Screenshot](docs/screenshot.png)
 
 ## About
 

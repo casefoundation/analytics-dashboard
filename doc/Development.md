@@ -16,21 +16,15 @@ This will be the tab where we run the backend node server:
 ```bash
 # cd server
 # npm install
-```
-
-**Tab 1**
-
-Back in our `analytics-dashboard/server` directory tab
-
-```bash
 # node index.js
 ```
 
 **Tab 2**
 
-Enter the directory `analytics-dashboard/client`. This will be our front end React app tab.
+This will be our front end React app tab.
 
 ```bash
+# cd client
 # npm install
 # npm start
 ```

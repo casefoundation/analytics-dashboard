@@ -1,5 +1,9 @@
 # Setup
 
+1. [Theme Setup](#theme-setup)
+1. [Data Source Setup](#data-source-setup)
+1. [Deployment](#deployment)
+
 ## Theme Setup
 
 To customize the dashboard's theme, copy the file `client/src/theme/theme.sample` to `client/src/theme/theme.json`. Inside of that file, update the color codes to match your preferred colors. Also, Inside of `client/src/theme`, place your organization's logo as an SVG file named `logo.svg`.
