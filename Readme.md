@@ -24,7 +24,7 @@ See [Contributing](Contributing.md) for additional information.
 
 ## License
 
-See [LICENSE](LICENSE.txt) for additional information.
+See [LICENSE](License.txt) for additional information.
 
 ## To Do:
 
