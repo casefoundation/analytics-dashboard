@@ -1,5 +1,7 @@
 # Analytics Dashboard
 
+**WARNING: UNDER ACTIVE DEVELOPMENT**
+
 [![Build Status](https://travis-ci.org/casefoundation/analytics-dashboard.svg?branch=master)](https://travis-ci.org/casefoundation/analytics-dashboard)
 
 ![Screenshot](doc/screenshot.png)
@@ -15,6 +17,14 @@ See [Setup](doc/Setup.md)
 ## Development
 
 See [Development](doc/Development.md)
+
+## Contributing
+
+See [Contributing](Contributing.md) for additional information.
+
+## License
+
+See [LICENSE](LICENSE.txt) for additional information.
 
 ## To Do:
 
