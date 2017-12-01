@@ -12,6 +12,10 @@ To customize the dashboard's theme, copy the file `client/src/theme/theme.sample
 
 The dashboard relies on information from a set of "data sources" that each represent a different API service. Datasources may expose multiple widgets from their data. To enable new datasources, and therefore new widgets, create the necessary configuration file under the `server/config` directory. By default, the project ships with several sample configurations that should be altered per their directions and re-saved as `.json` files. (Also remove all `/* */` comments.)
 
+Before setting up any data sources, copy the `server/config/dashboards.sample` file to `server/config/dashboards.json`.
+
+Each datasource configuration file also contains a `dashboard` property to support multiple dashboards. To enable multiple dashboards, create a new entry in the `server/config/dashboards.json` file with an object containing a `name` and `label` property. The `name` is the machine readable string contained in each config file that identifies to which dashboard the config file belongs and the `label` property is the human readable string used on the front end.
+
 ### Google Analytics
 
 This datasource accesses the Google Analytics Reporting API and produces any of the following widgets on the dashboard:
