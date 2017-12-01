@@ -11,11 +11,24 @@ const initialDatasourcesState = {
     'startDate': new Date(NOW.getTime() - ONE_DAY * 30),
     'endDate': NOW
   },
+  'dashboard': 'default',
+  'dashboards': [],
   'error': null
 }
 
 const datasources = (state = initialDatasourcesState, action) => {
   switch (action.type) {
+    case ACTION.DATASOURCE.SET_DASHBOARDS:
+      return Object.assign({},state,{
+        'dashboards': action.dashboards,
+        'error': null
+      });
+    case ACTION.DATASOURCE.SET_DASHBOARD:
+      return Object.assign({},state,{
+        'dashboard': action.dashboard,
+        'data': {},
+        'error': null
+      });
     case ACTION.DATASOURCE.SET_NAMES:
       let newData = Object.assign({},state.data);
       action.names.forEach((name) => {

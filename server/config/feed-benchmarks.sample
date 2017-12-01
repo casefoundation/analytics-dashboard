@@ -4,4 +4,5 @@
   "feedUrl": "/* Website RSS URL */"
   "nPosts": /* Number of posts to pull from feed (feed must expose at least twice this number of averaging calculation to work properly) */,
   "nDays": /* Number of days to query in GA *,
+  "dashboard": "default"
 }

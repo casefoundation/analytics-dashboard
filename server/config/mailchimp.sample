@@ -1,5 +1,6 @@
 {
   "klass": "MailchimpStats", /* DO NOT CHANGE */
+  "dashboard": "default",
   "lists": [
     "/* Mailchimp list IDs for totals */"
   ],

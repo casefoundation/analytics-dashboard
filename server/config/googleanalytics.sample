@@ -1,6 +1,6 @@
 {
   "klass": "GoogleAnalytics", /* DO NOT CHANGE */
-  "auth": {/* JSON Auth Object */},
+  "dashboard": "default",
   "profile": "/* GA profile ID */",
   "elements": {
     "events": [

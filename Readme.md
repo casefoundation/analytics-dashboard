@@ -28,7 +28,7 @@ See [License](License.txt) for additional information.
 
 ## To Do:
 
-1. Support for additional screens
+1. Mobile/Desktop traffic split
 1. Simply measured datasource
 1. Clicky datasource
 1. Woopra datasource
