@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Line, LineChart, AreaChart, Area, CartesianGrid} from 'recharts';
+import {ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Line, LineChart, AreaChart, Area, CartesianGrid, PieChart, Pie, Cell} from 'recharts';
 import _ from 'lodash';
 import {
   COLORS
@@ -217,6 +217,21 @@ class Widget extends Component {
                   areas.map((key,i) => (<Area type="monotone" stroke="none" stackId="1" key={i} dataKey={key} fillOpacity={1} fill={COLORS.GRADIENT_BLUE[i]} />))
                 }
               </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        );
+      case 'pie':
+        return (
+          <div>
+            <ResponsiveContainer width="100%" height={450}>
+              <PieChart>
+                <Pie data={this.props.data.data} fill={COLORS.GRADIENT_BLUE[0]} nameKey={this.props.data.key} dataKey={this.props.data.value} label={(row) => row[this.props.data.key]}>
+                  {
+                    this.props.data.data.map((data,i) => (<Cell key={i} fill={COLORS.GRADIENT_BLUE[i]}/>))
+                  }
+                </Pie>
+                <Tooltip formatter={this.formatNumber} />
+              </PieChart>
             </ResponsiveContainer>
           </div>
         );

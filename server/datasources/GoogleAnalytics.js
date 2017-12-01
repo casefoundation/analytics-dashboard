@@ -207,6 +207,22 @@ class GoogleAnalytics extends GoogleDataSource {
       });
     }
 
+    if (this.config.elements.deviceData) {
+      reportTypes.push('deviceData');
+      reportRequests.push({
+        'dimensions': [
+          {
+            'name': 'ga:deviceCategory'
+          }
+        ],
+        'metrics': [
+          {
+            'expression': 'ga:users'
+          }
+        ]
+      });
+    }
+
     this.config.elements.dimensions.forEach((dimension) => {
       reportTypes.push('dimensions');
       reportRequests.push({
@@ -285,6 +301,9 @@ class GoogleAnalytics extends GoogleDataSource {
         case 'dimensions':
           intermediateReport.dimensions.push(this.parseTopDimensionsReport(report,intermediateReport.dimensions.length));
           break;
+        case 'deviceData':
+          intermediateReport.deviceData.push(this.parseDeviceDataReport(report,intermediateReport.deviceData.length));
+          break;
       }
     });
     const finalReport = [];
@@ -359,6 +378,17 @@ class GoogleAnalytics extends GoogleDataSource {
             'helptext': event.helptext
           }
         });
+      });
+    }
+    if (intermediateReport.deviceData && intermediateReport.deviceData.length > 0) {
+      finalReport.push({
+        'type': 'pie',
+        'label': 'Users by Device',
+        'data': intermediateReport.deviceData[0],
+        'key': 'Device',
+        'value': 'Percent of Users',
+        'helptext': 'Users of the site segmented by the type of device they use to browse it.',
+        'percent': true
       });
     }
     this.testData.processResponse = {
@@ -490,6 +520,25 @@ class GoogleAnalytics extends GoogleDataSource {
     return parsedReport;
   }
 
+  parseDeviceDataReport(report,offset) {
+    const total = report.data.rows.reduce((total,row) => {
+      return total + parseFloat(row.metrics[0].values[0]);
+    },0);
+    const parsedReport = report.data.rows.map((row) => {
+      return {
+        'Device': this.titleCase(row.dimensions[0]),
+        'Percent of Users': parseFloat(row.metrics[0].values[0]) / total
+      }
+    });
+    parsedReport.sort((a,b) => {
+      return b['Percent of Users'] - a['Percent of Users'];
+    });
+    parsedReport.forEach((row) => {
+      row['Percent of Users'] = (Math.round(row['Percent of Users'] * 10000) / 10000);
+    })
+    return parsedReport;
+  }
+
   parseTopDimensionsReport(report,offset) {
     const parsedReport = report.data.rows.map(function(row) {
       return {
@@ -505,6 +554,10 @@ class GoogleAnalytics extends GoogleDataSource {
       parsedReport
     };
     return parsedReport;
+  }
+
+  titleCase(str) {
+    return str[0].toUpperCase() + str.substring(1);
   }
 }
 

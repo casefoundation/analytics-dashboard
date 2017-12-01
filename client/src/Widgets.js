@@ -58,7 +58,7 @@ class Widgets extends Component {
 }
 
 Widgets.isWidgetType = (type) => {
-  return ['table','barchart','callout','sparklines','stackedchart'].indexOf(type) >= 0;
+  return ['table','barchart','callout','sparklines','stackedchart','pie'].indexOf(type) >= 0;
 }
 
 
