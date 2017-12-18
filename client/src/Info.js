@@ -1,50 +1,57 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import './Info.scss'
+import PropTypes from 'prop-types'
 
 export default class Info extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
     this.state = {
       'visible': false,
       'transitioningToInvisible': false
     }
   }
 
-  showTooltip() {
+  showTooltip () {
     this.setState({
-      'visible':true,
-      'transitioningToInvisible':false
-    });
+      'visible': true,
+      'transitioningToInvisible': false
+    })
   }
 
-  hideTooltip() {
-    this.setState({'transitioningToInvisible':true});
+  hideTooltip () {
+    this.setState({'transitioningToInvisible': true})
     setTimeout(() => {
       if (this.state.transitioningToInvisible) {
         this.setState({
-          'visible':false,
-          'transitioningToInvisible':false
-        });
+          'visible': false,
+          'transitioningToInvisible': false
+        })
       }
-    },250);
+    }, 250)
   }
 
-  render() {
+  render () {
     const overlayStyle = {
       'opacity': this.state.visible ? 1 : 0,
       'top': (this.infoElement ? this.infoElement.offsetTop + this.infoElement.offsetHeight : 0) + this.props.offsetTop,
       'right': this.props.offsetRight
     }
     return (
-      <div className="info" ref={(element) => { this.infoElement = element; }} >
-        <span className="glyphicon glyphicon-question-sign" onMouseOver={() => this.showTooltip()} onMouseOut={() => this.hideTooltip()}>
-          <span className="sr-only">Info</span>
+      <div className='info' ref={(element) => { this.infoElement = element }} >
+        <span className='glyphicon glyphicon-question-sign' onMouseOver={() => this.showTooltip()} onMouseOut={() => this.hideTooltip()}>
+          <span className='sr-only'>Info</span>
         </span>
-        <div style={overlayStyle} ref={(element) => { this.tooltipElement = element; }} className="dashboard-tooltip">
-          <span className="glyphicon glyphicon-triangle-top"></span>
+        <div style={overlayStyle} ref={(element) => { this.tooltipElement = element }} className='dashboard-tooltip'>
+          <span className='glyphicon glyphicon-triangle-top' />
           { this.props.helptext }
         </div>
       </div>
-    );
+    )
   }
+}
+
+Info.propTypes = {
+  offsetTop: PropTypes.number,
+  offsetRight: PropTypes.number,
+  helptext: PropTypes.string
 }

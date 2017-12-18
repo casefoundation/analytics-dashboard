@@ -1,50 +1,50 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import _ from 'lodash';
-import Masonry from 'react-masonry-component';
-import Widget from './Widget';
-import Info from './Info';
-import './Widgets.scss';
+import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import _ from 'lodash'
+import Masonry from 'react-masonry-component'
+import Widget from './Widget'
+import Info from './Info'
+import './Widgets.scss'
+import PropTypes from 'prop-types'
 
 class Widgets extends Component {
-
-  getWidgetWidthClass(widget) {
+  getWidgetWidthClass (widget) {
     return 'col-lg-4 col-md-6 col-sm-12'
   }
 
-  render() {
-    const datasourcesAsArray = _.toPairs(this.props.datasources.data).filter((datasource) => datasource[1].data.length > 0).map((datasource) => ({ 'name': datasource[0], 'data': datasource[1] }));
-    const widgets = [];
+  render () {
+    const datasourcesAsArray = _.toPairs(this.props.datasources.data).filter((datasource) => datasource[1].data.length > 0).map((datasource) => ({ 'name': datasource[0], 'data': datasource[1] }))
+    const widgets = []
     datasourcesAsArray.forEach((datasource) => {
       datasource.data.data.filter((data) => Widgets.isWidgetType(data.type)).forEach((data) => {
         widgets.push({
           datasource,
           data
-        });
-      });
-    });
+        })
+      })
+    })
     return (
       <Masonry
-        className="row"
+        className='row'
         >
         {
-          widgets.map((widget,i) => {
+          widgets.map((widget, i) => {
             return (
-              <div key={i} className={[this.getWidgetWidthClass(widget),widget.datasource.data.loading ? 'loading' : null].join(' ')}>
-                <div className="panel panel-default">
-                  <div className="panel-heading">
-                    <h3 className="panel-title pull-left">
+              <div key={i} className={[this.getWidgetWidthClass(widget), widget.datasource.data.loading ? 'loading' : null].join(' ')}>
+                <div className='panel panel-default'>
+                  <div className='panel-heading'>
+                    <h3 className='panel-title pull-left'>
                       {widget.data.label}
                       { widget.datasource.data.loading ? (
                         <span> (Loading)</span>
                       ) : null }
                     </h3>
-                    <div className="pull-right">
+                    <div className='pull-right'>
                       <Info helptext={widget.data.helptext} offsetRight={20} offsetTop={0} />
                     </div>
                   </div>
-                  <div className="panel-body">
+                  <div className='panel-body'>
                     <Widget datasource={widget.datasource} data={widget.data} />
                   </div>
                 </div>
@@ -58,9 +58,8 @@ class Widgets extends Component {
 }
 
 Widgets.isWidgetType = (type) => {
-  return ['table','barchart','callout','sparklines','stackedchart','pie'].indexOf(type) >= 0;
+  return ['table', 'barchart', 'callout', 'sparklines', 'stackedchart', 'pie'].indexOf(type) >= 0
 }
-
 
 const stateToProps = (state) => {
   return {
@@ -74,3 +73,9 @@ const dispatchToProps = (dispatch) => {
 }
 
 export default connect(stateToProps, dispatchToProps)(Widgets)
+
+Widgets.propTypes = {
+  datasources: React.PropTypes.shape({
+    data: PropTypes.object.isRequired
+  })
+}
