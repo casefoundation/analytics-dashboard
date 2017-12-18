@@ -44,11 +44,13 @@ class Dashboard extends Component {
                 <img src={logo} alt="Logo" className="logo" />
               </a>
             </div>
-            <ul className="nav navbar-nav">
-              {
-                this.props.datasources.dashboards.map((dashboard,i) => (<li key={i} className={dashboard.name === this.props.datasources.dashboard ? 'active' : null}><Link to={dashboard.name === 'default' ? '/' : '/'+dashboard.name}>{dashboard.label}</Link></li>))
-              }
-            </ul>
+            { this.props.datasources.dashboards.length > 1 && (
+              <ul className="nav navbar-nav">
+                {
+                  this.props.datasources.dashboards.map((dashboard,i) => (<li key={i} className={dashboard.name === this.props.datasources.dashboard ? 'active' : null}><Link to={dashboard.name === 'default' ? '/' : '/'+dashboard.name}>{dashboard.label}</Link></li>))
+                }
+              </ul>
+            )}
             <div className="navbar-form navbar-right">
               <DashboardControl />
             </div>

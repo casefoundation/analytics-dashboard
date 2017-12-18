@@ -107,6 +107,7 @@ class FeedBenchmarks extends FeedDataSource {
 
   analyzeReport(feed,report) {
     const reports = [];
+    const tzOffset = new Date().getTimezoneOffset() * 60 * 1000;
     feed.slice(0,this.config.nPosts).forEach((reportPost,i) => {
       const data = [];
       const thisReport = {
@@ -123,11 +124,12 @@ class FeedBenchmarks extends FeedDataSource {
         const baseDate = new Date(Date.parse(this.formatDate(computePost.pubdate)));
         for(var l = 0; l < this.config.nDays; l++) {
           const stamp = baseDate.getTime() + (l * FeedDataSource.OneDay);
+          const actualDate = thisReport.startDate.getTime() + (l * FeedDataSource.OneDay);
           if (!data[l]) {
             data[l] = {
               'Average': [],
               'Actual': 0,
-              'Date': new Date(stamp).toDateString()
+              'Date': new Date(actualDate).toDateString()
             };
           }
           if (report[computePost.link] && report[computePost.link][stamp] && report[computePost.link][stamp].metrics.pageviews) {
