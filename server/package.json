@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test.js",
+    "lint": "eslint --ignore-path .gitignore .",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov > coverage.lcov"
   },
   "author": "",
@@ -24,6 +25,8 @@
   "devDependencies": {
     "chai": "^4.1.0",
     "chai-http": "^3.0.0",
-    "mocha": "^3.4.2"
+    "eslint": "^4.13.1",
+    "mocha": "^3.4.2",
+    "standard": "^10.0.3"
   }
 }
