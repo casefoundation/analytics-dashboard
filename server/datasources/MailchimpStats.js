@@ -1,22 +1,22 @@
-const Mailchimp = require('mailchimp-api-v3');
-const async = require('async');
-const _ = require('lodash');
-const DataSource = require('./DataSource');
+const Mailchimp = require('mailchimp-api-v3')
+const async = require('async')
+const _ = require('lodash')
+const DataSource = require('./DataSource')
 
 class MailchimpStats extends DataSource {
-  constructor(config,secrets) {
-    super(config,secrets);
-    this.mailchimp = new Mailchimp(secrets.mailchimp);
+  constructor (config, secrets) {
+    super(config, secrets)
+    this.mailchimp = new Mailchimp(secrets.mailchimp)
   }
 
-  setup() {
-    return new Promise((resolve,reject) => {
-      resolve();
-    });
+  setup () {
+    return new Promise((resolve, reject) => {
+      resolve()
+    })
   }
 
-  query(startDate,endDate) {
-    const returnData = [];
+  query (startDate, endDate) {
+    const returnData = []
     return this.fetchListStats()
       .then((stats) => {
         stats.forEach((list) => {
@@ -27,7 +27,7 @@ class MailchimpStats extends DataSource {
               'value': list.stats.member_count,
               'helptext': 'The number of subscribers in the ' + list.name + ' list in MailChimp'
             }
-          });
+          })
           returnData.push({
             'type': 'callout',
             'label': list.name + ' Stats',
@@ -46,11 +46,11 @@ class MailchimpStats extends DataSource {
               }
             ],
             'helptext': 'These are the average open and click rates for email campaigns sent from the ' + list.name + ' list in MailChimp.'
-          });
-        });
+          })
+        })
       })
       .then(() => {
-        return this.fetchMemberSignupStats(startDate,endDate);
+        return this.fetchMemberSignupStats(startDate, endDate)
       })
       .then((arraysOfDaysAndSignups) => {
         arraysOfDaysAndSignups.forEach((daysAndSignups) => {
@@ -60,11 +60,11 @@ class MailchimpStats extends DataSource {
             'xAxis': 'date',
             'data': daysAndSignups,
             'helptext': 'This is a daily graph of email list signups in Mailchimp and where the subscribers are coming from.'
-          });
-        });
+          })
+        })
       })
       .then(() => {
-        return this.fetchCampaignStats(startDate,endDate);
+        return this.fetchCampaignStats(startDate, endDate)
       })
       .then((campaigns) => {
         returnData.push({
@@ -87,32 +87,32 @@ class MailchimpStats extends DataSource {
         })
       })
       .then(() => {
-        return returnData;
+        return returnData
       })
   }
 
-  fetchListStats() {
-    return new Promise((resolve,reject) => {
+  fetchListStats () {
+    return new Promise((resolve, reject) => {
       async.series(
         this.config.lists.map((listId) => {
           return (next) => {
             this.mailchimp.get({
               'path': '/lists/' + listId
-            },next);
+            }, next)
           }
         }),
-        (err,stats) => {
+        (err, stats) => {
           if (err) {
-            reject(err);
+            reject(err)
           } else {
-            resolve(stats);
+            resolve(stats)
           }
         }
       )
-    });
+    })
   }
 
-  fetchCampaignStats(startDate,endDate) {
+  fetchCampaignStats (startDate, endDate) {
     return this.mailchimp.get({
       'path': '/campaigns',
       'query': {
@@ -127,20 +127,20 @@ class MailchimpStats extends DataSource {
       .then((campaigns) => {
         if (this.config.campaignWhitelist) {
           return campaigns.campaigns.filter((campaign) => {
-            return this.config.campaignWhitelist.indexOf(campaign.recipients.list_id) >= 0;
-          });
+            return this.config.campaignWhitelist.indexOf(campaign.recipients.list_id) >= 0
+          })
         } else {
-          return campaigns.campaigns;
+          return campaigns.campaigns
         }
       })
   }
 
-  fetchMemberSignupStats(startDate,endDate) {
-    return new Promise((resolve,reject) => {
+  fetchMemberSignupStats (startDate, endDate) {
+    return new Promise((resolve, reject) => {
       async.series(
         this.config.lists.map((listId) => {
           return (next) => {
-            const aggregatedMembers = [];
+            const aggregatedMembers = []
             const makeMCCall = (page) => {
               return this.mailchimp.get({
                 'path': '/lists/' + listId + '/members',
@@ -153,54 +153,54 @@ class MailchimpStats extends DataSource {
                 }
               }).then((members) => {
                 members.members.forEach((member) => {
-                  aggregatedMembers.push(member);
-                });
+                  aggregatedMembers.push(member)
+                })
                 if (members.members.length == 1000) {
-                  return makeMCCall(page+1);
+                  return makeMCCall(page + 1)
                 }
-              });
+              })
             }
             makeMCCall(0)
               .then(() => {
-                const dayMap = {};
+                const dayMap = {}
                 aggregatedMembers.forEach((member) => {
-                  const signupDate = new Date(Date.parse(member.timestamp_opt));
-                  const signupDay = new Date(signupDate.getFullYear(),signupDate.getMonth(),signupDate.getDate());
-                  const stamp = signupDay.getTime();
+                  const signupDate = new Date(Date.parse(member.timestamp_opt))
+                  const signupDay = new Date(signupDate.getFullYear(), signupDate.getMonth(), signupDate.getDate())
+                  const stamp = signupDay.getTime()
                   if (!dayMap[stamp]) {
                     dayMap[stamp] = {
                       'date': signupDay
-                    };
+                    }
                   }
-                  const source = member.merge_fields[this.config.sourceField] && member.merge_fields[this.config.sourceField].trim().length > 0 ? member.merge_fields[this.config.sourceField] : 'Unknown';
+                  const source = member.merge_fields[this.config.sourceField] && member.merge_fields[this.config.sourceField].trim().length > 0 ? member.merge_fields[this.config.sourceField] : 'Unknown'
                   if (!dayMap[stamp][source]) {
-                    dayMap[stamp][source] = 1;
+                    dayMap[stamp][source] = 1
                   } else {
-                    dayMap[stamp][source]++;
+                    dayMap[stamp][source]++
                   }
-                });
-                const days = _.values(dayMap);
-                days.sort((a,b) => {
-                  return a.date.getTime() - b.date.getTime();
-                });
+                })
+                const days = _.values(dayMap)
+                days.sort((a, b) => {
+                  return a.date.getTime() - b.date.getTime()
+                })
                 days.forEach((day) => {
-                  day.date = day.date.toDateString();
-                });
-                next(null,days);
+                  day.date = day.date.toDateString()
+                })
+                next(null, days)
               })
-              .catch(next);
+              .catch(next)
           }
         }),
-        (err,members) => {
+        (err, members) => {
           if (err) {
-            reject(err);
+            reject(err)
           } else {
-            resolve(members);
+            resolve(members)
           }
         }
       )
-    });
+    })
   }
 }
 
-module.exports = MailchimpStats;
+module.exports = MailchimpStats
