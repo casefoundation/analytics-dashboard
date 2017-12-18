@@ -10,9 +10,11 @@ install:
 script:
 - cd $TRAVIS_BUILD_DIR/server
 - npm test
+- npm run lint
 - npm run coverage
 - codecov
 - cd $TRAVIS_BUILD_DIR/client
+- npm run lint
 - npm build
 env:
   matrix:
