@@ -6,10 +6,15 @@ const secrets = process.env.NODE_ENV === 'test' ? require('../test/config/secret
 
 exports.load = () => {
   const configPath = process.env.NODE_ENV === 'test' ? './test/config' : './config';
-  return fs.readdir(configPath)
+  let dashboardsArray = null;
+  return fs.readJson(path.join(configPath,'dashboards.json'))
+    .then((_dashboardsArray) => {
+      dashboardsArray = _dashboardsArray;
+      return fs.readdir(configPath);
+    })
     .then((contents) => {
       const configFiles = contents.filter((file) => {
-        return path.extname(file) === '.json' && file !== 'secrets.json';
+        return path.extname(file) === '.json' && file !== 'secrets.json' && file !== 'dashboards.json';
       });
       return new Promise((resolve,reject) => {
         async.parallel(
@@ -38,7 +43,10 @@ exports.load = () => {
             if (err) {
               reject(err)
             } else {
-              resolve(configs.filter((config) => config !== null));
+              resolve({
+                dashboardsArray,
+                'datasources': configs.filter((config) => config !== null)
+              });
             }
           }
         )

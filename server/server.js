@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const path = require('path');
 const configLoader = require('./lib/configLoader');
-const dashboardsArray = require('./config/dashboards.json');
+// const dashboardsArray = require('./config/dashboards.json');
 
 const app = express();
 if (process.env.NODE_ENV !== 'test') {
@@ -14,13 +14,13 @@ app.use(bodyParser.json());
 
 module.exports = () => {
   return configLoader.load()
-    .then((datasources) => {
-      setupRoutes(datasources);
+    .then(({dashboardsArray,datasources}) => {
+      setupRoutes(dashboardsArray,datasources);
       return app;
     })
 }
 
-function setupRoutes(datasources) {
+function setupRoutes(dashboardsArray,datasources) {
   app.get('/api/dashboard',(req,res,next) => {
     res.send(dashboardsArray);
   });

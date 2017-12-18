@@ -40,9 +40,23 @@ describe('Web API',() => {
       });
   });
 
-  it('GET /api/datasource',(done) => {
+  it('GET /api/dashboard',(done) => {
     chai.request(api)
-      .get('/api/datasource')
+      .get('/api/dashboard')
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('array');
+        res.body.length.should.be.eql(1);
+        res.body[0].should.be.a('object');
+        res.body[0].name.should.be.eql('default');
+        res.body[0].label.should.be.eql('Home');
+        done();
+      });
+  });
+
+  it('GET /api/default/datasource',(done) => {
+    chai.request(api)
+      .get('/api/default/datasource')
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a('array');
@@ -111,24 +125,6 @@ describe('Datasources',() => {
           _.keys(data.processGoogleResponseBodies.consolidatedReport[url][date].metrics).forEach((metric) => {
             assert.equal(consolidatedReport[url][date].metrics[metric],data.processGoogleResponseBodies.consolidatedReport[url][date].metrics[metric]);
           });
-        });
-      });
-    });
-
-    it('analyzeReport',() => {
-      fixFeed(data.analyzeReport.feed);
-      const reports = ds.analyzeReport(data.analyzeReport.feed,data.analyzeReport.report);
-      assert.equal(reports.length,data.analyzeReport.reports.length);
-      data.analyzeReport.reports.forEach((report,i) => {
-        assert.equal(reports[i].url,report.url);
-        assert.equal(reports[i].name,report.name);
-        assert.equal(reports[i].startDate.toISOString(),report.startDate);
-        assert(reports[i].endDate.getTime() < new Date().getTime());
-        assert.equal(reports[i].data.length,report.data.length);
-        report.data.forEach((dataRow,j) => {
-          assert.equal(reports[i].data[j].Average,dataRow.Average);
-          assert.equal(reports[i].data[j].Actual,dataRow.Actual);
-          assert.equal(reports[i].data[j].Date,dataRow.Date);
         });
       });
     });

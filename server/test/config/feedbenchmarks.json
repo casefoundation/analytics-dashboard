@@ -1,4 +1,5 @@
 {
   "nPosts": 10,
-  "nDays": 30
+  "nDays": 30,
+  "dashboard": "default"
 }

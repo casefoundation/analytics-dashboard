@@ -7,5 +7,6 @@
     "qwerty",
     "asdf"
   ],
-  "sourceField": "SOURCE"
+  "sourceField": "SOURCE",
+  "dashboard": "default"
 }

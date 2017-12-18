@@ -1,6 +1,7 @@
 {
   "klass": "GoogleAnalytics",
   "profile": "12345678",
+  "dashboard": "default",
   "elements": {
     "events": [
       {
