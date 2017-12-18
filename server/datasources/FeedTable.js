@@ -83,7 +83,7 @@ class FeedTable extends FeedDataSource {
             if (foundURL) {
               if (!consolidatedReport[foundURL.href]) {
                 const feedRow = feed.find((feedItem) => {
-                  return feedItem.link == foundURL.href
+                  return feedItem.link === foundURL.href
                 })
                 consolidatedReport[foundURL.href] = {
                   'URL': foundURL.href,

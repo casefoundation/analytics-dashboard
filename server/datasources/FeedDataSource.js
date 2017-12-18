@@ -1,10 +1,7 @@
 const google = require('googleapis')
 const analyticsreporting = google.analyticsreporting('v4')
-const async = require('async')
 const FeedParser = require('feedparser')
 const url = require('url')
-const fs = require('fs')
-const path = require('path')
 const GoogleDataSource = require('./GoogleDataSource')
 const request = require('request')
 
@@ -48,9 +45,8 @@ class FeedDataSource extends GoogleDataSource {
       feedparser.on('error', reject)
       feedparser.on('readable', function () {
         const stream = this
-        const meta = this.meta
         var item
-        while (item = stream.read()) {
+        while ((item = stream.read()) !== null) {
           items.push(item)
         }
       })
@@ -144,7 +140,7 @@ class FeedDataSource extends GoogleDataSource {
         }, {}, (err, response) => {
           if (err) {
             reject(err)
-          } else if (response.reports && response.reports.length == reportRequests.length) {
+          } else if (response.reports && response.reports.length === reportRequests.length) {
             const pageTokens = reportTypes.map(function (report) {
               return null
             })
@@ -161,8 +157,8 @@ class FeedDataSource extends GoogleDataSource {
             } else {
               resolve(previousResponseBodies)
             }
-          } else if (body.error) {
-            reject(new Error(body.error.message))
+          } else if (response.error) {
+            reject(new Error(response.error.message))
           } else {
             reject(new Error('Unknown response'))
           }

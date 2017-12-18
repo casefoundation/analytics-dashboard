@@ -6,7 +6,7 @@ const zlib = require('zlib')
 class JSONEncrypter {
   encrypt (object) {
     return new Promise((resolve, reject) => {
-      const buffer = new Buffer(JSON.stringify(object), 'utf-8')
+      const buffer = Buffer.from(JSON.stringify(object), 'utf-8')
       const cipher = crypto.createCipher(algorithm, password)
       const crypted = Buffer.concat([cipher.update(buffer), cipher.final()])
       zlib.gzip(crypted, (err, result) => {

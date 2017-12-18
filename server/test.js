@@ -1,13 +1,13 @@
+/* global describe beforeEach it before */
+
 process.env.NODE_ENV = 'test'
 
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const server = require('./server')
-const should = chai.should()
 const FeedBenchmarks = require('./datasources/FeedBenchmarks')
 const FeedTable = require('./datasources/FeedTable')
 const GoogleAnalytics = require('./datasources/GoogleAnalytics')
-const MailchimpStats = require('./datasources/MailchimpStats')
 const assert = require('assert')
 const _ = require('lodash')
 const url = require('url')
@@ -15,6 +15,7 @@ const secrets = require('./test/config/secrets')
 const fs = require('fs-extra')
 const JSONEncrypter = require('./lib/JSONEncrypter')
 
+chai.should()
 chai.use(chaiHttp)
 
 const fixFeed = (feed) => {
@@ -44,13 +45,17 @@ describe('Web API', () => {
     chai.request(api)
       .get('/api/dashboard')
       .end((err, res) => {
-        res.should.have.status(200)
-        res.body.should.be.a('array')
-        res.body.length.should.be.eql(1)
-        res.body[0].should.be.a('object')
-        res.body[0].name.should.be.eql('default')
-        res.body[0].label.should.be.eql('Home')
-        done()
+        if (err) {
+          done(err)
+        } else {
+          res.should.have.status(200)
+          res.body.should.be.a('array')
+          res.body.length.should.be.eql(1)
+          res.body[0].should.be.a('object')
+          res.body[0].name.should.be.eql('default')
+          res.body[0].label.should.be.eql('Home')
+          done()
+        }
       })
   })
 
@@ -58,12 +63,16 @@ describe('Web API', () => {
     chai.request(api)
       .get('/api/default/datasource')
       .end((err, res) => {
-        res.should.have.status(200)
-        res.body.should.be.a('array')
-        res.body.length.should.be.eql(2)
-        res.body[0].should.be.eql('googleanalytics')
-        res.body[1].should.be.eql('mailchimpstats')
-        done()
+        if (err) {
+          done(err)
+        } else {
+          res.should.have.status(200)
+          res.body.should.be.a('array')
+          res.body.length.should.be.eql(2)
+          res.body[0].should.be.eql('googleanalytics')
+          res.body[1].should.be.eql('mailchimpstats')
+          done()
+        }
       })
   })
 })
@@ -201,17 +210,6 @@ describe('Datasources', () => {
   describe('GoogleAnalytics', () => {
     const config = require('./test/config/googleanalytics')
     const ds = new GoogleAnalytics(config, secrets)
-    let data
-
-    before(() => {
-      return fs.readFile('./test/data/GoogleAnalytics.data')
-        .then((encrypted) => {
-          return new JSONEncrypter().decrypt(encrypted)
-        })
-        .then((_data) => {
-          data = _data
-        })
-    })
 
     it('buildRequests', () => {
       const specificData = require('./test/data/GoogleAnalytics_buildRequests.json')
@@ -226,13 +224,6 @@ describe('Datasources', () => {
       specificData.reportRequests.forEach((reportRequest, i) => {
         assert.equal(JSON.stringify(reportRequest), JSON.stringify(reportRequests[i]))
       })
-    })
-
-    it('processResponse', () => {
-      // TODO
-      // const {reportTypes,reports,finalReport} = data.processResponse;
-      // const generatedFinalReport = ds.processResponse(reportTypes,reports);
-      // assert.equal(finalReport.length,generatedFinalReport.length);
     })
 
     it('parseEventReport', () => {

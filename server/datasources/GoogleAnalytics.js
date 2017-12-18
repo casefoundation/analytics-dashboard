@@ -245,7 +245,6 @@ class GoogleAnalytics extends GoogleDataSource {
       })
     })
 
-    const now = new Date()
     reportRequests.forEach((request) => {
       request.viewId = this.config.profile
       request.dateRanges = {
@@ -547,7 +546,7 @@ class GoogleAnalytics extends GoogleDataSource {
         'Unique Views': parseInt(row.metrics[0].values[0]),
         'Average Time on Page (seconds)': parseInt(row.metrics[0].values[2])
       }
-    }).filter((data) => data.Name && data.Name != 'null')
+    }).filter((data) => data.Name && data.Name !== 'null')
     this.testData.parseTopDimensionsReport = {
       report,
       offset,

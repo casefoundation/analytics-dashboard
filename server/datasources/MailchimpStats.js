@@ -155,7 +155,7 @@ class MailchimpStats extends DataSource {
                 members.members.forEach((member) => {
                   aggregatedMembers.push(member)
                 })
-                if (members.members.length == 1000) {
+                if (members.members.length === 1000) {
                   return makeMCCall(page + 1)
                 }
               })
