@@ -41,6 +41,43 @@ class GoogleAnalytics extends GoogleDataSource {
     const reportTypes = []
     const reportRequests = []
 
+    this.buildEventsRequests(startDate, endDate, reportTypes, reportRequests)
+    this.buildPagesRequests(startDate, endDate, reportTypes, reportRequests)
+    this.buildGoalsRequests(startDate, endDate, reportTypes, reportRequests)
+    this.buildTopPagesRequests(startDate, endDate, reportTypes, reportRequests)
+    this.buildReferralsRequests(startDate, endDate, reportTypes, reportRequests)
+    this.buildOverallMetricsRequests(startDate, endDate, reportTypes, reportRequests)
+    this.buildDeviceDataRequests(startDate, endDate, reportTypes, reportRequests)
+    this.buildDimensionsRequests(startDate, endDate, reportTypes, reportRequests)
+
+    reportRequests.forEach((request) => {
+      request.viewId = this.config.profile
+      request.dateRanges = {
+        'startDate': this.formatDate(startDate),
+        'endDate': this.formatDate(endDate)
+      }
+      request.samplingLevel = 'LARGE'
+      if (request.pageSize) {
+        request.pageSize = 10000
+      }
+    })
+
+    // this.testData.buildRequests = {
+    //   startDate,
+    //   endDate,
+    //   reportTypes,
+    //   reportRequests
+    // };
+
+    // console.log(JSON.stringify(this.testData.buildRequests))
+
+    return {
+      reportTypes,
+      reportRequests
+    }
+  }
+
+  buildEventsRequests (startDate, endDate, reportTypes, reportRequests) {
     this.config.elements.events.forEach((event) => {
       reportTypes.push('events')
       reportRequests.push({
@@ -84,7 +121,9 @@ class GoogleAnalytics extends GoogleDataSource {
         }
       })
     })
+  }
 
+  buildPagesRequests (startDate, endDate, reportTypes, reportRequests) {
     this.config.elements.pages.forEach((page) => {
       reportTypes.push('pages')
       const urlObject = url.parse(page.url)
@@ -121,7 +160,9 @@ class GoogleAnalytics extends GoogleDataSource {
         })
       }
     })
+  }
 
+  buildGoalsRequests (startDate, endDate, reportTypes, reportRequests) {
     this.config.elements.goals.forEach((goal) => {
       reportTypes.push('goals')
       reportRequests.push({
@@ -132,7 +173,9 @@ class GoogleAnalytics extends GoogleDataSource {
         ]
       })
     })
+  }
 
+  buildTopPagesRequests (startDate, endDate, reportTypes, reportRequests) {
     if (this.config.elements.topPages) {
       reportTypes.push('topPages')
       reportRequests.push({
@@ -162,7 +205,9 @@ class GoogleAnalytics extends GoogleDataSource {
         'pageSize': 100
       })
     }
+  }
 
+  buildReferralsRequests (startDate, endDate, reportTypes, reportRequests) {
     if (this.config.elements.referrals) {
       reportTypes.push('referrals')
       reportRequests.push({
@@ -186,7 +231,9 @@ class GoogleAnalytics extends GoogleDataSource {
         'pageSize': 100
       })
     }
+  }
 
+  buildOverallMetricsRequests (startDate, endDate, reportTypes, reportRequests) {
     if (this.config.elements.overallMetrics) {
       reportTypes.push('overallMetrics')
       reportRequests.push({
@@ -206,7 +253,9 @@ class GoogleAnalytics extends GoogleDataSource {
         ]
       })
     }
+  }
 
+  buildDeviceDataRequests (startDate, endDate, reportTypes, reportRequests) {
     if (this.config.elements.deviceData) {
       reportTypes.push('deviceData')
       reportRequests.push({
@@ -222,7 +271,9 @@ class GoogleAnalytics extends GoogleDataSource {
         ]
       })
     }
+  }
 
+  buildDimensionsRequests (startDate, endDate, reportTypes, reportRequests) {
     this.config.elements.dimensions.forEach((dimension) => {
       reportTypes.push('dimensions')
       reportRequests.push({
@@ -244,32 +295,6 @@ class GoogleAnalytics extends GoogleDataSource {
         ]
       })
     })
-
-    reportRequests.forEach((request) => {
-      request.viewId = this.config.profile
-      request.dateRanges = {
-        'startDate': this.formatDate(startDate),
-        'endDate': this.formatDate(endDate)
-      }
-      request.samplingLevel = 'LARGE'
-      if (request.pageSize) {
-        request.pageSize = 10000
-      }
-    })
-
-    // this.testData.buildRequests = {
-    //   startDate,
-    //   endDate,
-    //   reportTypes,
-    //   reportRequests
-    // };
-
-    // console.log(JSON.stringify(this.testData.buildRequests))
-
-    return {
-      reportTypes,
-      reportRequests
-    }
   }
 
   processResponse (reportTypes, reports) {
@@ -305,6 +330,10 @@ class GoogleAnalytics extends GoogleDataSource {
           break
       }
     })
+    return this.buildFinalReport(reportTypes, reports, intermediateReport)
+  }
+
+  buildFinalReport (reportTypes, reports, intermediateReport) {
     const finalReport = []
     if (intermediateReport.pages && intermediateReport.pages.length > 0) {
       finalReport.push({
