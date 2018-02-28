@@ -11,7 +11,9 @@
 
 ## About
 
-This is the dashboard use by the Case Foundation to display key web, email, and social metrics for internal analysis and planning.
+Data-informed decision making within an organization is only as good as the organization's understanding of the data and the timeliness of that information. Faced with that challenge here at the Case Foundation, the team responsible for digital analytics and reporting, called ASK meaning Analytics SEO and Key Metrics, set out to construct a dashboard in that directly communicated key online data to the entire organization in an efficient and easy-to-use experience. 
+
+This dashboard has the potential to support and display any dataset needed, blending information from any API or other data service that we desire. To start, we've built the dashboard to interact with our RSS feed, Google Analytics, and Mailchimp, and we plan to eventually expand the dashboard's functionality to also pull in data from other tools we use such as Simply Measured, Clicky and Woopra.
 
 ## Setup
 
@@ -35,4 +37,3 @@ See [License](License.txt) for additional information.
 1. Clicky datasource
 1. Woopra datasource
 1. Scrolldepth datasource
-
