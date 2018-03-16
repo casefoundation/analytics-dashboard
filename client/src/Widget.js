@@ -244,7 +244,7 @@ export default class Widget extends Component {
 
 Widget.propTypes = {
   data: React.PropTypes.shape({
-    data: PropTypes.array.isRequired,
+    data: PropTypes.any,
     percent: PropTypes.boolean,
     type: PropTypes.string,
     key: PropTypes.string,

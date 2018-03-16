@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 import {
   fetchDatasourceNames,
   setDashboardName,
-  fetchDashboardNames
+  fetchDashboardNames,
+  fetchAllDatasourcesData
 } from './actions'
 import _ from 'lodash'
 import DashboardControl from './DashboardControl'
@@ -18,6 +19,11 @@ import PropTypes from 'prop-types'
 class Dashboard extends Component {
   componentDidMount () {
     this.loadDashboard(this.props.match.params.dashboard || 'default')
+    this.interval = window.setInterval(() => this.props.fetchAllDatasourcesData(), 1000 * 60 * 5)
+  }
+
+  componentWillUnmount () {
+    window.clearInterval(this.interval)
   }
 
   componentWillReceiveProps (props) {
@@ -101,7 +107,8 @@ const dispatchToProps = (dispatch) => {
   return bindActionCreators({
     fetchDatasourceNames,
     setDashboardName,
-    fetchDashboardNames
+    fetchDashboardNames,
+    fetchAllDatasourcesData
   }, dispatch)
 }
 
@@ -114,6 +121,7 @@ Dashboard.propTypes = {
   fetchDatasourceNames: PropTypes.func.isRequired,
   setDashboardName: PropTypes.func.isRequired,
   fetchDashboardNames: PropTypes.func.isRequired,
+  fetchAllDatasourcesData: PropTypes.func.isRequired,
   datasources: React.PropTypes.shape({
     data: PropTypes.object.isRequired,
     dashboards: PropTypes.array.isRequired,
