@@ -56,11 +56,11 @@ The dashboard looks at a secrets.json file for all API access info. Copy the sam
 
 #### Google Analytics
 
-Set up a new application in the Google APIs Console, enable the Google Analytics Reporting API for that application, and generate a "service account" for the application. Download the JSON credentials for that service account and paste that JSON object in the value for the `google` key in the `secrets.json` file. Also, the service account will contain an email address that you will need to add to your Google Analytics properties authorized user/viewers list.
+Set up a new application in the [Google APIs Console](https://console.developers.google.com/), enable the [Google Analytics Reporting API](https://console.developers.google.com/apis/library/analyticsreporting.googleapis.com) for that application, and generate a "[service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts)" for the application. Download the JSON credentials for that service account and paste that JSON object in the value for the `google` key in the `secrets.json` file. Also, the service account will contain an email address that you will need to add to your Google Analytics property's authorized user/viewers list.
 
 #### MailChimp
 
-Create an API key in your MailChimp account and specify that string as the value for the key `mailchimp` in the `secrets.json` file.
+[Create an API key](https://kb.mailchimp.com/integrations/api-integrations/about-api-keys) in your MailChimp account and specify that string as the value for the key `mailchimp` in the `secrets.json` file.
 
 ## Deployment
 
