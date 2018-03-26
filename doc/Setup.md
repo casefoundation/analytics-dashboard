@@ -28,6 +28,8 @@ With the necessary information from above ready, run the Quick Setup utility fro
 # node quickSetup.js
 ```
 
+After running the Quick Setup, the Dashboard is ready to run. (The utility will provide instructions on how to run the Dashboard.) For more information on configuring the dashboard, continue reading.
+
 ## Advanced Data Source Setup
 
 The dashboard relies on information from a set of "data sources" that each represent a different API service. Datasources may expose multiple widgets from their data. To enable new datasources, and therefore new widgets, create the necessary configuration file under the `server/config` directory. By default, the project ships with several sample configurations that should be altered per their directions and re-saved as `.json` files. (Also remove all `/* */` comments.)
