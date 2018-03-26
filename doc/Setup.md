@@ -12,7 +12,7 @@ To customize the dashboard's theme, copy the file `client/src/theme/theme.sample
 
 ## Data Source Quick Setup
 
-To quickly get some data into the dashboard, we've provided a quick setup utility. For more advanced configuration, jump to [Advanced Data Source Setup](#advanced-data-Source-setup).
+To quickly get some data into the dashboard, we've provided a quick setup utility. For more advanced configuration, jump to [Advanced Data Source Setup](#advanced-data-source-setup).
 
 Before running the Quick Setup utility, there are a few prerequisite steps. Those are:
 
