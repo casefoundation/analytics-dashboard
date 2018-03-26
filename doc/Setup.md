@@ -1,14 +1,34 @@
 # Setup
 
 1. [Theme Setup](#theme-setup)
-1. [Data Source Setup](#data-source-setup)
+1. [Data Source Quick Setup](#data-source-quick-setup)
+1. [Advanced Data Source Setup](#advanced-data-source-setup)
+1. [API Setup](#api-setup)
 1. [Deployment](#deployment)
 
 ## Theme Setup
 
 To customize the dashboard's theme, copy the file `client/src/theme/theme.sample` to `client/src/theme/theme.json`. Inside of that file, update the color codes to match your preferred colors. Also, Inside of `client/src/theme`, place your organization's logo as an SVG file named `logo.svg`.
 
-## Data Source Setup
+## Data Source Quick Setup
+
+To quickly get some data into the dashboard, we've provided a quick setup utility. For more advanced configuration, jump to [Advanced Data Source Setup](#advanced-data-Source-setup).
+
+Before running the Quick Setup utility, there are a few prerequisite steps. Those are:
+
+1. Setup access to the [Google Analytics API](#google-analytics-api). (Required only if using Google Analytics)
+1. Grab your Google Analytics View ID in Google Analytics under _Admin_ > _View Settings_. (Required only if using Google Analytics)
+1. Grab your RSS feed URL. (Optional)
+1. Setup access to the [Mailchimp API](#mailchimp-api). (Required only if using Mailchimp)
+1. Grab your Mailchimp [list ID](https://kb.mailchimp.com/lists/manage-contacts/find-your-list-id). (Required only if using Mailchimp)
+
+With the necessary information from above ready, run the Quick Setup utility from the command line:
+
+```bash
+# node quickSetup.js
+```
+
+## Advanced Data Source Setup
 
 The dashboard relies on information from a set of "data sources" that each represent a different API service. Datasources may expose multiple widgets from their data. To enable new datasources, and therefore new widgets, create the necessary configuration file under the `server/config` directory. By default, the project ships with several sample configurations that should be altered per their directions and re-saved as `.json` files. (Also remove all `/* */` comments.)
 
@@ -50,24 +70,28 @@ This datasource queries the Mailchimp API and exposes the following widgets:
 
 Copy the sample config file under `server/config/mailchimp.sample` to `server/config/mailchimp.json` and follow the help text in that file to set up the data source.
 
-### API Setup
+## API Setup
 
 The dashboard looks at a secrets.json file for all API access info. Copy the sample secrets file under `server/config/secrets.sample` to `server/config/secrets.json` to begin specify access information.
 
-#### Google Analytics
+### Google Analytics API
 
-Set up a new application in the [Google APIs Console](https://console.developers.google.com/), enable the [Google Analytics Reporting API](https://console.developers.google.com/apis/library/analyticsreporting.googleapis.com) for that application, and generate a "[service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts)" for the application. Download the JSON credentials for that service account and paste that JSON object in the value for the `google` key in the `secrets.json` file. Also, the service account will contain an email address that you will need to add to your Google Analytics property's authorized user/viewers list.
+Set up a new application in the [Google APIs Console](https://console.developers.google.com/), enable the [Google Analytics Reporting API](https://console.developers.google.com/apis/library/analyticsreporting.googleapis.com) for that application, and generate a "[service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts)" for the application. 
 
-#### MailChimp
+Download the JSON credentials for that service account. If using the Quick Setup, be ready to paste the path to that downloaded file into the prompt when asked. Otherwise, paste that JSON object in the value for the `google` key in the `secrets.json` file. 
 
-[Create an API key](https://kb.mailchimp.com/integrations/api-integrations/about-api-keys) in your MailChimp account and specify that string as the value for the key `mailchimp` in the `secrets.json` file.
+Also, the service account will contain an email address that you will need to add to your Google Analytics property's authorized user/viewers list.
+
+### MailChimp API
+
+[Create an API key](https://kb.mailchimp.com/integrations/api-integrations/about-api-keys) in your MailChimp account. If using the Quick Setup, be ready to paste that key into the prompt when asked. Otherwise, specify that string as the value for the key `mailchimp` in the `secrets.json` file.
 
 ## Deployment
 
 To build a Docker image of Analytics Dashboard, build the Dockerfile located in the root of the project by running:
 
 ```bash
-# docker build -t analytics-dashboard
+# docker build -t analytics-dashboard ./
 ```
 
 Then run the image using Docker's run command:

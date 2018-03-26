@@ -1,0 +1,227 @@
+const readline = require('readline')
+const fs = require('fs')
+const promisify = require('util').promisify
+const writeFile = promisify(fs.writeFile)
+const path = require('path')
+
+const writeConfig = (name, json) => {
+  const savePath = path.join('./server/config', name + '.json')
+  return writeFile(savePath, JSON.stringify(json, null, '  '), {})
+}
+
+const loadConfig = (name) => {
+  const readPath = path.join('./server/config', name + '.json')
+  try {
+    const str = fs.readFileSync(readPath, 'utf8')
+    return JSON.parse(str)
+  } catch (err) {
+    switch (name) {
+      case 'dashboards':
+        return []
+      case 'googleanalytics':
+        return {
+          "klass": "GoogleAnalytics",
+          "dashboard": "default",
+          "profile": null,
+          "elements": {
+            "events": [],
+            "pages": [],
+            "dimensions": [],
+            "goals": [],
+            "topPages": false,
+            "referrals": false,
+            "overallMetrics": false,
+            "deviceData": false
+          }
+        }
+      case 'secrets':
+        return {
+          "google": null,
+          "mailchimp": null
+        }
+      case 'mailchimp':
+        return {
+          "klass": "MailchimpStats",
+          "dashboard": "default",
+          "lists": [],
+          "campaignWhitelist": [],
+          "sourceField": null
+        }
+      case 'feed-table':
+        return {
+          "klass": "FeedTable",
+          "profile": null,
+          "feedUrl": null,
+          "sourceName": "Blog",
+          "dashboard": "default"
+        }    
+      default:
+        return {}                  
+    }
+  }
+}
+
+const booleanize = (str) => {
+  return str[0].toLowerCase() === 'y'
+}
+
+const goToQuestion = (label) => {
+  const index = questions.findIndex(question => question.label === label)
+  if (index >= 0) {
+    return Promise.resolve(index)
+  } else {
+    return Promise.resolve(questions.length)
+  }
+}
+
+const questions = [
+  {
+    'text': 'What is the name of this dashboard?',
+    'handler': (answer) => {
+      const dashboards = [{
+        "name": "default",
+        "label": answer
+      }]
+      return writeConfig('dashboards', dashboards)
+    }
+  },
+  {
+    'text': 'Do you want to show data from Google Analytics? (y/n)',
+    'handler': (answer) => {
+      if (!booleanize(answer)) {
+        return goToQuestion('mailchimp')
+      }
+      return Promise.resolve()
+    }
+  },
+  {
+    'text': 'Please specify the filepath to the Service Account JSON file downloaded from the Google APIs Console:',
+    'handler': (answer) => {
+      const json = fs.readFileSync(answer, 'utf8')
+      const secrets = loadConfig('secrets')
+      secrets.google = JSON.parse(json).web
+      return writeConfig('secrets', secrets)
+    }
+  },
+  {
+    'text': 'What is the Google Analytics View ID which you want to track?',
+    'handler': (answer) => {
+      const googleanalytics = loadConfig('googleanalytics')
+      googleanalytics.profile = answer
+      return writeConfig('googleanalytics', googleanalytics)
+    }
+  },
+  {
+    'text': 'Do you want to show top pages by pageview? (y/n)',
+    'handler': (answer) => {
+      const googleanalytics = loadConfig('googleanalytics')
+      googleanalytics.elements.topPages = booleanize(answer)
+      return writeConfig('googleanalytics', googleanalytics)
+    }
+  },
+  {
+    'text': 'Do you want to show top referrals by pageview? (y/n)',
+    'handler': (answer) => {
+      const googleanalytics = loadConfig('googleanalytics')
+      googleanalytics.elements.referrals = booleanize(answer)
+      return writeConfig('googleanalytics', googleanalytics)
+    }
+  },
+  {
+    'text': 'Do you want to show traffic by device (desktop, mobile, tablet)? (y/n)',
+    'handler': (answer) => {
+      const googleanalytics = loadConfig('googleanalytics')
+      googleanalytics.elements.deviceData = booleanize(answer)
+      return writeConfig('googleanalytics', googleanalytics)
+    }
+  },
+  {
+    'text': 'Do you want to show sitewide web metrics? (y/n)',
+    'handler': (answer) => {
+      const googleanalytics = loadConfig('googleanalytics')
+      googleanalytics.elements.overallMetrics = booleanize(answer)
+      return writeConfig('googleanalytics', googleanalytics)
+    }
+  },
+  {
+    'text': 'Do you have an RSS feed for your blog? (y/n)',
+    'handler': (answer) => {
+      if (!booleanize(answer)) {
+        return goToQuestion('mailchimp')
+      }
+      return Promise.resolve()
+    }
+  },
+  {
+    'text': 'What is the URL of your RSS feed?',
+    'handler': (answer) => {
+      const googleanalytics = loadConfig('googleanalytics')
+      const feedTable = loadConfig('feed-table')
+      feedTable.profile = googleanalytics.profile
+      feedTable.feedUrl = answer
+      return writeConfig('feed-table', feedTable)
+    }
+  },
+  {
+    'text': 'Do you want to show email campaign data from Mailchimp? (y/n)',
+    'label': 'mailchimp',
+    'handler': (answer) => {
+      if (!booleanize(answer)) {
+        return goToQuestion(null)
+      }
+      return Promise.resolve()
+    }
+  },
+  {
+    'text': 'What is your Mailchimp API key?',
+    'handler': (answer) => {
+      const secrets = loadConfig('secrets')
+      secrets.mailchimp = answer
+      return writeConfig('secrets', secrets)
+    }
+  },
+  {
+    'text': 'What is the list ID of your Mailchimp list?',
+    'handler': (answer) => {
+      const mailchimp = loadConfig('mailchimp')
+      mailchimp.lists.push(answer)
+      return writeConfig('mailchimp', mailchimp)
+    }
+  }
+]
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
+
+const nextQuestion = (index) => {
+  if (index >= questions.length) return
+  const question = questions[index]
+  return new Promise((resolve, reject) => {
+    rl.question(question.text + ' ', answer => {
+      question.handler(answer.trim())
+        .then((response) => {
+          const nextIndex = isNaN(response) ? (index + 1) : response
+          return nextQuestion(nextIndex)
+        })
+        .catch((err) => {
+          console.error(err)
+          return nextQuestion(index)
+        })
+        .then(() => {
+          resolve()
+        })
+    })
+  })
+}
+
+nextQuestion(0)
+  .then(() => {
+    rl.close()
+    console.log('Your dashboard is now configured. You may start it by running "docker build -t analytics-dashboard ./ && docker run -p 8080:8080 analytics-dashboard".')
+  })
+  .catch((err) => {
+    console.error(err)
+  })
+  
