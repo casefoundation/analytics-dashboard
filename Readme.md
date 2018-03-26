@@ -9,9 +9,9 @@
 
 ## About
 
-Data-informed decision making within an organization is only as good as the organization's understanding of the data and the timeliness of that information. Faced with that challenge here at the Case Foundation, the team responsible for digital analytics and reporting, called ASK meaning Analytics SEO and Key Metrics, set out to construct a dashboard in that directly communicated key online data to the entire organization in an efficient and easy-to-use experience. 
+Data-informed decision making within an organization is only as good as the organization’s understanding of the data and the timeliness of that information. Faced with that challenge at the Case Foundation, the team responsible for digital analytics and reporting set out to construct a dashboard in that directly communicated key online data to the entire organization in an efficient and easy-to-use experience. This dashboard leverages multiple, more complex analytics services to provide one clear picture of the Case Foundation’s digital performance on multiple website it runs. 
 
-This dashboard has the potential to support and display any dataset needed, blending information from any API or other data service that we desire. To start, we've built the dashboard to interact with our RSS feed, Google Analytics, and Mailchimp, and we plan to eventually expand the dashboard's functionality to also pull in data from other tools we use such as Simply Measured, Clicky and Woopra.
+Using this tool, project and program leaders can see real time performance on key communications tools like top blog authors within the organization, page views, time on page, new users, downloads, top performing pages and posts, email campaign performance. To start, we've built the dashboard to interact with our RSS feed, Google Analytics, and Mailchimp, and we plan to eventually expand the dashboard's functionality to also pull in data from other tools we use such as Simply Measured, Clicky and Woopra.
 
 ## Setup
 
@@ -30,6 +30,8 @@ See [Contributing](Contributing.md) for additional information.
 See [License](License.txt) for additional information.
 
 ## To Do:
+
+We're actively seeking contributors to this project. Please reach out if you are interested in building any of the new features listed below or have an idea for your own unique contribution.
 
 1. Simply measured datasource
 1. Clicky datasource
