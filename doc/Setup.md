@@ -16,6 +16,7 @@ To quickly get some data into the dashboard, we've provided a quick setup utilit
 
 Before running the Quick Setup utility, there are a few prerequisite steps. Those are:
 
+1. Install [Node.js](https://nodejs.org/en/) and [Docker Community Edition](https://www.docker.com/community-edition)
 1. Setup access to the [Google Analytics API](#google-analytics-api). (Required only if using Google Analytics)
 1. Grab your Google Analytics View ID in Google Analytics under _Admin_ > _View Settings_. (Required only if using Google Analytics)
 1. Grab your RSS feed URL. (Optional)
@@ -25,7 +26,7 @@ Before running the Quick Setup utility, there are a few prerequisite steps. Thos
 With the necessary information from above ready, run the Quick Setup utility from the command line:
 
 ```bash
-# node quickSetup.js
+# ./quickSetup
 ```
 
 After running the Quick Setup, the Dashboard is ready to run. (The utility will provide instructions on how to run the Dashboard.) For more information on configuring the dashboard, continue reading.
