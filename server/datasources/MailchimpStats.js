@@ -2,6 +2,7 @@ const Mailchimp = require('mailchimp-api-v3')
 const async = require('async')
 const _ = require('lodash')
 const DataSource = require('./DataSource')
+const demoModeGenerator = require('../lib/demoModeGenerator')
 
 class MailchimpStats extends DataSource {
   constructor (config, secrets) {
@@ -24,7 +25,7 @@ class MailchimpStats extends DataSource {
             'type': 'quickstat',
             'label': list.name + ' Size',
             'data': {
-              'value': list.stats.member_count,
+              'value': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : list.stats.member_count,
               'helptext': 'The number of subscribers in the ' + list.name + ' list in MailChimp'
             }
           })
@@ -36,12 +37,12 @@ class MailchimpStats extends DataSource {
             'data': [
               {
                 'key': 'Open Rate',
-                'value': (Math.round(parseFloat(list.stats.open_rate) * 10) / 10).toLocaleString() + '%',
+                'value': process.env.DEMO_MODE ? demoModeGenerator.randomPercent() : (Math.round(parseFloat(list.stats.open_rate) * 10) / 10).toLocaleString() + '%',
                 'helptext': 'The average percentage of subscribers who open e-mails from the ' + list.name + ' list in MailChimp'
               },
               {
                 'key': 'Click Rate',
-                'value': (Math.round(parseFloat(list.stats.click_rate) * 10) / 10).toLocaleString() + '%',
+                'value': process.env.DEMO_MODE ? demoModeGenerator.randomPercent() : (Math.round(parseFloat(list.stats.click_rate) * 10) / 10).toLocaleString() + '%',
                 'helptext': 'The average percentage of subscribers who click links e-mails from the ' + list.name + ' list in MailChimp'
               }
             ],
@@ -73,8 +74,8 @@ class MailchimpStats extends DataSource {
           'data': campaigns.map((campaign) => {
             return {
               'Name': campaign.settings.title,
-              'Open Rate': campaign.report_summary.open_rate,
-              'Click Rate': campaign.report_summary.click_rate
+              'Open Rate': process.env.DEMO_MODE ? demoModeGenerator.randomPercent() : campaign.report_summary.open_rate,
+              'Click Rate': process.env.DEMO_MODE ? demoModeGenerator.randomPercent() : campaign.report_summary.click_rate
             }
           }),
           'key': 'Name',
@@ -183,8 +184,15 @@ class MailchimpStats extends DataSource {
                 days.sort((a, b) => {
                   return a.date.getTime() - b.date.getTime()
                 })
-                days.forEach((day) => {
+                days.forEach((day, i) => {
                   day.date = day.date.toDateString()
+                  if (process.env.DEMO_MODE) {
+                    _.keys(day).forEach((key, j) => {
+                      if (key !== 'date') {
+                        day[key] = demoModeGenerator.randomSequence(i)
+                      }
+                    })
+                  }
                 })
                 next(null, days)
               })

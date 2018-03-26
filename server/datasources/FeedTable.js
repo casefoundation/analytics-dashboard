@@ -1,5 +1,6 @@
 const FeedDataSource = require('./FeedDataSource')
 const _ = require('lodash')
+const demoModeGenerator = require('../lib/demoModeGenerator')
 
 class FeedTable extends FeedDataSource {
   getGoogleRequestMetricsDimensions () {
@@ -99,7 +100,7 @@ class FeedTable extends FeedDataSource {
                     } else {
                       switch (j) {
                         default:
-                          consolidatedReport[foundURL.href][metricNameMap[metricName]] = parseInt(row.metrics[0].values[j])
+                          consolidatedReport[foundURL.href][metricNameMap[metricName]] = process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(row.metrics[0].values[j])
                           break
                       }
                     }
@@ -143,7 +144,9 @@ class FeedTable extends FeedDataSource {
         }
       })
 
-      if (scrollDepths && scrollDepths.length > 0) {
+      if (process.env.DEMO_MODE) {
+        row['Average Scroll Depth'] = demoModeGenerator.randomPercent()
+      } else if (scrollDepths && scrollDepths.length > 0) {
         row['Average Scroll Depth'] = Math.round((scrollDepths.reduce(function (total, current) {
           return total + current
         }) / scrollDepths.length) * 100) + '%'

@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 require('./server')()
   .then((app) => {
     return new Promise((resolve, reject) => {

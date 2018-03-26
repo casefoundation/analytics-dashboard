@@ -1,4 +1,5 @@
 const FeedDataSource = require('./FeedDataSource')
+const demoModeGenerator = require('../lib/demoModeGenerator')
 
 class FeedBenchmarks extends FeedDataSource {
   getGoogleRequestMetricsDimensions () {
@@ -137,7 +138,9 @@ class FeedBenchmarks extends FeedDataSource {
       })
 
       for (var l = 0; l < this.config.nDays; l++) {
-        if (l < data.length) {
+        if (process.env.DEMO_MODE) {
+          data[l].Average = demoModeGenerator.randomSequence(l)
+        } else if (l < data.length) {
           data[l].Average = data[l].Average.reduce(function (previous, current) {
             return previous + current
           }, 0) / computePosts.length
@@ -148,7 +151,9 @@ class FeedBenchmarks extends FeedDataSource {
 
       for (var m = 0; m < this.config.nDays; m++) {
         const stamp = thisReport.startDate.getTime() + (m * FeedDataSource.OneDay)
-        if (report[reportPost.link] && report[reportPost.link][stamp] && report[reportPost.link][stamp].metrics.pageviews) {
+        if (process.env.DEMO_MODE) {
+          data[m].Actual = demoModeGenerator.randomSequence(m)
+        } else if (report[reportPost.link] && report[reportPost.link][stamp] && report[reportPost.link][stamp].metrics.pageviews) {
           const value = report[reportPost.link][stamp].metrics.pageviews
           data[m].Actual = value
         } else {
