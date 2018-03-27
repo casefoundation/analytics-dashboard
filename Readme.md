@@ -7,6 +7,8 @@
 
 ![Screenshot](doc/screenshot.png)
 
+(Demo data shown)
+
 ## About
 
 Data-informed decision making within an organization is only as good as the organization’s understanding of the data and the timeliness of that information. Faced with that challenge at the Case Foundation, the team responsible for digital analytics and reporting set out to construct a dashboard in that directly communicated key online data to the entire organization in an efficient and easy-to-use experience. This dashboard leverages multiple, more complex analytics services to provide one clear picture of the Case Foundation’s digital performance on multiple website it runs. 
