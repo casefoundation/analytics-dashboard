@@ -104,3 +104,5 @@ Then run the image using Docker's run command:
 ```
 
 To have the server listen on another port, specify --env PORT=[PORT NUMBER].
+
+We suggest running this on a server whose access is restricted to your organization's IP (a.k.a. IP Whitelisting) so that access is kept private.

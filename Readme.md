@@ -15,6 +15,8 @@ Data-informed decision making within an organization is only as good as the orga
 
 Using this tool, project and program leaders can see real time performance on key communications tools like top blog authors within the organization, page views, time on page, new users, downloads, top performing pages and posts, email campaign performance. To start, we've built the dashboard to interact with our RSS feed, Google Analytics, and Mailchimp, and we plan to eventually expand the dashboard's functionality to also pull in data from other tools we use such as Simply Measured, Clicky and Woopra.
 
+Jump to the [Quick Setup](doc/Setup.md#data-source-quick-setup) to get started.
+
 ## Setup
 
 See [Setup](doc/Setup.md)
