@@ -72,10 +72,11 @@ class MailchimpStats extends DataSource {
           'type': 'barchart',
           'label': 'Email Campaigns',
           'data': campaigns.map((campaign) => {
+            console.log(campaign.report_summary.open_rate)
             return {
               'Name': campaign.settings.title,
-              'Open Rate': process.env.DEMO_MODE ? demoModeGenerator.randomPercent() : campaign.report_summary.open_rate,
-              'Click Rate': process.env.DEMO_MODE ? demoModeGenerator.randomPercent() : campaign.report_summary.click_rate
+              'Open Rate': process.env.DEMO_MODE ? demoModeGenerator.randomFloatPercent() : campaign.report_summary.open_rate,
+              'Click Rate': process.env.DEMO_MODE ? demoModeGenerator.randomFloatPercent() : campaign.report_summary.click_rate
             }
           }),
           'key': 'Name',

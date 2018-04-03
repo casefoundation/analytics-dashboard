@@ -499,13 +499,17 @@ class GoogleAnalytics extends GoogleDataSource {
   }
 
   parseTopPagesReport (report, offset) {
-    const parsedReport = report.data.rows.map(function (row) {
+    let parsedReport = report.data.rows.map(function (row) {
       return {
         'Name': row.dimensions[2],
         'URL': url.parse('http://' + row.dimensions[0] + row.dimensions[1]).href,
         'Views': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(row.metrics[0].values[0])
       }
     })
+    if (process.env.DEMO_MODE) {
+      parsedReport = parsedReport.slice(0, 20)
+      parsedReport.sort((a, b) => b.Views - a.Views)
+    }
     this.testData.parseTopPagesReport = {
       report,
       offset,
@@ -515,12 +519,16 @@ class GoogleAnalytics extends GoogleDataSource {
   }
 
   parseReferralsReport (report, offset) {
-    const parsedReport = report.data.rows.map(function (row) {
+    let parsedReport = report.data.rows.map(function (row) {
       return {
         'Referrer': row.dimensions[0],
         'Views': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(row.metrics[0].values[0])
       }
     })
+    if (process.env.DEMO_MODE) {
+      parsedReport = parsedReport.slice(0, 20)
+      parsedReport.sort((a, b) => b.Views - a.Views)
+    }
     this.testData.parseReferralsReport = {
       report,
       offset,
