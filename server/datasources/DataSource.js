@@ -9,6 +9,14 @@ class DataSource {
     this.testData = {}
   }
 
+  setup () {
+    return Promise.resolve()
+  }
+
+  query (startDate, endDate) {
+    throw new Error('Must override!')
+  }
+
   writeTestData () {
     const savePath = path.join('./test/data', this.constructor.name + '.data')
     return new JSONEncrypter().encrypt(this.testData)
