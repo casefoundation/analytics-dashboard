@@ -82,23 +82,135 @@ At the end of the execution of the `query` method, the code should return a data
 
 ## Widget Types
 
+These are example JSON objects that can be included in the data payload array. 
+
+For each type of widget, there are a few common properties:
+
+1. **type** is the indicator of the widget type.
+1. **label** is the widget's human-readable title.
+1. **helptext** is the text to place in the tooltip.
+1. **data** holds the meat of the widget.
+
 ### Quickstat
 
+Include a number in the left-hand _Quickstats_ column.
 
+```JSON
+{
+  "type": "quickstat",
+  "label": "Some data",
+  "data": {
+    "value": 100,
+    "helptext": "Useful information"
+  }
+}
+```
 
 ### Table
 
+Creates a table whose rows will automatically sort by clicking on the column headings. The default sort is whichever order is specified here.
+
+```JSON
+{
+  "type": "table",
+  "label": "Tabular Data",
+  "helptext": "Usefule information about the data",
+  "data": [
+    {
+      "Column Heading": "Column value",
+      "Numeric Column Heading": 123
+    },
+    ...
+  ]
+}
+```
 
 ### Callout
 
+Creates a widget with bolded _callout_ numbers. (The quantity of numbers to include is arbitrary.) Note that the properties `key` and `value` specify the property names to use in `data` for the label and value for each callout.
+
+```JSON
+{
+  "type": "callout",
+  "label": "Important Numbers",
+  "helptext": "Useful information about those numbers",
+  "key": "stat",
+  "value": "number",
+  "data": [
+    {
+      "stat": "Some Stat Label",
+      "number": 1,
+      "helptext": "Helpful information about this specific stat."
+    },
+    ...
+  ]
+}
+```
 
 ### Bar Chart
 
+Creates a horizontal bar chart. Note the use of the `key`/`value` properties to specify axis series. Multiple entries for `value` as scene here creates multiple bars per data array item. Also, the `percent` boolean signals if the number properties are 0.0 to 1.0 percentages and renders them as 0% to 100%.
 
-### Sparklines
-
+```JSON
+{
+  "type": "barchart",
+  "label": "Bars",
+  "helptext": "These bars show data.",
+  "key": "Base Axis Prop",
+  "value": [
+    "Numeric Prop 1",
+    "Numeric Prop 2"
+  ],
+  "percent": false,
+  "data": [
+    {
+      "Base Axis Prop": "Monday",
+      "Numeric Prop 1": 1,
+      "Numeric Prop 2": 2
+    }
+  ]
+}
+```
 
 ### Stacked Chart
 
+Creates a stacked line chart. Note that the `xAxis` property specifies which property in the `data` array to use as the X Axis. All other properties in the `data` array are expected to be numeric and for the stacked chart.
+
+```JSON
+{
+  "type": "stackedchart",
+  "label": "Information that stacks up",
+  "helptext": "Useful information",
+  "xAxis": "Date", 
+  "data": [
+    {
+      "Date": "Monday, June 2",
+      "Value 1": 1,
+      "Value 2": 2
+    },
+    ...
+  ]
+}
+```
 
 ### Pie Chart
+
+Creates a simple pie chart. Note the use of the `key`/`value` properties to specify section name and share. Also, the `percent` boolean signals if the number properties are 0.0 to 1.0 percentages and renders them as 0% to 100%.
+
+```JSON
+{
+  "type": "pie",
+  "label": "Parts of a Whole",
+  "helptext": "Useful information about those numbers",
+  "key": "Section",
+  "value": "Share",
+  "percent": true,
+  "data": [
+    {
+      "Section": "Section name",
+      "Share": 0.25
+    },
+    ...
+  ]
+}
+```
