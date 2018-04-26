@@ -6,6 +6,7 @@
     "events": [
       {
         "name": "/* Display ame for front end */",
+        "pagePath": "/* path to restrict events to*/",
         "category": "/* GA event category or null */",
         "label": "/* GA event label or null */",
         "action": "/* GA event action or null */",

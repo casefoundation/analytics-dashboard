@@ -103,18 +103,23 @@ class GoogleAnalytics extends GoogleDataSource {
           'filters': [
             {
               'dimensionName': 'ga:eventCategory',
-              'operator': (typeof event.category === 'object') ? 'IN_LIST' : 'EXACT',
+              'operator': 'IN_LIST',
               'expressions': (typeof event.category === 'object') ? event.category : [event.category]
             },
             {
               'dimensionName': 'ga:eventLabel',
-              'operator': (typeof event.action === 'object') ? 'IN_LIST' : 'EXACT',
+              'operator': 'IN_LIST',
               'expressions': (typeof event.action === 'object') ? event.label : [event.label]
             },
             {
               'dimensionName': 'ga:eventAction',
-              'operator': (typeof event.action === 'object') ? 'IN_LIST' : 'EXACT',
+              'operator': 'IN_LIST',
               'expressions': (typeof event.action === 'object') ? event.action : [event.action]
+            },
+            {
+              'dimensionName': 'ga:pagePath',
+              'operator': 'IN_LIST',
+              'expressions': (typeof event.pagePath === 'object') ? event.pagePath : [event.pagePath]
             }
           ].filter((filter) => {
             return filter.expressions[0]
