@@ -41,3 +41,7 @@ We're actively seeking contributors to this project. Please reach out if you are
 1. Clicky datasource
 1. Woopra datasource
 1. Scrolldepth datasource
+
+---
+
+Are you using part or all of this code we've shared? We'd love to hear about it! Email us at [opensource@casefoundation.org](mailto:opensource@casefoundation.org) and tell us about how you're using this open source project.
