@@ -43,6 +43,7 @@ class GoogleAnalytics extends GoogleDataSource {
     const reportRequests = []
 
     this.buildEventsRequests(startDate, endDate, reportTypes, reportRequests)
+    this.buildEventsRankingsRequests(startDate, endDate, reportTypes, reportRequests)
     this.buildPagesRequests(startDate, endDate, reportTypes, reportRequests)
     this.buildGoalsRequests(startDate, endDate, reportTypes, reportRequests)
     this.buildTopPagesRequests(startDate, endDate, reportTypes, reportRequests)
@@ -81,6 +82,57 @@ class GoogleAnalytics extends GoogleDataSource {
   buildEventsRequests (startDate, endDate, reportTypes, reportRequests) {
     this.config.elements.events.forEach((event) => {
       reportTypes.push('events')
+      reportRequests.push({
+        'metrics': [
+          {
+            'expression': 'ga:totalEvents'
+          }
+        ],
+        'dimensions': [
+          {
+            'name': 'ga:eventCategory'
+          },
+          {
+            'name': 'ga:eventAction'
+          },
+          {
+            'name': 'ga:eventLabel'
+          }
+        ],
+        'dimensionFilterClauses': {
+          'operator': 'AND',
+          'filters': [
+            {
+              'dimensionName': 'ga:eventCategory',
+              'operator': 'IN_LIST',
+              'expressions': (typeof event.category === 'object') ? event.category : [event.category]
+            },
+            {
+              'dimensionName': 'ga:eventLabel',
+              'operator': 'IN_LIST',
+              'expressions': (typeof event.action === 'object') ? event.label : [event.label]
+            },
+            {
+              'dimensionName': 'ga:eventAction',
+              'operator': 'IN_LIST',
+              'expressions': (typeof event.action === 'object') ? event.action : [event.action]
+            },
+            {
+              'dimensionName': 'ga:pagePath',
+              'operator': 'IN_LIST',
+              'expressions': (typeof event.pagePath === 'object') ? event.pagePath : [event.pagePath]
+            }
+          ].filter((filter) => {
+            return filter.expressions[0]
+          })
+        }
+      })
+    })
+  }
+
+  buildEventsRankingsRequests (startDate, endDate, reportTypes, reportRequests) {
+    this.config.elements.eventsRankings.forEach((event) => {
+      reportTypes.push('eventsRankings')
       reportRequests.push({
         'metrics': [
           {
@@ -313,6 +365,9 @@ class GoogleAnalytics extends GoogleDataSource {
         case 'events':
           intermediateReport.events.push(this.parseEventReport(report, intermediateReport.events.length))
           break
+        case 'eventsRankings':
+          intermediateReport.eventsRankings.push(this.parseEventsRankingsReport(report, intermediateReport.eventsRankings.length))
+          break
         case 'pages':
           intermediateReport.pages.push(this.parsePagesReport(report, intermediateReport.pages.length))
           break
@@ -414,6 +469,16 @@ class GoogleAnalytics extends GoogleDataSource {
         })
       })
     }
+    if (intermediateReport.eventsRankings && intermediateReport.eventsRankings.length > 0) {
+      intermediateReport.eventsRankings.forEach((eventsRanking) => {
+        finalReport.push({
+          'type': 'table',
+          'label': eventsRanking.label,
+          'data': eventsRanking.data,
+          'helptext': eventsRanking.helptext
+        })
+      })
+    }
     if (intermediateReport.deviceData && intermediateReport.deviceData.length > 0) {
       finalReport.push({
         'type': 'pie',
@@ -447,6 +512,43 @@ class GoogleAnalytics extends GoogleDataSource {
         return accum + parseInt(row.metrics[0].values[0])
       }, 0)
       parsedReport['Total Events'] = total
+    }
+    this.testData.parseEventReport = {
+      report,
+      offset,
+      parsedReport
+    }
+    return parsedReport
+  }
+
+  parseEventsRankingsReport (report, offset) {
+    const config = this.config.elements.eventsRankings[offset]
+    const parsedReport = {
+      'label': config.name,
+      'data': [],
+      'helptext': config.helptext
+    }
+    if (process.env.DEMO_MODE) {
+      // parsedReport.data =
+      // TODO
+    } else if (report.data.rows && report.data.rows.length > 0) {
+      parsedReport.data = report.data.rows.map((row, i) => {
+        const tableRow = {}
+        const columnNames = ['category', 'action', 'label']
+        columnNames.forEach((columnKey, j) => {
+          if (config.columnMap[columnKey]) {
+            let key = config.columnMap[columnKey]
+            let value = row.dimensions[j]
+            if (config.valueMap && config.valueMap[columnKey] && config.valueMap[columnKey][value]) {
+              tableRow[key] = config.valueMap[columnKey][value]
+            } else {
+              tableRow[key] = value
+            }
+          }
+        })
+        tableRow['Events'] = parseInt(row.metrics[0].values[0])
+        return tableRow
+      })
     }
     this.testData.parseEventReport = {
       report,
