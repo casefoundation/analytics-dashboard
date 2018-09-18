@@ -475,7 +475,8 @@ class GoogleAnalytics extends GoogleDataSource {
           'type': 'table',
           'label': eventsRanking.label,
           'data': eventsRanking.data,
-          'helptext': eventsRanking.helptext
+          'helptext': eventsRanking.helptext,
+          'sumRows': eventsRanking.sumRows
         })
       })
     }
@@ -526,13 +527,14 @@ class GoogleAnalytics extends GoogleDataSource {
     const parsedReport = {
       'label': config.name,
       'data': [],
-      'helptext': config.helptext
+      'helptext': config.helptext,
+      'sumRows': ['Events']
     }
     if (process.env.DEMO_MODE) {
       // parsedReport.data =
       // TODO
     } else if (report.data.rows && report.data.rows.length > 0) {
-      parsedReport.data = report.data.rows.map((row, i) => {
+      const rowData = report.data.rows.map((row, i) => {
         const tableRow = {}
         const columnNames = ['category', 'action', 'label']
         columnNames.forEach((columnKey, j) => {
@@ -541,13 +543,58 @@ class GoogleAnalytics extends GoogleDataSource {
             let value = row.dimensions[j]
             if (config.valueMap && config.valueMap[columnKey] && config.valueMap[columnKey][value]) {
               tableRow[key] = config.valueMap[columnKey][value]
-            } else {
-              tableRow[key] = value
+            } else if (config.filterUnmappedValues !== true) {
+              if (config.filter && config.filter.length > 0) {
+                const match = config.filter.find(filter => {
+                  return value === filter[columnKey]
+                })
+                if (!match) {
+                  tableRow[key] = value
+                }
+              } else {
+                tableRow[key] = value
+              }
             }
           }
         })
+        if (Object.keys(tableRow).length === 0) {
+          return false
+        }
         tableRow['Events'] = parseInt(row.metrics[0].values[0])
         return tableRow
+      }).filter(row => row !== false)
+
+      const merges = []
+      const flatMerges = []
+      const serializedForMergeCheck = rowData.map(row => {
+        const noEvents = Object.assign({}, row)
+        delete noEvents['Events']
+        return JSON.stringify(noEvents)
+      })
+      for (let i = 0; i < rowData.length - 1; i++) {
+        if (flatMerges.indexOf(i) < 0) {
+          const merge = [i]
+          for (let j = i + 1; j < rowData.length; j++) {
+            if (flatMerges.indexOf(j) < 0 && serializedForMergeCheck[i] === serializedForMergeCheck[j]) {
+              merge.push(j)
+              flatMerges.push(j)
+            }
+          }
+          if (merge.length > 1) {
+            merges.push(merge)
+          }
+        }
+      }
+      // console.log(config.name, merges)
+      merges.forEach(merge => {
+        let master = merge[0]
+        merge.slice(1).forEach(index => {
+          rowData[master]['Events'] += rowData[index]['Events']
+        })
+      })
+
+      parsedReport.data = rowData.filter((row, i) => {
+        return flatMerges.indexOf(i) < 0
       })
     }
     this.testData.parseEventReport = {

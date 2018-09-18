@@ -26,6 +26,7 @@
           "action": "/* User-friendly name for event action */"
           "label": "/* User-friendly name for event label */"
         },
+        "filterUnmapped": true/false,
         "valueMap": {
           "category": {
             "Value From GA": "Value For User"
@@ -36,7 +37,14 @@
           "label": {
             "Value From GA": "Value For User"
           }
-        }
+        },
+        "filter": [ /*Remove certain values that match one or all of the event fields*/
+          {
+            "category": "Filter by category",
+            "action": "Filter by action",
+            "label": "Filter by label"
+          }
+        ]
       }
     ],
     "pages": [

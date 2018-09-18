@@ -24,4 +24,8 @@
   th {
     color: $brand-primary;
   }
+  tfoot tr td {
+    font-weight: bold;
+    color: $brand-primary;
+  }
 }

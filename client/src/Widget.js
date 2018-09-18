@@ -104,6 +104,27 @@ export default class Widget extends Component {
                   })
                 }
               </tbody>
+              {
+                this.props.data.sumRows && this.props.data.sumRows.length > 0 && (
+                  <tfoot>
+                    <tr>
+                      {
+                        headers.map((header, i) => {
+                          if (this.props.data.sumRows.indexOf(header) >= 0) {
+                            const sum = this.props.data.data.reduce((total, row) => {
+                              return total + parseFloat(row[header])
+                            }, 0)
+                            return (<td>{sum}</td>)
+                          } else if (i === 0) {
+                            return (<td>Total:</td>)
+                          }
+                          return (<td />)
+                        })
+                      }
+                    </tr>
+                  </tfoot>
+                )
+              }
             </table>
           </div>
         )
@@ -251,6 +272,7 @@ Widget.propTypes = {
     value: PropTypes.string,
     primary: PropTypes.string,
     secondary: PropTypes.string,
-    xAxis: PropTypes.string
+    xAxis: PropTypes.string,
+    sumRows: PropTypes.array
   })
 }
