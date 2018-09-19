@@ -51,6 +51,7 @@ class GoogleAnalytics extends GoogleDataSource {
     this.buildOverallMetricsRequests(startDate, endDate, reportTypes, reportRequests)
     this.buildDeviceDataRequests(startDate, endDate, reportTypes, reportRequests)
     this.buildDimensionsRequests(startDate, endDate, reportTypes, reportRequests)
+    this.buildCampaignsRequests(startDate, endDate, reportTypes, reportRequests)
 
     reportRequests.forEach((request) => {
       request.viewId = this.config.profile
@@ -355,6 +356,41 @@ class GoogleAnalytics extends GoogleDataSource {
     })
   }
 
+  buildCampaignsRequests (startDate, endDate, reportTypes, reportRequests) {
+    if (this.config.elements.campaigns) {
+      reportTypes.push('campaigns')
+      reportRequests.push({
+        'metrics': [
+          {
+            'expression': 'ga:pageviews'
+          }
+        ],
+        'dimensions': [
+          {
+            'name': 'ga:campaign'
+          },
+          {
+            'name': 'ga:source'
+          },
+          {
+            'name': 'ga:medium'
+          }
+        ],
+        'dimensionFilterClauses': {
+          'operator': 'AND',
+          'filters': [
+            {
+              'dimensionName': 'ga:campaign',
+              'operator': 'EXACT',
+              'expressions': ['(not set)'],
+              'not': true
+            }
+          ]
+        }
+      })
+    }
+  }
+
   processResponse (reportTypes, reports) {
     const intermediateReport = {}
     reports.forEach((report, i) => {
@@ -388,6 +424,9 @@ class GoogleAnalytics extends GoogleDataSource {
           break
         case 'deviceData':
           intermediateReport.deviceData.push(this.parseDeviceDataReport(report, intermediateReport.deviceData.length))
+          break
+        case 'campaigns':
+          intermediateReport.campaigns.push(this.parseCampaignsReport(report, intermediateReport.campaigns.length))
           break
       }
     })
@@ -489,6 +528,14 @@ class GoogleAnalytics extends GoogleDataSource {
         'value': 'Percent of Users',
         'helptext': 'Users of the site segmented by the type of device they use to browse it.',
         'percent': true
+      })
+    }
+    if (intermediateReport.campaigns && intermediateReport.campaigns.length > 0) {
+      finalReport.push({
+        'type': 'table',
+        'label': 'Campaigns',
+        'data': intermediateReport.campaigns[0],
+        'helptext': 'This is a table of all campaign-generated traffic.'
       })
     }
     this.testData.processResponse = {
@@ -766,6 +813,23 @@ class GoogleAnalytics extends GoogleDataSource {
       }
     }).filter((data) => data.Name && data.Name !== 'null')
     this.testData.parseTopDimensionsReport = {
+      report,
+      offset,
+      parsedReport
+    }
+    return parsedReport
+  }
+
+  parseCampaignsReport (report, offset) {
+    const parsedReport = report.data.rows.map(function (row) {
+      return {
+        'Campaign': row.dimensions[0],
+        'Source': row.dimensions[1],
+        'Medium': row.dimensions[2],
+        'Views': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(row.metrics[0].values[0])
+      }
+    }).filter((data) => data.Campaign && data.Campaign !== 'null' && data.Campaign.trim().length > 0)
+    this.testData.parseCampaignsReport = {
       report,
       offset,
       parsedReport
