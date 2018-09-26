@@ -8,7 +8,7 @@ import {
 const initialDatasourcesState = {
   'data': {},
   'range': {
-    'startDate': new Date(NOW.getTime() - ONE_DAY * 30),
+    'startDate': new Date(NOW.getTime() - ONE_DAY * 7),
     'endDate': NOW
   },
   'dashboard': 'default',
