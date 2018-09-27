@@ -2,7 +2,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const async = require('async')
 const datasources = require('../datasources')
-const secrets = process.env.NODE_ENV === 'test' ? require('../test/config/secrets') : require('../config/secrets')
+const secrets = process.env.DEMO_MODE ? {} : (process.env.NODE_ENV === 'test' ? require('../test/config/secrets') : require('../config/secrets'))
 
 exports.load = () => {
   if (process.env.DEMO_MODE) {
