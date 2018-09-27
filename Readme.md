@@ -1,5 +1,7 @@
 # Analytics Dashboard
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/casefoundation/analytics-dashboard)
+
 [![Build Status](https://travis-ci.org/casefoundation/analytics-dashboard.svg?branch=master)](https://travis-ci.org/casefoundation/analytics-dashboard)
 [![Maintainability](https://api.codeclimate.com/v1/badges/c66b6ad7385bea3a422b/maintainability)](https://codeclimate.com/github/casefoundation/analytics-dashboard/maintainability)
 
