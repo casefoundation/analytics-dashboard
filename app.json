@@ -1,6 +1,6 @@
 {
   "name": "Analytics Dashboard",
-  "description": "The Case Foundation's Analytics Dashboard is a web application that queries Google Analytics' and Mailchimp's APIs to produce a top-level view of digital communications performance.",
+  "description": "The Case Foundation's Analytics Dashboard is a web application that produces a top-level view of digital communications performance.",
   "repository": "https://github.com/casefoundation/analytics-dashboard",
   "image": "heroku/nodejs",
   "env": {
