@@ -553,9 +553,7 @@ class GoogleAnalytics extends GoogleDataSource {
       'Total Events': 0,
       'helptext': config.helptext
     }
-    if (process.env.DEMO_MODE) {
-      parsedReport['Total Events'] = demoModeGenerator.randomInt()
-    } else if (report.data.rows && report.data.rows.length > 0) {
+    if (report.data.rows && report.data.rows.length > 0) {
       const total = report.data.rows.reduce(function (accum, row) {
         return accum + parseInt(row.metrics[0].values[0])
       }, 0)
@@ -577,10 +575,7 @@ class GoogleAnalytics extends GoogleDataSource {
       'helptext': config.helptext,
       'sumRows': ['Events']
     }
-    if (process.env.DEMO_MODE) {
-      // parsedReport.data =
-      // TODO
-    } else if (report.data.rows && report.data.rows.length > 0) {
+    if (report.data.rows && report.data.rows.length > 0) {
       const rowData = report.data.rows.map((row, i) => {
         const tableRow = {}
         const columnNames = ['category', 'action', 'label']
@@ -661,11 +656,7 @@ class GoogleAnalytics extends GoogleDataSource {
       'Unique Views': 0,
       'Average Time on Page (seconds)': 0
     }
-    if (process.env.DEMO_MODE) {
-      parsedReport['Views'] = demoModeGenerator.randomInt()
-      parsedReport['Unique Views'] = demoModeGenerator.randomInt()
-      parsedReport['Average Time on Page (seconds)'] = demoModeGenerator.randomFloat()
-    } else if (report.data.rows && report.data.rows.length > 0) {
+    if (report.data.rows && report.data.rows.length > 0) {
       const reportRow = report.data.rows[0]
       parsedReport['Views'] = parseInt(reportRow.metrics[0].values[1])
       parsedReport['Unique Views'] = parseInt(reportRow.metrics[0].values[0])
@@ -686,9 +677,7 @@ class GoogleAnalytics extends GoogleDataSource {
       'Conversion Rate': '0%',
       'helptext': config.helptext
     }
-    if (process.env.DEMO_MODE) {
-      parsedReport['Conversion Rate'] = demoModeGenerator.randomPercent()
-    } else if (report.data.totals) {
+    if (report.data.totals) {
       parsedReport['Conversion Rate'] = (Math.round(parseFloat(report.data.totals[0].values[0]) * 10) / 10) + '%'
     }
     this.testData.parseGoalsReport = {
@@ -704,13 +693,9 @@ class GoogleAnalytics extends GoogleDataSource {
       return {
         'Name': row.dimensions[2],
         'URL': url.parse('http://' + row.dimensions[0] + row.dimensions[1]).href,
-        'Views': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(row.metrics[0].values[0])
+        'Views': parseInt(row.metrics[0].values[0])
       }
     })
-    if (process.env.DEMO_MODE) {
-      parsedReport = parsedReport.slice(0, 20)
-      parsedReport.sort((a, b) => b.Views - a.Views)
-    }
     this.testData.parseTopPagesReport = {
       report,
       offset,
@@ -723,13 +708,9 @@ class GoogleAnalytics extends GoogleDataSource {
     let parsedReport = report.data.rows.map(function (row) {
       return {
         'Referrer': row.dimensions[0],
-        'Views': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(row.metrics[0].values[0])
+        'Views': parseInt(row.metrics[0].values[0])
       }
     })
-    if (process.env.DEMO_MODE) {
-      parsedReport = parsedReport.slice(0, 20)
-      parsedReport.sort((a, b) => b.Views - a.Views)
-    }
     this.testData.parseReferralsReport = {
       report,
       offset,
@@ -742,19 +723,19 @@ class GoogleAnalytics extends GoogleDataSource {
     const parsedReport = {}
     if (report.data.totals) {
       parsedReport['Views'] = {
-        'value': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(report.data.totals[0].values[0]),
+        'value': parseInt(report.data.totals[0].values[0]),
         'helptext': 'All page views'
       }
       parsedReport['Unique Views'] = {
-        'value': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(report.data.totals[0].values[1]),
+        'value': parseInt(report.data.totals[0].values[1]),
         'helptext': 'All page views not counting repeat visits'
       }
       parsedReport['Average Time on Page'] = {
-        'value': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(report.data.totals[0].values[2]),
+        'value': parseInt(report.data.totals[0].values[2]),
         'helptext': 'The average time users spend on every page of the site in seconds.'
       }
       parsedReport['New Users'] = {
-        'value': process.env.DEMO_MODE ? demoModeGenerator.randomPercent() : (Math.round(parseFloat(report.data.totals[0].values[3]) * 10) / 10).toLocaleString() + '%',
+        'value': (Math.round(parseFloat(report.data.totals[0].values[3]) * 10) / 10).toLocaleString() + '%',
         'helptext': 'The portion of users coming to the site who have not visited before.'
       }
     }
@@ -771,29 +752,12 @@ class GoogleAnalytics extends GoogleDataSource {
       return total + parseFloat(row.metrics[0].values[0])
     }, 0)
     let parsedReport
-    if (process.env.DEMO_MODE) {
-      parsedReport = [
-        {
-          'Device': this.titleCase('mobile'),
-          'Percent of Users': 0.5
-        },
-        {
-          'Device': this.titleCase('desktop'),
-          'Percent of Users': 0.4
-        },
-        {
-          'Device': this.titleCase('tablet'),
-          'Percent of Users': 0.1
-        }
-      ]
-    } else {
-      parsedReport = report.data.rows.map((row) => {
-        return {
-          'Device': this.titleCase(row.dimensions[0]),
-          'Percent of Users': parseFloat(row.metrics[0].values[0]) / total
-        }
-      })
-    }
+    parsedReport = report.data.rows.map((row) => {
+      return {
+        'Device': this.titleCase(row.dimensions[0]),
+        'Percent of Users': parseFloat(row.metrics[0].values[0]) / total
+      }
+    })
     parsedReport.sort((a, b) => {
       return b['Percent of Users'] - a['Percent of Users']
     })
@@ -807,9 +771,9 @@ class GoogleAnalytics extends GoogleDataSource {
     const parsedReport = report.data.rows.map(function (row) {
       return {
         'Name': row.dimensions[0],
-        'Views': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(row.metrics[0].values[1]),
-        'Unique Views': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(row.metrics[0].values[0]),
-        'Average Time on Page (seconds)': process.env.DEMO_MODE ? demoModeGenerator.randomFloat() : parseInt(row.metrics[0].values[2])
+        'Views': parseInt(row.metrics[0].values[1]),
+        'Unique Views': parseInt(row.metrics[0].values[0]),
+        'Average Time on Page (seconds)': parseInt(row.metrics[0].values[2])
       }
     }).filter((data) => data.Name && data.Name !== 'null')
     this.testData.parseTopDimensionsReport = {
@@ -826,7 +790,7 @@ class GoogleAnalytics extends GoogleDataSource {
         'Campaign': row.dimensions[0],
         'Source': row.dimensions[1],
         'Medium': row.dimensions[2],
-        'Views': process.env.DEMO_MODE ? demoModeGenerator.randomInt() : parseInt(row.metrics[0].values[0])
+        'Views': parseInt(row.metrics[0].values[0])
       }
     }).filter((data) => data.Campaign && data.Campaign !== 'null' && data.Campaign.trim().length > 0)
     this.testData.parseCampaignsReport = {

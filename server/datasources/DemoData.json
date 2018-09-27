@@ -1,0 +1,982 @@
+[
+    {
+        "type": "table",
+        "label": "Key Pages",
+        "data": [
+            {
+                "Name": "Home",
+                "URL": "http://example.com",
+                "Views": 5000,
+                "Unique Views": 4000,
+                "Average Time on Page (seconds)": 90
+            },
+            {
+                "Name": "About",
+                "URL": "http://example.com/about/",
+                "Views": 4000,
+                "Unique Views": 3500,
+                "Average Time on Page (seconds)": 60
+            },
+            {
+                "Name": "Our Team",
+                "URL": "http://example.com/our-team",
+                "Views": 3000,
+                "Unique Views": 2500,
+                "Average Time on Page (seconds)": 80
+            },
+            {
+                "Name": "Contact Us",
+                "URL": "https://example.com/contact",
+                "Views": 2500,
+                "Unique Views": 2500,
+                "Average Time on Page (seconds)": 30
+            }
+        ],
+        "helptext": "These are performance metrics for specific pages."
+    },
+    {
+        "type": "callout",
+        "label": "Goals",
+        "data": [
+            {
+                "Name": "Email Signups",
+                "Conversion Rate": "2.5%",
+                "helptext": "The percentage of site users who complete the email newsletter signup form."
+            },
+            {
+                "Name": "Contact Us Form",
+                "Conversion Rate": "1%",
+                "helptext": "The percentage of site users who complete the Contact Us form."
+            }
+        ],
+        "key": "Name",
+        "value": "Conversion Rate",
+        "helptext": "These are Google Analytics Goals which are conversion rates for specific events."
+    },
+    {
+        "type": "barchart",
+        "label": "Top Pages",
+        "data": [
+            {
+                "Name": "Home",
+                "URL": "http://example.com",
+                "Views": 5000
+            },
+            {
+                "Name": "About",
+                "URL": "http://example.com/about",
+                "Views": 4000
+            },
+            {
+                "Name": "Our Team",
+                "URL": "http://example.com/our-team",
+                "Views": 3000
+            },
+            {
+                "Name": "Profiles | CEO",
+                "URL": "http://example.com/profiles/ceo",
+                "Views": 2750
+            },
+            {
+                "Name": "Careers",
+                "URL": "http://example.com/careers",
+                "Views": 2600
+            },
+            {
+                "Name": "Contact Us",
+                "URL": "http://example.com/contact-us",
+                "Views": 2500
+            }
+        ],
+        "key": "Name",
+        "value": "Views",
+        "helptext": "These are the top performing pages based on pageviews."
+    },
+    {
+        "type": "barchart",
+        "label": "Top Referrers",
+        "data": [
+            {
+                "Referrer": "Google",
+                "Views": 6420
+            },
+            {
+                "Referrer": "Twitter",
+                "Views": 3940
+            },
+            {
+                "Referrer": "Facebook",
+                "Views": 308
+            },
+            {
+                "Referrer": "Bing",
+                "Views": 150
+            }
+        ],
+        "key": "Referrer",
+        "value": "Views",
+        "helptext": "These are the top traffic referrers to the site based on landing-page pageviews."
+    },
+    {
+        "type": "quickstat",
+        "label": "Views",
+        "data": {
+            "value": 15000,
+            "helptext": "All page views"
+        }
+    },
+    {
+        "type": "quickstat",
+        "label": "Unique Views",
+        "data": {
+            "value": 14000,
+            "helptext": "All page views not counting repeat visits"
+        }
+    },
+    {
+        "type": "quickstat",
+        "label": "Average Time on Page",
+        "data": {
+            "value": 190,
+            "helptext": "The average time users spend on every page of the site in seconds."
+        }
+    },
+    {
+        "type": "quickstat",
+        "label": "New Users",
+        "data": {
+            "value": "75%",
+            "helptext": "The portion of users coming to the site who have not visited before."
+        }
+    },
+    {
+        "type": "table",
+        "label": "Authors",
+        "data": [
+            {
+                "Name": "John Doe",
+                "Views": 1000,
+                "Unique Views": 900,
+                "Average Time on Page (seconds)": 60
+            },
+            {
+                "Name": "Jane Smith",
+                "Views": 1200,
+                "Unique Views": 1100,
+                "Average Time on Page (seconds)": 50
+            }
+        ],
+        "helptext": "These are performance metrics for individual authors."
+    },
+    {
+        "type": "quickstat",
+        "label": "PDF Downloads",
+        "data": {
+            "value": 500,
+            "helptext": "The number of downloads of the Short Guide to Impact Investing from the site."
+        }
+    },
+    {
+        "type": "pie",
+        "label": "Users by Device",
+        "data": [
+            {
+                "Device": "Mobile",
+                "Percent of Users": 0.45
+            },
+            {
+                "Device": "Desktop",
+                "Percent of Users": 0.4
+            },
+            {
+                "Device": "Tablet",
+                "Percent of Users": 0.15
+            }
+        ],
+        "key": "Device",
+        "value": "Percent of Users",
+        "helptext": "Users of the site segmented by the type of device they use to browse it.",
+        "percent": true
+    },
+    {
+        "data": [
+            {
+                "url": "http://example.com",
+                "name": "An Awesome Blog Post",
+                "startDate": "2018-09-25T00:00:00.000Z",
+                "endDate": "2018-09-27T14:04:57.769Z",
+                "data": [
+                    {
+                        "Average": 45.44444444444444,
+                        "Actual": 60,
+                        "Date": "Mon Sep 24 2018"
+                    },
+                    {
+                        "Average": 246.22222222222223,
+                        "Actual": 105,
+                        "Date": "Tue Sep 25 2018"
+                    },
+                    {
+                        "Average": 162.33333333333334,
+                        "Actual": 4,
+                        "Date": "Wed Sep 26 2018"
+                    },
+                    {
+                        "Average": 51.44444444444444,
+                        "Actual": 0,
+                        "Date": "Thu Sep 27 2018"
+                    },
+                    {
+                        "Average": 681.5555555555555,
+                        "Actual": 0,
+                        "Date": "Fri Sep 28 2018"
+                    },
+                    {
+                        "Average": 55.44444444444444,
+                        "Actual": 0,
+                        "Date": "Sat Sep 29 2018"
+                    },
+                    {
+                        "Average": 15.444444444444445,
+                        "Actual": 0,
+                        "Date": "Sun Sep 30 2018"
+                    },
+                    {
+                        "Average": 59.111111111111114,
+                        "Actual": 0,
+                        "Date": "Mon Oct 01 2018"
+                    },
+                    {
+                        "Average": 19.77777777777778,
+                        "Actual": 0,
+                        "Date": "Tue Oct 02 2018"
+                    },
+                    {
+                        "Average": 7.555555555555555,
+                        "Actual": 0,
+                        "Date": "Wed Oct 03 2018"
+                    },
+                    {
+                        "Average": 9,
+                        "Actual": 0,
+                        "Date": "Thu Oct 04 2018"
+                    },
+                    {
+                        "Average": 8.444444444444445,
+                        "Actual": 0,
+                        "Date": "Fri Oct 05 2018"
+                    },
+                    {
+                        "Average": 4.888888888888889,
+                        "Actual": 0,
+                        "Date": "Sat Oct 06 2018"
+                    },
+                    {
+                        "Average": 4.222222222222222,
+                        "Actual": 0,
+                        "Date": "Sun Oct 07 2018"
+                    },
+                    {
+                        "Average": 17,
+                        "Actual": 0,
+                        "Date": "Mon Oct 08 2018"
+                    },
+                    {
+                        "Average": 21,
+                        "Actual": 0,
+                        "Date": "Tue Oct 09 2018"
+                    },
+                    {
+                        "Average": 3.888888888888889,
+                        "Actual": 0,
+                        "Date": "Wed Oct 10 2018"
+                    },
+                    {
+                        "Average": 5.888888888888889,
+                        "Actual": 0,
+                        "Date": "Thu Oct 11 2018"
+                    },
+                    {
+                        "Average": 3.5555555555555554,
+                        "Actual": 0,
+                        "Date": "Fri Oct 12 2018"
+                    },
+                    {
+                        "Average": 1.7777777777777777,
+                        "Actual": 0,
+                        "Date": "Sat Oct 13 2018"
+                    },
+                    {
+                        "Average": 1.8888888888888888,
+                        "Actual": 0,
+                        "Date": "Sun Oct 14 2018"
+                    },
+                    {
+                        "Average": 2.4444444444444446,
+                        "Actual": 0,
+                        "Date": "Mon Oct 15 2018"
+                    },
+                    {
+                        "Average": 4.333333333333333,
+                        "Actual": 0,
+                        "Date": "Tue Oct 16 2018"
+                    },
+                    {
+                        "Average": 2.2222222222222223,
+                        "Actual": 0,
+                        "Date": "Wed Oct 17 2018"
+                    },
+                    {
+                        "Average": 1.8888888888888888,
+                        "Actual": 0,
+                        "Date": "Thu Oct 18 2018"
+                    },
+                    {
+                        "Average": 1.2222222222222223,
+                        "Actual": 0,
+                        "Date": "Fri Oct 19 2018"
+                    },
+                    {
+                        "Average": 1.1111111111111112,
+                        "Actual": 0,
+                        "Date": "Sat Oct 20 2018"
+                    },
+                    {
+                        "Average": 1.2222222222222223,
+                        "Actual": 0,
+                        "Date": "Sun Oct 21 2018"
+                    },
+                    {
+                        "Average": 2.6666666666666665,
+                        "Actual": 0,
+                        "Date": "Mon Oct 22 2018"
+                    },
+                    {
+                        "Average": 3.111111111111111,
+                        "Actual": 0,
+                        "Date": "Tue Oct 23 2018"
+                    }
+                ]
+            },
+            {
+                "url": "http://example.com",
+                "name": "Another Awesome Blog Post",
+                "startDate": "2018-09-20T00:00:00.000Z",
+                "endDate": "2018-09-27T14:04:57.769Z",
+                "data": [
+                    {
+                        "Average": 40,
+                        "Actual": 75,
+                        "Date": "Wed Sep 19 2018"
+                    },
+                    {
+                        "Average": 35.888888888888886,
+                        "Actual": 523,
+                        "Date": "Thu Sep 20 2018"
+                    },
+                    {
+                        "Average": 21.555555555555557,
+                        "Actual": 403,
+                        "Date": "Fri Sep 21 2018"
+                    },
+                    {
+                        "Average": 15.555555555555555,
+                        "Actual": 329,
+                        "Date": "Sat Sep 22 2018"
+                    },
+                    {
+                        "Average": 677.1111111111111,
+                        "Actual": 56,
+                        "Date": "Sun Sep 23 2018"
+                    },
+                    {
+                        "Average": 56.888888888888886,
+                        "Actual": 13,
+                        "Date": "Mon Sep 24 2018"
+                    },
+                    {
+                        "Average": 17,
+                        "Actual": 10,
+                        "Date": "Tue Sep 25 2018"
+                    },
+                    {
+                        "Average": 62,
+                        "Actual": 4,
+                        "Date": "Wed Sep 26 2018"
+                    },
+                    {
+                        "Average": 20.88888888888889,
+                        "Actual": 0,
+                        "Date": "Thu Sep 27 2018"
+                    },
+                    {
+                        "Average": 7.777777777777778,
+                        "Actual": 0,
+                        "Date": "Fri Sep 28 2018"
+                    },
+                    {
+                        "Average": 9.222222222222221,
+                        "Actual": 0,
+                        "Date": "Sat Sep 29 2018"
+                    },
+                    {
+                        "Average": 10.444444444444445,
+                        "Actual": 0,
+                        "Date": "Sun Sep 30 2018"
+                    },
+                    {
+                        "Average": 5,
+                        "Actual": 0,
+                        "Date": "Mon Oct 01 2018"
+                    },
+                    {
+                        "Average": 4.444444444444445,
+                        "Actual": 0,
+                        "Date": "Tue Oct 02 2018"
+                    },
+                    {
+                        "Average": 17.444444444444443,
+                        "Actual": 0,
+                        "Date": "Wed Oct 03 2018"
+                    },
+                    {
+                        "Average": 21.333333333333332,
+                        "Actual": 0,
+                        "Date": "Thu Oct 04 2018"
+                    },
+                    {
+                        "Average": 4,
+                        "Actual": 0,
+                        "Date": "Fri Oct 05 2018"
+                    },
+                    {
+                        "Average": 5.888888888888889,
+                        "Actual": 0,
+                        "Date": "Sat Oct 06 2018"
+                    },
+                    {
+                        "Average": 4,
+                        "Actual": 0,
+                        "Date": "Sun Oct 07 2018"
+                    },
+                    {
+                        "Average": 2,
+                        "Actual": 0,
+                        "Date": "Mon Oct 08 2018"
+                    },
+                    {
+                        "Average": 2.4444444444444446,
+                        "Actual": 0,
+                        "Date": "Tue Oct 09 2018"
+                    },
+                    {
+                        "Average": 2.6666666666666665,
+                        "Actual": 0,
+                        "Date": "Wed Oct 10 2018"
+                    },
+                    {
+                        "Average": 4.555555555555555,
+                        "Actual": 0,
+                        "Date": "Thu Oct 11 2018"
+                    },
+                    {
+                        "Average": 2.3333333333333335,
+                        "Actual": 0,
+                        "Date": "Fri Oct 12 2018"
+                    },
+                    {
+                        "Average": 2,
+                        "Actual": 0,
+                        "Date": "Sat Oct 13 2018"
+                    },
+                    {
+                        "Average": 1.4444444444444444,
+                        "Actual": 0,
+                        "Date": "Sun Oct 14 2018"
+                    },
+                    {
+                        "Average": 1.3333333333333333,
+                        "Actual": 0,
+                        "Date": "Mon Oct 15 2018"
+                    },
+                    {
+                        "Average": 1.4444444444444444,
+                        "Actual": 0,
+                        "Date": "Tue Oct 16 2018"
+                    },
+                    {
+                        "Average": 3,
+                        "Actual": 0,
+                        "Date": "Wed Oct 17 2018"
+                    },
+                    {
+                        "Average": 3.3333333333333335,
+                        "Actual": 0,
+                        "Date": "Thu Oct 18 2018"
+                    }
+                ]
+            },
+            {
+                "url": "http://example.com",
+                "name": "An Older Awesome Blog Post",
+                "startDate": "2018-09-18T00:00:00.000Z",
+                "endDate": "2018-09-27T14:04:57.769Z",
+                "data": [
+                    {
+                        "Average": 65.22222222222223,
+                        "Actual": 7,
+                        "Date": "Mon Sep 17 2018"
+                    },
+                    {
+                        "Average": 70.66666666666667,
+                        "Actual": 13,
+                        "Date": "Tue Sep 18 2018"
+                    },
+                    {
+                        "Average": 34.77777777777778,
+                        "Actual": 7,
+                        "Date": "Wed Sep 19 2018"
+                    },
+                    {
+                        "Average": 29,
+                        "Actual": 6,
+                        "Date": "Thu Sep 20 2018"
+                    },
+                    {
+                        "Average": 716.6666666666666,
+                        "Actual": 3,
+                        "Date": "Fri Sep 21 2018"
+                    },
+                    {
+                        "Average": 73.22222222222223,
+                        "Actual": 1,
+                        "Date": "Sat Sep 22 2018"
+                    },
+                    {
+                        "Average": 32,
+                        "Actual": 3,
+                        "Date": "Sun Sep 23 2018"
+                    },
+                    {
+                        "Average": 117.22222222222223,
+                        "Actual": 1,
+                        "Date": "Mon Sep 24 2018"
+                    },
+                    {
+                        "Average": 38.55555555555556,
+                        "Actual": 2,
+                        "Date": "Tue Sep 25 2018"
+                    },
+                    {
+                        "Average": 11.555555555555555,
+                        "Actual": 3,
+                        "Date": "Wed Sep 26 2018"
+                    },
+                    {
+                        "Average": 18.555555555555557,
+                        "Actual": 0,
+                        "Date": "Thu Sep 27 2018"
+                    },
+                    {
+                        "Average": 23.22222222222222,
+                        "Actual": 0,
+                        "Date": "Fri Sep 28 2018"
+                    },
+                    {
+                        "Average": 14.777777777777779,
+                        "Actual": 0,
+                        "Date": "Sat Sep 29 2018"
+                    },
+                    {
+                        "Average": 9.11111111111111,
+                        "Actual": 0,
+                        "Date": "Sun Sep 30 2018"
+                    },
+                    {
+                        "Average": 24,
+                        "Actual": 0,
+                        "Date": "Mon Oct 01 2018"
+                    },
+                    {
+                        "Average": 27.77777777777778,
+                        "Actual": 0,
+                        "Date": "Tue Oct 02 2018"
+                    },
+                    {
+                        "Average": 5.333333333333333,
+                        "Actual": 0,
+                        "Date": "Wed Oct 03 2018"
+                    },
+                    {
+                        "Average": 12.333333333333334,
+                        "Actual": 0,
+                        "Date": "Thu Oct 04 2018"
+                    },
+                    {
+                        "Average": 10.88888888888889,
+                        "Actual": 0,
+                        "Date": "Fri Oct 05 2018"
+                    },
+                    {
+                        "Average": 10.222222222222221,
+                        "Actual": 0,
+                        "Date": "Sat Oct 06 2018"
+                    },
+                    {
+                        "Average": 7.111111111111111,
+                        "Actual": 0,
+                        "Date": "Sun Oct 07 2018"
+                    },
+                    {
+                        "Average": 9.11111111111111,
+                        "Actual": 0,
+                        "Date": "Mon Oct 08 2018"
+                    },
+                    {
+                        "Average": 8.555555555555555,
+                        "Actual": 0,
+                        "Date": "Tue Oct 09 2018"
+                    },
+                    {
+                        "Average": 2.7777777777777777,
+                        "Actual": 0,
+                        "Date": "Wed Oct 10 2018"
+                    },
+                    {
+                        "Average": 7.777777777777778,
+                        "Actual": 0,
+                        "Date": "Thu Oct 11 2018"
+                    },
+                    {
+                        "Average": 10.666666666666666,
+                        "Actual": 0,
+                        "Date": "Fri Oct 12 2018"
+                    },
+                    {
+                        "Average": 23.77777777777778,
+                        "Actual": 0,
+                        "Date": "Sat Oct 13 2018"
+                    },
+                    {
+                        "Average": 14.777777777777779,
+                        "Actual": 0,
+                        "Date": "Sun Oct 14 2018"
+                    },
+                    {
+                        "Average": 9.666666666666666,
+                        "Actual": 0,
+                        "Date": "Mon Oct 15 2018"
+                    },
+                    {
+                        "Average": 9.444444444444445,
+                        "Actual": 0,
+                        "Date": "Tue Oct 16 2018"
+                    }
+                ]
+            },
+            {
+                "url": "http://example.com",
+                "name": "An Even Older Awesome Blog Post",
+                "startDate": "2018-09-17T00:00:00.000Z",
+                "endDate": "2018-09-27T14:04:57.769Z",
+                "data": [
+                    {
+                        "Average": 189.77777777777777,
+                        "Actual": 35,
+                        "Date": "Sun Sep 16 2018"
+                    },
+                    {
+                        "Average": 189.22222222222223,
+                        "Actual": 18,
+                        "Date": "Mon Sep 17 2018"
+                    },
+                    {
+                        "Average": 52.22222222222222,
+                        "Actual": 16,
+                        "Date": "Tue Sep 18 2018"
+                    },
+                    {
+                        "Average": 31.88888888888889,
+                        "Actual": 5,
+                        "Date": "Wed Sep 19 2018"
+                    },
+                    {
+                        "Average": 717.8888888888889,
+                        "Actual": 2,
+                        "Date": "Thu Sep 20 2018"
+                    },
+                    {
+                        "Average": 74.88888888888889,
+                        "Actual": 7,
+                        "Date": "Fri Sep 21 2018"
+                    },
+                    {
+                        "Average": 34.888888888888886,
+                        "Actual": 3,
+                        "Date": "Sat Sep 22 2018"
+                    },
+                    {
+                        "Average": 179.11111111111111,
+                        "Actual": 5,
+                        "Date": "Sun Sep 23 2018"
+                    },
+                    {
+                        "Average": 71.22222222222223,
+                        "Actual": 6,
+                        "Date": "Mon Sep 24 2018"
+                    },
+                    {
+                        "Average": 14.333333333333334,
+                        "Actual": 4,
+                        "Date": "Tue Sep 25 2018"
+                    },
+                    {
+                        "Average": 19.444444444444443,
+                        "Actual": 1,
+                        "Date": "Wed Sep 26 2018"
+                    },
+                    {
+                        "Average": 23.77777777777778,
+                        "Actual": 0,
+                        "Date": "Thu Sep 27 2018"
+                    },
+                    {
+                        "Average": 15.333333333333334,
+                        "Actual": 0,
+                        "Date": "Fri Sep 28 2018"
+                    },
+                    {
+                        "Average": 10.222222222222221,
+                        "Actual": 0,
+                        "Date": "Sat Sep 29 2018"
+                    },
+                    {
+                        "Average": 24.88888888888889,
+                        "Actual": 0,
+                        "Date": "Sun Sep 30 2018"
+                    },
+                    {
+                        "Average": 28.666666666666668,
+                        "Actual": 0,
+                        "Date": "Mon Oct 01 2018"
+                    },
+                    {
+                        "Average": 7.111111111111111,
+                        "Actual": 0,
+                        "Date": "Tue Oct 02 2018"
+                    },
+                    {
+                        "Average": 13.222222222222221,
+                        "Actual": 0,
+                        "Date": "Wed Oct 03 2018"
+                    },
+                    {
+                        "Average": 10.88888888888889,
+                        "Actual": 0,
+                        "Date": "Thu Oct 04 2018"
+                    },
+                    {
+                        "Average": 10.88888888888889,
+                        "Actual": 0,
+                        "Date": "Fri Oct 05 2018"
+                    },
+                    {
+                        "Average": 8.88888888888889,
+                        "Actual": 0,
+                        "Date": "Sat Oct 06 2018"
+                    },
+                    {
+                        "Average": 9.11111111111111,
+                        "Actual": 0,
+                        "Date": "Sun Oct 07 2018"
+                    },
+                    {
+                        "Average": 11.222222222222221,
+                        "Actual": 0,
+                        "Date": "Mon Oct 08 2018"
+                    },
+                    {
+                        "Average": 3.4444444444444446,
+                        "Actual": 0,
+                        "Date": "Tue Oct 09 2018"
+                    },
+                    {
+                        "Average": 10.88888888888889,
+                        "Actual": 0,
+                        "Date": "Wed Oct 10 2018"
+                    },
+                    {
+                        "Average": 11.777777777777779,
+                        "Actual": 0,
+                        "Date": "Thu Oct 11 2018"
+                    },
+                    {
+                        "Average": 27.77777777777778,
+                        "Actual": 0,
+                        "Date": "Fri Oct 12 2018"
+                    },
+                    {
+                        "Average": 15.222222222222221,
+                        "Actual": 0,
+                        "Date": "Sat Oct 13 2018"
+                    },
+                    {
+                        "Average": 10.777777777777779,
+                        "Actual": 0,
+                        "Date": "Sun Oct 14 2018"
+                    },
+                    {
+                        "Average": 11.222222222222221,
+                        "Actual": 0,
+                        "Date": "Mon Oct 15 2018"
+                    }
+                ]
+            }
+        ],
+        "type": "sparklines",
+        "label": "Pageview Performance vs Rolling Average",
+        "primary": "Actual",
+        "secondary": "Average",
+        "xAxis": "Date",
+        "helptext": "This displays a comparison graph between each post from its publish date plus 30 days compared to a rolling average of previous posts from their publish date plus 30 days."
+    },
+    {
+        "data": [
+            {
+                "URL": "http://example.com",
+                "Name": "An Awesome Blog Post",
+                "Views": 500,
+                "Unique Views": 490,
+                "Average Time on Page (Seconds)": 240,
+                "Average Scroll Depth": "55%"
+            },
+            {
+                "URL": "http://example.com",
+                "Name": "Another Awesome Blog Post",
+                "Views": 600,
+                "Unique Views": 580,
+                "Average Time on Page (Seconds)": 500,
+                "Average Scroll Depth": "48%"
+            }
+        ],
+        "type": "table",
+        "label": "Recent Posts",
+        "helptext": "This is a table of posts and performance metrics from an RSS feed on Example.com."
+    },
+    {
+        "type": "quickstat",
+        "label": "Email List Size",
+        "data": {
+            "value": 125000,
+            "helptext": "The number of subscribers in the email list in MailChimp"
+        }
+    },
+    {
+        "type": "callout",
+        "label": "Email List Stats",
+        "key": "key",
+        "value": "value",
+        "data": [
+            {
+                "key": "Open Rate",
+                "value": "20%",
+                "helptext": "The average percentage of subscribers who open e-mails sent from MailChimp"
+            },
+            {
+                "key": "Click Rate",
+                "value": "5%",
+                "helptext": "The average percentage of subscribers who click links e-mails sent from MailChimp"
+            }
+        ],
+        "helptext": "These are the average open and click rates for email campaigns sent from MailChimp."
+    },
+    {
+        "type": "stackedchart",
+        "label": "Signup Sources",
+        "xAxis": "date",
+        "data": [
+            {
+                "date": "Thu Sep 20 2018",
+                "Email Landing Page": 14,
+                "Footer Form": 10,
+                "Email Popup": 13
+            },
+            {
+                "date": "Fri Sep 21 2018",
+                "Email Landing Page": 20,
+                "Footer Form": 8,
+                "Email Popup": 12
+            },
+            {
+                "date": "Sat Sep 22 2018",
+                "Email Landing Page": 18,
+                "Footer Form": 20,
+                "Email Popup": 1
+            },
+            {
+                "date": "Sun Sep 23 2018",
+                "Email Landing Page": 5,
+                "Footer Form": 10,
+                "Email Popup": 9
+            },
+            {
+                "date": "Mon Sep 24 2018",
+                "Email Landing Page": 8,
+                "Footer Form": 10,
+                "Email Popup": 14
+            },
+            {
+                "date": "Tue Sep 25 2018",
+                "Email Landing Page": 15,
+                "Footer Form": 16,
+                "Email Popup": 12
+            },
+            {
+                "date": "Wed Sep 26 2018",
+                "Email Landing Page": 20,
+                "Footer Form": 14,
+                "Email Popup": 8
+            },
+            {
+                "date": "Thu Sep 27 2018",
+                "Email Landing Page": 9,
+                "Footer Form": 4,
+                "Email Popup": 12
+            }
+        ],
+        "helptext": "This is a daily graph of email list signups in Mailchimp and where the subscribers are coming from."
+    },
+    {
+        "type": "barchart",
+        "label": "Email Campaigns",
+        "data": [
+            {
+                "Name": "Newsletter 1",
+                "Open Rate": 0.1,
+                "Click Rate": 0.08
+            },
+            {
+                "Name": "Newsletter 2",
+                "Open Rate": 0.15,
+                "Click Rate": 0.13
+            },
+            {
+                "Name": "Newsletter 3",
+                "Open Rate": 0.09,
+                "Click Rate": 0.06
+            },
+            {
+                "Name": "Newsletter 4",
+                "Open Rate": 0.11,
+                "Click Rate": 0.05
+            }
+        ],
+        "key": "Name",
+        "value": [
+            "Open Rate",
+            "Click Rate"
+        ],
+        "percent": true,
+        "helptext": "These are open and click rates for email campaigns sent in MailChimp."
+    }
+]

@@ -2,7 +2,8 @@
   'GoogleAnalytics',
   'FeedBenchmarks',
   'MailchimpStats',
-  'FeedTable'
+  'FeedTable',
+  'DemoDatasource'
 ].forEach((className) => {
   module.exports[className] = require('./' + className)
 })
