@@ -5,7 +5,7 @@
   "image": "heroku/nodejs",
   "env": {
     "DEMO_MODE": {
-      "value": "true"
+      "value": "1"
     }
   }
 }
