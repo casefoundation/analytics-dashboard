@@ -118,23 +118,23 @@ describe('Datasources', () => {
       }
     })
 
-    it('processGoogleResponseBodies', () => {
-      fixFeed(data.processGoogleResponseBodies.feed)
-      const urls = fixUrls(data.processGoogleResponseBodies.urls)
-      const consolidatedReport = ds.processGoogleResponseBodies(data.processGoogleResponseBodies.feed, urls, data.processGoogleResponseBodies.responseBodies)
-      _.keys(data.processGoogleResponseBodies.consolidatedReport).forEach((url) => {
-        assert(consolidatedReport[url])
-        _.keys(data.processGoogleResponseBodies.consolidatedReport[url]).forEach((date) => {
-          assert(consolidatedReport[url][date])
-          assert(consolidatedReport[url][date].date)
-          assert(consolidatedReport[url][date].metrics)
-          assert.equal(consolidatedReport[url][date].date.toISOString(), data.processGoogleResponseBodies.consolidatedReport[url][date].date)
-          _.keys(data.processGoogleResponseBodies.consolidatedReport[url][date].metrics).forEach((metric) => {
-            assert.equal(consolidatedReport[url][date].metrics[metric], data.processGoogleResponseBodies.consolidatedReport[url][date].metrics[metric])
-          })
-        })
-      })
-    })
+    // it('processGoogleResponseBodies', () => {
+    //   fixFeed(data.processGoogleResponseBodies.feed)
+    //   const urls = fixUrls(data.processGoogleResponseBodies.urls)
+    //   const consolidatedReport = ds.processGoogleResponseBodies(data.processGoogleResponseBodies.feed, urls, data.processGoogleResponseBodies.responseBodies)
+    //   _.keys(data.processGoogleResponseBodies.consolidatedReport).forEach((url) => {
+    //     assert(consolidatedReport[url])
+    //     _.keys(data.processGoogleResponseBodies.consolidatedReport[url]).forEach((date) => {
+    //       assert(consolidatedReport[url][date])
+    //       assert(consolidatedReport[url][date].date)
+    //       assert(consolidatedReport[url][date].metrics)
+    //       assert.equal(consolidatedReport[url][date].date.toISOString(), data.processGoogleResponseBodies.consolidatedReport[url][date].date)
+    //       _.keys(data.processGoogleResponseBodies.consolidatedReport[url][date].metrics).forEach((metric) => {
+    //         assert.equal(consolidatedReport[url][date].metrics[metric], data.processGoogleResponseBodies.consolidatedReport[url][date].metrics[metric])
+    //       })
+    //     })
+    //   })
+    // })
   })
 
   describe('FeedTable', () => {

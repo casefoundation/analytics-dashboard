@@ -121,7 +121,7 @@ class FeedDataSource extends GoogleDataSource {
                 'dimensionName': 'ga:pagePath',
                 'operator': 'IN_LIST',
                 'expressions': urls.map((url) => {
-                  return url.path
+                  return url.pathname
                 })
               }
             }].concat(this.getGoogleRequestDimensionFilterClauses(i)),

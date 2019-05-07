@@ -44,7 +44,7 @@ class GoogleDataSource extends DataSource {
   getURLForHostnameAndPath (urls, hostname, path) {
     const submittedURL = new url.URL('http://' + hostname + path)
     return urls.find(function (url) {
-      return url.host === submittedURL.host && url.path === submittedURL.path && url.hash === submittedURL.hash
+      return url.host === submittedURL.host && url.pathname === submittedURL.pathname && url.hash === submittedURL.hash
     })
   }
 }

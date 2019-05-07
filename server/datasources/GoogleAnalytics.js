@@ -210,7 +210,7 @@ class GoogleAnalytics extends GoogleDataSource {
               {
                 'dimensionName': 'ga:pagePath',
                 'operator': 'EXACT',
-                'expressions': [urlObject.path]
+                'expressions': [urlObject.pathname]
               }
             ].filter((filter) => {
               return filter.expressions[0]

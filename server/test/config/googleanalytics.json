@@ -25,11 +25,11 @@
     "pages": [
       {
         "name": "Home",
-        "url": "/"
+        "url": "http://example.com/"
       },
       {
         "name": "About",
-        "url": "/about"
+        "url": "http://example.com/about"
       }
     ],
     "dimensions": [
