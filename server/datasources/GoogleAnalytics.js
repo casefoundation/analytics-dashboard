@@ -4,7 +4,7 @@ const _ = require('lodash')
 const analyticsreporting = google.analyticsreporting('v4')
 const url = require('url')
 const GoogleDataSource = require('./GoogleDataSource')
-const demoModeGenerator = require('../lib/demoModeGenerator')
+// const demoModeGenerator = require('../lib/demoModeGenerator')
 
 class GoogleAnalytics extends GoogleDataSource {
   query (startDate, endDate) {
@@ -132,7 +132,7 @@ class GoogleAnalytics extends GoogleDataSource {
   }
 
   buildEventsRankingsRequests (startDate, endDate, reportTypes, reportRequests) {
-    this.config.elements.eventsRankings.forEach((event) => {
+    (this.config.elements.eventsRankings || []).forEach((event) => {
       reportTypes.push('eventsRankings')
       reportRequests.push({
         'metrics': [
