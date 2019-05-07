@@ -14,7 +14,7 @@ app.use(bodyParser.json())
 
 module.exports = () => {
   return configLoader.load()
-    .then(({dashboardsArray, datasources}) => {
+    .then(({ dashboardsArray, datasources }) => {
       setupRoutes(dashboardsArray, datasources)
       return app
     })

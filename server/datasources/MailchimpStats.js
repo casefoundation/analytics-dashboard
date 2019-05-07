@@ -2,7 +2,7 @@ const Mailchimp = require('mailchimp-api-v3')
 const async = require('async')
 const _ = require('lodash')
 const DataSource = require('./DataSource')
-const demoModeGenerator = require('../lib/demoModeGenerator')
+// const demoModeGenerator = require('../lib/demoModeGenerator')
 
 class MailchimpStats extends DataSource {
   constructor (config, secrets) {

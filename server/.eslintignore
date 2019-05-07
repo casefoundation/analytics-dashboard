@@ -1,0 +1,8 @@
+config/*.json
+.nyc_output
+coverage
+coverage.lcov
+test.js
+test
+node_modules
+build

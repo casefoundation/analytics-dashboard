@@ -7,7 +7,7 @@ class JSONEncrypter {
   encrypt (object) {
     return new Promise((resolve, reject) => {
       const buffer = Buffer.from(JSON.stringify(object), 'utf-8')
-      const cipher = crypto.createCipher(algorithm, password)
+      const cipher = crypto.createCipheriv(algorithm, password)
       const crypted = Buffer.concat([cipher.update(buffer), cipher.final()])
       zlib.gzip(crypted, (err, result) => {
         if (err) {
@@ -25,7 +25,7 @@ class JSONEncrypter {
         if (err) {
           reject(err)
         } else {
-          const decipher = crypto.createDecipher(algorithm, password)
+          const decipher = crypto.createDecipheriv(algorithm, password)
           const dec = Buffer.concat([decipher.update(result), decipher.final()])
           const string = dec.toString('utf8')
           const obj = JSON.parse(string)

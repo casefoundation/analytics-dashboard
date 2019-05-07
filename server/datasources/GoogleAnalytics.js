@@ -185,7 +185,7 @@ class GoogleAnalytics extends GoogleDataSource {
   buildPagesRequests (startDate, endDate, reportTypes, reportRequests) {
     this.config.elements.pages.forEach((page) => {
       reportTypes.push('pages')
-      const urlObject = url.parse(page.url)
+      const urlObject = new url.URL(page.url)
       if (urlObject) {
         reportRequests.push({
           'metrics': [
@@ -692,7 +692,7 @@ class GoogleAnalytics extends GoogleDataSource {
     let parsedReport = report.data.rows.map(function (row) {
       return {
         'Name': row.dimensions[2],
-        'URL': url.parse('http://' + row.dimensions[0] + row.dimensions[1]).href,
+        'URL': new url.URL('http://' + row.dimensions[0] + row.dimensions[1]).href,
         'Views': parseInt(row.metrics[0].values[0])
       }
     })

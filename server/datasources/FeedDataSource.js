@@ -13,7 +13,7 @@ class FeedDataSource extends GoogleDataSource {
         const newFeed = this.filterReportFeed(feed, startDate, endDate)
         return this.fetchAnalytics(newFeed, startDate, endDate)
       })
-      .then(({feed, report}) => {
+      .then(({ feed, report }) => {
         return this.generateWidgets(feed, report)
       })
   }
@@ -64,7 +64,7 @@ class FeedDataSource extends GoogleDataSource {
 
   convertFeedToUrls (feed) {
     return feed.map(function (feedItem) {
-      return url.parse(feedItem.link)
+      return new url.URL(feedItem.link)
     }).filter(function (urlObj) {
       return urlObj
     })

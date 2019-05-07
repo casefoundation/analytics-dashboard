@@ -1,6 +1,6 @@
 const FeedDataSource = require('./FeedDataSource')
 const _ = require('lodash')
-const demoModeGenerator = require('../lib/demoModeGenerator')
+// const demoModeGenerator = require('../lib/demoModeGenerator')
 
 class FeedTable extends FeedDataSource {
   getGoogleRequestMetricsDimensions () {

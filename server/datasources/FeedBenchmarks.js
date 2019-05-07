@@ -1,5 +1,5 @@
 const FeedDataSource = require('./FeedDataSource')
-const demoModeGenerator = require('../lib/demoModeGenerator')
+// const demoModeGenerator = require('../lib/demoModeGenerator')
 
 class FeedBenchmarks extends FeedDataSource {
   getGoogleRequestMetricsDimensions () {
